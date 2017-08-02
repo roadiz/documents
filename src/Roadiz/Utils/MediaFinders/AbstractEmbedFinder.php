@@ -242,7 +242,7 @@ abstract class AbstractEmbedFinder
          * Create document metas
          * for each translation
          */
-        $this->injectMetaInDocument($document);
+        $this->injectMetaInDocument($objectManager, $document);
 
         return $document;
     }
@@ -258,10 +258,11 @@ abstract class AbstractEmbedFinder
     /**
      * Store additional information into Document.
      *
+     * @param ObjectManager $objectManager
      * @param DocumentInterface $document
      * @return DocumentInterface
      */
-    abstract protected function injectMetaInDocument(DocumentInterface $document);
+    abstract protected function injectMetaInDocument(ObjectManager $objectManager, DocumentInterface $document);
 
     /**
      * Get media title from feed.
