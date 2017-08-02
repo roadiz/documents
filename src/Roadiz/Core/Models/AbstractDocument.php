@@ -122,6 +122,20 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     ];
 
     /**
+     * Get short type name for current document Mime type.
+     *
+     * @return string
+     */
+    public function getShortType()
+    {
+        if (isset(static::$mimeToIcon[$this->getMimeType()])) {
+            return static::$mimeToIcon[$this->getMimeType()];
+        } else {
+            return 'unknown';
+        }
+    }
+
+    /**
      * Get short Mime type.
      *
      * @return string
