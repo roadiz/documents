@@ -48,6 +48,7 @@ class UrlOptionsResolver extends OptionsResolver
             'grayscale' => false,
             'progressive' => false,
             'noProcess' => false,
+            'interlace' => false,
             'width' => 0,
             'height' => 0,
             'quality' => 90,
@@ -70,6 +71,7 @@ class UrlOptionsResolver extends OptionsResolver
         $this->setAllowedTypes('grayscale', ['boolean']);
         $this->setAllowedTypes('progressive', ['boolean']);
         $this->setAllowedTypes('noProcess', ['boolean']);
+        $this->setAllowedTypes('interlace', ['boolean']);
 
         /*
          * Guess width and height options from fit

@@ -137,47 +137,10 @@ class DocumentUrlGenerator
      */
     protected function getProcessedDocumentUrlByArray()
     {
-        $interventionRequestOptions = [];
-
-        if (null === $this->options['fit'] && $this->options['width'] > 0) {
-            $interventionRequestOptions['w'] = 'w' . (int) $this->options['width'];
-        }
-        if (null === $this->options['fit'] && $this->options['height'] > 0) {
-            $interventionRequestOptions['h'] = 'h' . (int) $this->options['height'];
-        }
-        if (null !== $this->options['crop']) {
-            $interventionRequestOptions['c'] = 'c' . strip_tags($this->options['crop']);
-        }
-        if ($this->options['blur'] > 0) {
-            $interventionRequestOptions['l'] = 'l' . ($this->options['blur']);
-        }
-        if (null !== $this->options['fit']) {
-            $interventionRequestOptions['f'] = 'f' . strip_tags($this->options['fit']);
-        }
-        if ($this->options['rotate'] > 0) {
-            $interventionRequestOptions['r'] = 'r' . ($this->options['rotate']);
-        }
-        if ($this->options['sharpen'] > 0) {
-            $interventionRequestOptions['s'] = 's' . ($this->options['sharpen']);
-        }
-        if ($this->options['contrast'] > 0) {
-            $interventionRequestOptions['k'] = 'k' . ($this->options['contrast']);
-        }
-        if ($this->options['grayscale']) {
-            $interventionRequestOptions['g'] = 'g1';
-        }
-        if ($this->options['quality'] > 0) {
-            $interventionRequestOptions['q'] = 'q' . $this->options['quality'];
-        }
-        if (null !== $this->options['background']) {
-            $interventionRequestOptions['b'] = 'b' . strip_tags($this->options['background']);
-        }
-        if ($this->options['progressive']) {
-            $interventionRequestOptions['p'] = 'p1';
-        }
+        $compiler = new OptionsCompiler();
 
         $routeParams = [
-            'queryString' => implode('-', $interventionRequestOptions),
+            'queryString' => $compiler->compile($this->options),
             'filename' => $this->document->getRelativePath(),
         ];
 
