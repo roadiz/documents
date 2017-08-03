@@ -53,7 +53,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      *
      * @var array
      */
-    public static $mimeToIcon = [
+    protected static $mimeToIcon = [
         'text/html' => 'code',
         'application/javascript' => 'code',
         'text/css' => 'code',
