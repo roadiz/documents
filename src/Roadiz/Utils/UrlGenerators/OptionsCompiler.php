@@ -29,7 +29,7 @@
 
 namespace RZ\Roadiz\Utils\UrlGenerators;
 
-use RZ\Roadiz\Utils\Document\UrlOptionsResolver;
+use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 
 /**
  * Compile Intervention Request options into a single query string.
@@ -51,7 +51,7 @@ class OptionsCompiler
      */
     public function compile($options)
     {
-        $resolver = new UrlOptionsResolver();
+        $resolver = new ViewOptionsResolver();
         $this->options = $resolver->resolve($options);
 
         $shortOptions = [];
