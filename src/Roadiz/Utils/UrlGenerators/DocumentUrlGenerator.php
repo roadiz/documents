@@ -33,7 +33,7 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface as SymfonyUrlGeneratorInterface;
 
 class DocumentUrlGenerator
 {
@@ -53,7 +53,7 @@ class DocumentUrlGenerator
      */
     private $packages;
     /**
-     * @var UrlGeneratorInterface
+     * @var SymfonyUrlGeneratorInterface
      */
     private $urlGenerator;
 
@@ -61,14 +61,14 @@ class DocumentUrlGenerator
      * DocumentUrlGenerator constructor.
      * @param RequestStack $requestStack
      * @param Packages $packages
-     * @param UrlGeneratorInterface $urlGenerator
+     * @param SymfonyUrlGeneratorInterface $urlGenerator
      * @param DocumentInterface|null $document
      * @param array $options
      */
     public function __construct(
         RequestStack $requestStack,
         Packages $packages,
-        UrlGeneratorInterface $urlGenerator,
+        SymfonyUrlGeneratorInterface $urlGenerator,
         DocumentInterface $document = null,
         array $options = []
     ) {
@@ -147,7 +147,7 @@ class DocumentUrlGenerator
         $path = $this->urlGenerator->generate(
             $this->getRouteName(),
             $routeParams,
-            UrlGeneratorInterface::ABSOLUTE_PATH
+            SymfonyUrlGeneratorInterface::ABSOLUTE_PATH
         );
 
         /*

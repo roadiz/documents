@@ -37,7 +37,7 @@ use RZ\Roadiz\Utils\MediaFinders\AbstractEmbedFinder;
 use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGenerator;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface as SymfonyUrlGeneratorInterface;
 
 /**
  * Class DocumentViewer
@@ -65,7 +65,7 @@ abstract class AbstractDocumentViewer
     /** @var array */
     protected $documentPlatforms;
 
-    /** @var UrlGeneratorInterface */
+    /** @var SymfonyUrlGeneratorInterface */
     private $urlGenerator;
 
     /**
@@ -77,12 +77,12 @@ abstract class AbstractDocumentViewer
      * @param RequestStack $requestStack
      * @param \Twig_Environment $environment
      * @param ObjectManager $objectManager
-     * @param UrlGeneratorInterface $urlGenerator
+     * @param SymfonyUrlGeneratorInterface $urlGenerator
      * @param DocumentUrlGenerator $documentUrlGenerator
      * @param Packages $packages
      * @param $availablePlatforms
      */
-    public function __construct(RequestStack $requestStack, \Twig_Environment $environment, ObjectManager $objectManager, UrlGeneratorInterface $urlGenerator, DocumentUrlGenerator $documentUrlGenerator, Packages $packages, $availablePlatforms)
+    public function __construct(RequestStack $requestStack, \Twig_Environment $environment, ObjectManager $objectManager, SymfonyUrlGeneratorInterface $urlGenerator, DocumentUrlGenerator $documentUrlGenerator, Packages $packages, $availablePlatforms)
     {
         $this->packages = $packages;
         $this->requestStack = $requestStack;
