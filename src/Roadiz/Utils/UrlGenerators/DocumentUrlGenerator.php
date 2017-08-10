@@ -117,11 +117,9 @@ class DocumentUrlGenerator
             );
         }
 
-        $defaultPackageName = $absolute ? Packages::ABSOLUTE : null;
-        return $this->packages->getUrl(
-            $this->getProcessedDocumentUrlByArray(),
-            $defaultPackageName
-        );
+        $referenceType = $absolute ? SymfonyUrlGeneratorInterface::ABSOLUTE_URL : SymfonyUrlGeneratorInterface::ABSOLUTE_PATH;
+
+        return $this->getProcessedDocumentUrlByArray($referenceType);
     }
 
     /**
@@ -133,9 +131,10 @@ class DocumentUrlGenerator
     }
 
     /**
+     * @param int $referenceType The type of reference to be generated (one of the UrlGeneratorInterface constants)
      * @return string
      */
-    protected function getProcessedDocumentUrlByArray()
+    protected function getProcessedDocumentUrlByArray($referenceType = SymfonyUrlGeneratorInterface::ABSOLUTE_PATH)
     {
         $compiler = new OptionsCompiler();
 
@@ -144,49 +143,10 @@ class DocumentUrlGenerator
             'filename' => $this->document->getRelativePath(),
         ];
 
-        $path = $this->urlGenerator->generate(
+        return $this->urlGenerator->generate(
             $this->getRouteName(),
             $routeParams,
-            SymfonyUrlGeneratorInterface::ABSOLUTE_PATH
+            $referenceType
         );
-
-        /*
-         * Need to remove base-path from url as AssetPackages will prepend it.
-         */
-        $path = $this->removeBasePath($path);
-
-        return $this->removeStartingSlash($path);
-    }
-
-    /**
-     * Need to remove base-path from url as AssetPackages will prepend it.
-     *
-     * @param string $path
-     * @return bool|string
-     */
-    protected function removeBasePath($path)
-    {
-        $basePath = $this->requestStack->getMasterRequest()->getBasePath();
-        if ($basePath != '') {
-            $path = substr($path, strlen($basePath));
-        }
-
-        return $path;
-    }
-
-    /**
-     * Remove root-slash not to disable Assets Packages resolving
-     * real server root.
-     *
-     * @param string $path
-     * @return string
-     */
-    protected function removeStartingSlash($path)
-    {
-        if (substr($path, 0, 1) === '/') {
-            $path = substr($path, 1);
-        }
-
-        return $path;
     }
 }
