@@ -166,7 +166,8 @@ class Packages extends BasePackages
         /*
          * If no protocol, use https as default
          */
-        if (!preg_match("~^(?:f|ht)tps?://~i", $staticDomainAndPort)) {
+        if (!preg_match("~^//~i", $staticDomainAndPort) &&
+            !preg_match("~^(?:f|ht)tps?://~i", $staticDomainAndPort)) {
             $staticDomainAndPort = "https://" . $staticDomainAndPort;
         }
 
