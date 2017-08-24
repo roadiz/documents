@@ -45,20 +45,50 @@ use Symfony\Component\HttpFoundation\Response;
  */
 abstract class AbstractEmbedFinder
 {
+    /**
+     * @var array|null
+     */
     protected $feed = null;
     /**
      * @var string
      */
     protected $embedId;
+    /**
+     * @var string
+     */
     protected $key;
 
+    /**
+     * @var string
+     */
     protected static $platform = 'abstract';
 
     /**
      * AbstractEmbedFinder constructor.
      * @param string $embedId
+     * @param bool $validate Validate the embed id passed at the constructor [default: true].
      */
-    public function __construct($embedId = '')
+    public function __construct($embedId = '', $validate = true)
+    {
+        if ($validate) {
+            $this->embedId = $this->validateEmbedId($embedId);
+        } else {
+            $this->embedId = $embedId;
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmbedId()
+    {
+        return $this->embedId;
+    }
+
+    /**
+     * @param string $embedId
+     */
+    public function setEmbedId($embedId)
     {
         $this->embedId = $this->validateEmbedId($embedId);
     }
