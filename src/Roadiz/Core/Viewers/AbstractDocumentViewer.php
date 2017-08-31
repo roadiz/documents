@@ -82,8 +82,15 @@ abstract class AbstractDocumentViewer
      * @param Packages $packages
      * @param $availablePlatforms
      */
-    public function __construct(RequestStack $requestStack, \Twig_Environment $environment, ObjectManager $objectManager, SymfonyUrlGeneratorInterface $urlGenerator, DocumentUrlGenerator $documentUrlGenerator, Packages $packages, $availablePlatforms)
-    {
+    public function __construct(
+        RequestStack $requestStack,
+        \Twig_Environment $environment,
+        ObjectManager $objectManager,
+        SymfonyUrlGeneratorInterface $urlGenerator,
+        DocumentUrlGenerator $documentUrlGenerator,
+        Packages $packages,
+        $availablePlatforms
+    ) {
         $this->packages = $packages;
         $this->requestStack = $requestStack;
         $this->twig = $environment;
@@ -277,7 +284,7 @@ abstract class AbstractDocumentViewer
 
         if (!empty($options['alt'])) {
             $assignation['alt'] = $options['alt'];
-        } elseif ("" !== $this->getDocumentAlt()) {
+        } elseif ("" != $this->getDocumentAlt()) {
             $assignation['alt'] = $this->getDocumentAlt();
         } else {
             $assignation['alt'] = $this->document->getFilename();
