@@ -315,9 +315,9 @@ class Packages extends BasePackages
     public function getDocumentFilePath(DocumentInterface $document)
     {
         if ($document->isPrivate()) {
-            return $this->getPrivateFilesPath($document->getRelativeUrl());
+            return $this->getPrivateFilesPath($document->getRelativePath());
         }
-        return $this->getPublicFilesPath($document->getRelativeUrl());
+        return $this->getPublicFilesPath($document->getRelativePath());
     }
 
     /**
