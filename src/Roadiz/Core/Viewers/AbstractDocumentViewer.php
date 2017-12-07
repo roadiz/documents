@@ -245,6 +245,9 @@ abstract class AbstractDocumentViewer
      * @param array $options
      *
      * @return string HTML output
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
     public function getDocumentByArray(array $options = [])
     {
