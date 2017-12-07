@@ -187,7 +187,7 @@ class Packages extends BasePackages
         }
 
         return new PathPackage(
-            $this->requestStackContext->getBasePath(),
+            '/',
             $this->versionStrategy,
             $this->requestStackContext
         );
@@ -221,7 +221,7 @@ class Packages extends BasePackages
         }
 
         return new PathPackage(
-            $this->requestStackContext->getBasePath() . $this->fileAware->getPublicFilesBasePath(),
+            $this->fileAware->getPublicFilesBasePath(),
             $this->versionStrategy,
             $this->requestStackContext
         );
@@ -248,7 +248,7 @@ class Packages extends BasePackages
     protected function getPublicPathPackage()
     {
         return new PathPackage(
-            $this->requestStackContext->getBasePath() . $this->fileAware->getPublicFilesPath(),
+            $this->fileAware->getPublicFilesPath(),
             $this->versionStrategy
         );
     }
