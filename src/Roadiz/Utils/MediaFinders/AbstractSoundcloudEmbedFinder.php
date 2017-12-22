@@ -182,6 +182,6 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         }
 
 
-        return 'https//w.soundcloud.com/player/?' . http_build_query($queryString);
+        return 'https://w.soundcloud.com/player/?' . http_build_query($queryString);
     }
 }
