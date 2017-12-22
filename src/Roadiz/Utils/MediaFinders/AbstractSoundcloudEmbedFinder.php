@@ -126,7 +126,7 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
                     if (false !== $embedId = $this->getEmbedIdFromPlaylistFeed($trackInfo)) {
                         return $embedId;
                     } elseif (false !== $embedId = $this->getEmbedIdFromTrackFeed($trackInfo)) {
-                        return $trackInfo['id'];
+                        return $embedId;
                     }
                 }
             } catch (RequestException $exception) {
