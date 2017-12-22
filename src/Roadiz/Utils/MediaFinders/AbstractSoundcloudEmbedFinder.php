@@ -123,7 +123,9 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
 
                 if (Response::HTTP_OK == $response->getStatusCode()) {
                     $trackInfo =  $response->json();
-                    if (isset($trackInfo['id'])) {
+                    if (false !== $embedId = $this->getEmbedIdFromPlaylistFeed($trackInfo)) {
+                        return $embedId;
+                    } elseif (false !== $embedId = $this->getEmbedIdFromTrackFeed($trackInfo)) {
                         return $trackInfo['id'];
                     }
                 }
@@ -133,6 +135,38 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         }
 
         throw new \InvalidArgumentException('embedId.is_not_valid');
+    }
+
+    /**
+     * @param array $feed
+     * @return bool|int
+     */
+    public function getEmbedIdFromPlaylistFeed(array &$feed)
+    {
+        if (isset($feed['tracks']) &&
+            isset($feed['tracks'][0]) &&
+            isset($feed['tracks'][0]['kind']) &&
+            $feed['tracks'][0]['kind'] == 'track' &&
+            isset($feed['tracks'][0]['id'])) {
+            return $feed['tracks'][0]['id'];
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array $feed
+     * @return bool|int
+     */
+    public function getEmbedIdFromTrackFeed(array &$feed)
+    {
+        if (isset($feed['kind']) &&
+            $feed['kind'] == 'track' &&
+            isset($feed['id'])) {
+            return $feed['id'];
+        }
+
+        return false;
     }
 
     /**
