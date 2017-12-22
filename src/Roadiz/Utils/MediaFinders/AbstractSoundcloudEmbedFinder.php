@@ -28,7 +28,10 @@
  */
 namespace RZ\Roadiz\Utils\MediaFinders;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Soundcloud tools class.
@@ -68,7 +71,6 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         return $this->getFeed()['artwork_url'];
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -83,15 +85,54 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
     public function getMediaFeed($search = null)
     {
         if ($this->getKey() != "") {
-            $url = "http://api.soundcloud.com/tracks/".
-                    $this->embedId.
-                    ".json?client_id=".
-                    $this->getKey();
+            $endpoint = "https://api.soundcloud.com/tracks/". $this->embedId;
+            $query = [
+                'client_id' => $this->getKey()
+            ];
 
-            return $this->downloadFeedFromAPI($url);
+            return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
         } else {
             throw new APINeedsAuthentificationException("Soundcloud need a clientId to perform API calls, create a “soundcloud_client_id” setting.", 1);
         }
+    }
+
+    /**
+     * Validate extern Id against platform naming policy.
+     *
+     * @param string $embedId
+     * @return string
+     */
+    protected function validateEmbedId($embedId = "")
+    {
+        if (preg_match('#(?<id>[0-9]+)$#', $embedId, $matches)) {
+            return $matches['id'];
+        }
+        /*
+         * Resolve real track ID
+         */
+        if (preg_match('#^https?\:\/\/(www\.)?soundcloud\.com\/(.+)$#', $embedId)) {
+            $endpoint = "https://api.soundcloud.com/resolve";
+            $client = new Client();
+            try {
+                $response = $client->get($endpoint, [
+                    'query' => [
+                        'url' => $embedId,
+                        'client_id' => $this->getKey()
+                    ]
+                ]);
+
+                if (Response::HTTP_OK == $response->getStatusCode()) {
+                    $trackInfo =  $response->json();
+                    if (isset($trackInfo['id'])) {
+                        return $trackInfo['id'];
+                    }
+                }
+            } catch (RequestException $exception) {
+                throw new \InvalidArgumentException('embedId.is_not_valid');
+            }
+        }
+
+        throw new \InvalidArgumentException('embedId.is_not_valid');
     }
 
     /**
@@ -141,6 +182,6 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         }
 
 
-        return '//w.soundcloud.com/player/?' . http_build_query($queryString);
+        return 'https//w.soundcloud.com/player/?' . http_build_query($queryString);
     }
 }
