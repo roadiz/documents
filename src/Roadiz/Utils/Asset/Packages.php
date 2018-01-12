@@ -107,6 +107,10 @@ class Packages extends BasePackages
      * @var RequestStack
      */
     private $requestStack;
+    /**
+     * @var bool
+     */
+    private $ready;
 
     /**
      * Build a new asset packages for Roadiz root and documents.
@@ -124,21 +128,48 @@ class Packages extends BasePackages
         $staticDomain = "",
         $isPreview = false
     ) {
+        parent::__construct();
         $this->requestStackContext = new RequestStackContext($requestStack);
         $this->requestStack = $requestStack;
         $this->fileAware = $fileAware;
         $this->staticDomain = $staticDomain;
         $this->isPreview = $isPreview;
         $this->versionStrategy = $versionStrategy;
+        $this->ready = false;
+    }
 
-        parent::__construct($this->getDefaultPackage(), [
+    /**
+     * Defer creating package collection not to create error
+     * when warming up cache on dependency injection.
+     * These packages need a valid Request object.
+     */
+    protected function initializePackages()
+    {
+        $this->setDefaultPackage($this->getDefaultPackage());
+        $packages = [
             static::ABSOLUTE => $this->getAbsoluteDefaultPackage(),
             static::DOCUMENTS => $this->getDocumentPackage(),
             static::ABSOLUTE_DOCUMENTS => $this->getAbsoluteDocumentPackage(),
             static::PUBLIC_PATH => $this->getPublicPathPackage(),
             static::PRIVATE_PATH => $this->getPrivatePathPackage(),
             static::FONTS_PATH => $this->getFontsPathPackage(),
-        ]);
+        ];
+        foreach ($packages as $name => $package) {
+            $this->addPackage($name, $package);
+        }
+        $this->ready = true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPackage($name = null)
+    {
+        if (false === $this->ready) {
+            $this->initializePackages();
+        }
+
+        return parent::getPackage($name);
     }
 
     /**
