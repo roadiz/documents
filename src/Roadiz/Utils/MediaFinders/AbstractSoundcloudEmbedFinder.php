@@ -122,7 +122,7 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
                 ]);
 
                 if (Response::HTTP_OK == $response->getStatusCode()) {
-                    $trackInfo =  json_decode($response->getBody()->getContents());
+                    $trackInfo =  json_decode($response->getBody()->getContents(), true);
                     if (false !== $embedId = $this->getEmbedIdFromPlaylistFeed($trackInfo)) {
                         return $embedId;
                     } elseif (false !== $embedId = $this->getEmbedIdFromTrackFeed($trackInfo)) {
