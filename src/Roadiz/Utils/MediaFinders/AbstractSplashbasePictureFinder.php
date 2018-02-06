@@ -62,7 +62,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     {
         try {
             $response = $this->client->get('http://www.splashbase.co/api/v1/images/random?images_only=true');
-            $this->feed = $response->json();
+            $this->feed = json_decode($response->getBody()->getContents());
             $url = $this->feed['url'];
 
             if (is_string($url)) {

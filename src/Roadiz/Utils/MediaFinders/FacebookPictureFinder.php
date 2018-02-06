@@ -56,7 +56,7 @@ class FacebookPictureFinder
     {
         $client = new Client();
         $this->response = $client->get('http://graph.facebook.com/'.$this->facebookUserAlias.'/picture?redirect=false&width=200&height=200');
-        $json = $this->response->json();
+        $json = json_decode($this->response->getBody()->getContents());
         return $json['data']['url'];
     }
 }
