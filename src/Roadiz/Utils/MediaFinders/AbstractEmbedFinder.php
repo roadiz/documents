@@ -31,7 +31,6 @@ namespace RZ\Roadiz\Utils\MediaFinders;
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Stream\Stream;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -326,7 +325,7 @@ abstract class AbstractEmbedFinder
      * Send a CURL request and get its string output.
      *
      * @param $url
-     * @return \GuzzleHttp\Stream\StreamInterface|null
+     * @return \Psr\Http\Message\StreamInterface
      * @throws \RuntimeException
      */
     public function downloadFeedFromAPI($url)
@@ -358,12 +357,11 @@ abstract class AbstractEmbedFinder
                 $thumbnailName = $this->embedId.'_'.$pathinfo;
 
                 try {
-                    $original = Stream::factory(fopen($url, 'r'));
+                    $original = \GuzzleHttp\Psr7\stream_for(fopen($url, 'r'));
 
                     $tmpFile = tempnam(sys_get_temp_dir(), $thumbnailName);
                     $handle = fopen($tmpFile, 'w');
-
-                    $local = Stream::factory($handle);
+                    $local = \GuzzleHttp\Psr7\stream_for($handle);
                     $local->write($original->getContents());
                     $local->close();
 
