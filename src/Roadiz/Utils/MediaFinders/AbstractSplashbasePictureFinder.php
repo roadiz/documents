@@ -36,7 +36,11 @@ use GuzzleHttp\Exception\ClientException;
  */
 abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var Client
+     */
     private $client;
+
     protected static $platform = 'splashbase';
 
     /**
@@ -47,7 +51,12 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     {
         parent::__construct($embedId);
 
-        $this->client = new Client();
+        $this->client = new Client([
+            // Base URI is used with relative requests
+            'base_uri' => 'http://www.splashbase.co',
+            // You can set any number of default request options.
+            'timeout'  => 1.0,
+        ]);
     }
 
     protected function validateEmbedId($embedId = "")
@@ -61,7 +70,11 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     public function getRandom()
     {
         try {
-            $response = $this->client->get('http://www.splashbase.co/api/v1/images/random?images_only=true');
+            $response = $this->client->get('/api/v1/images/random', [
+                'query' => [
+                    'images_only' => 'true'
+                ]
+            ]);
             $this->feed = json_decode($response->getBody()->getContents(), true);
             $url = $this->feed['url'];
 
@@ -82,7 +95,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     /**
      * @param string $keyword
      *
-     * @return array|bool|mixed|null
+     * @return array|bool|mixed
      */
     public function getRandomBySearch($keyword)
     {
