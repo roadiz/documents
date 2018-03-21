@@ -79,6 +79,41 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
         }
     }
 
+    /**
+     * @param string $keyword
+     *
+     * @return array|bool|mixed|null
+     */
+    public function getRandomBySearch($keyword)
+    {
+        try {
+            $query = [
+                'query' => $keyword,
+            ];
+            $response = $this->client->get('/api/v1/images/search', [
+                'query' => $query
+            ]);
+            $multipleFeed = json_decode($response->getBody()->getContents(), true);
+            if (isset($multipleFeed['images']) && count($multipleFeed['images']) > 0) {
+                $maxIndex = count($multipleFeed['images']) - 1;
+                $this->feed = $multipleFeed['images'][rand(0, $maxIndex)];
+                $url = $this->feed['url'];
+
+                if (is_string($url)) {
+                    if (false !== strpos($url, '.jpg')) {
+                        $this->embedId = $this->feed['id'];
+                        return $this->feed;
+                    }
+                }
+            }
+            $this->feed = false;
+            return false;
+        } catch (ClientException $e) {
+            $this->feed = false;
+            return false;
+        }
+    }
+
 
     /**
      * {@inheritdoc}
