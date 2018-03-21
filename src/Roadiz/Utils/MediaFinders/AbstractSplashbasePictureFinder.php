@@ -36,7 +36,11 @@ use GuzzleHttp\Exception\ClientException;
  */
 abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var Client
+     */
     private $client;
+
     protected static $platform = 'splashbase';
 
     /**
@@ -47,7 +51,12 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     {
         parent::__construct($embedId);
 
-        $this->client = new Client();
+        $this->client = new Client([
+            // Base URI is used with relative requests
+            'base_uri' => 'http://www.splashbase.co',
+            // You can set any number of default request options.
+            'timeout'  => 1.0,
+        ]);
     }
 
     protected function validateEmbedId($embedId = "")
@@ -61,7 +70,11 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     public function getRandom()
     {
         try {
-            $response = $this->client->get('http://www.splashbase.co/api/v1/images/random?images_only=true');
+            $response = $this->client->get('/api/v1/images/random', [
+                'query' => [
+                    'images_only' => 'true'
+                ]
+            ]);
             $this->feed = json_decode($response->getBody()->getContents(), true);
             $url = $this->feed['url'];
 
@@ -69,6 +82,41 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
                 if (false !== strpos($url, '.jpg')) {
                     $this->embedId = $this->feed['id'];
                     return $this->feed;
+                }
+            }
+            $this->feed = false;
+            return false;
+        } catch (ClientException $e) {
+            $this->feed = false;
+            return false;
+        }
+    }
+
+    /**
+     * @param string $keyword
+     *
+     * @return array|bool|mixed
+     */
+    public function getRandomBySearch($keyword)
+    {
+        try {
+            $query = [
+                'query' => $keyword,
+            ];
+            $response = $this->client->get('/api/v1/images/search', [
+                'query' => $query
+            ]);
+            $multipleFeed = json_decode($response->getBody()->getContents(), true);
+            if (isset($multipleFeed['images']) && count($multipleFeed['images']) > 0) {
+                $maxIndex = count($multipleFeed['images']) - 1;
+                $this->feed = $multipleFeed['images'][rand(0, $maxIndex)];
+                $url = $this->feed['url'];
+
+                if (is_string($url)) {
+                    if (false !== strpos($url, '.jpg')) {
+                        $this->embedId = $this->feed['id'];
+                        return $this->feed;
+                    }
                 }
             }
             $this->feed = false;
