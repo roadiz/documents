@@ -55,7 +55,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
             // Base URI is used with relative requests
             'base_uri' => 'http://www.splashbase.co',
             // You can set any number of default request options.
-            'timeout'  => 1.0,
+            'timeout'  => 5.0,
         ]);
     }
 
