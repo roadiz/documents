@@ -140,6 +140,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      * * showinfo
      * * start
      * * enablejsapi
+     * * muted
      *
      * @param array $options
      *
@@ -187,7 +188,10 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         if ($options['enablejsapi']) {
             $queryString['enablejsapi'] = (int) $options['enablejsapi'];
         }
+        if ($options['muted']) {
+            $queryString['muted'] = (int) $options['muted'];
+        }
 
-        return '//www.youtube.com/embed/'.$this->embedId.'?'.http_build_query($queryString);
+        return 'https://www.youtube.com/embed/'.$this->embedId.'?'.http_build_query($queryString);
     }
 }
