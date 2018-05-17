@@ -267,6 +267,7 @@ abstract class AbstractDocumentViewer
         $assignation['lazyload'] = $options['lazyload'];
         $assignation['autoplay'] = $options['autoplay'];
         $assignation['loop'] = $options['loop'];
+        $assignation['muted'] = $options['muted'];
         $assignation['controls'] = $options['controls'];
 
         if ($options['width'] > 0) {

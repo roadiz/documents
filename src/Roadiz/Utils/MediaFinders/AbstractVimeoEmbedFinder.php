@@ -141,6 +141,9 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
      * * portrait
      * * color
      * * api
+     * * muted
+     * * autopause
+     * * automute
      *
      * @param array $options
      *
@@ -189,6 +192,16 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
         if (null !== $options['background']) {
             $queryString['background'] = (int) $options['background'];
         }
+        if ($options['muted']) {
+            $queryString['background'] = (int) $options['background'];
+        }
+        if ($options['autopause']) {
+            $queryString['autopause'] = (int) $options['autopause'];
+        }
+        if ($options['automute']) {
+            $queryString['automute'] = (int) $options['automute'];
+        }
+
 
         return 'https://player.vimeo.com/video/'.$this->embedId.'?'.http_build_query($queryString);
     }

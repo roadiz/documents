@@ -91,6 +91,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('lazyload', ['boolean']);
         $this->setAllowedTypes('inline', ['boolean']);
         $this->setAllowedTypes('autoplay', ['boolean']);
+        $this->setAllowedTypes('muted', ['boolean']);
         $this->setAllowedTypes('loop', ['boolean']);
         $this->setAllowedTypes('controls', ['boolean']);
         $this->setAllowedTypes('fullscreen', ['boolean']);
@@ -108,6 +109,8 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('displayTitle', ['boolean']);
         $this->setAllowedTypes('byline', ['boolean']);
         $this->setAllowedTypes('portrait', ['boolean']);
+        $this->setAllowedTypes('automute', ['boolean']);
+        $this->setAllowedTypes('autopause', ['boolean']);
         $this->setAllowedTypes('color', ['null', 'string']);
         $this->setAllowedTypes('api', ['boolean']);
 
