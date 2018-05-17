@@ -50,6 +50,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'lazyload' => false,
             'inline' => true,
             'autoplay' => false,
+            'muted' => false,
             'loop' => false,
             'controls' => true,
             'fullscreen' => true,
@@ -71,6 +72,8 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'portrait' => false,
             'color' => null,
             'api' => true,
+            'automute' => false,
+            'autopause' => false,
             /*
              * Youtube
              */
