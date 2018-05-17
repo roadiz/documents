@@ -30,7 +30,14 @@
     {% endif %}
     {% if autoplay is same as(true) %}
         {% set attributes = attributes|merge({
-        'autoplay': true,
+            'autoplay': true,
+            'playsinline': true
+        }) %}
+    {% endif %}
+    {% if muted is same as(true) %}
+        {% set attributes = attributes|merge({
+            'muted': true,
+            'playsinline': true
         }) %}
     {% endif %}
     {% if loop is same as(true) %}
