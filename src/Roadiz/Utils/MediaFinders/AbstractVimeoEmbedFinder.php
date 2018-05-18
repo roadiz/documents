@@ -193,7 +193,7 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
             $queryString['background'] = (int) $options['background'];
         }
         if ($options['muted']) {
-            $queryString['background'] = (int) $options['background'];
+            $queryString['background'] = (int) $options['muted'];
         }
         if ($options['autopause']) {
             $queryString['autopause'] = (int) $options['autopause'];
