@@ -38,6 +38,7 @@ use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGenerator;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface as SymfonyUrlGeneratorInterface;
+use Twig\Environment;
 
 /**
  * Class DocumentViewer
@@ -56,7 +57,7 @@ abstract class AbstractDocumentViewer
     /** @var RequestStack */
     protected $requestStack;
 
-    /** @var \Twig_Environment */
+    /** @var Environment */
     protected $twig;
 
     /** @var EntityManager */
@@ -75,7 +76,7 @@ abstract class AbstractDocumentViewer
 
     /**
      * @param RequestStack $requestStack
-     * @param \Twig_Environment $environment
+     * @param Environment $environment
      * @param ObjectManager $objectManager
      * @param SymfonyUrlGeneratorInterface $urlGenerator
      * @param DocumentUrlGenerator $documentUrlGenerator
@@ -84,7 +85,7 @@ abstract class AbstractDocumentViewer
      */
     public function __construct(
         RequestStack $requestStack,
-        \Twig_Environment $environment,
+        Environment $environment,
         ObjectManager $objectManager,
         SymfonyUrlGeneratorInterface $urlGenerator,
         DocumentUrlGenerator $documentUrlGenerator,
@@ -245,9 +246,6 @@ abstract class AbstractDocumentViewer
      * @param array $options
      *
      * @return string HTML output
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function getDocumentByArray(array $options = [])
     {

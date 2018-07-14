@@ -29,10 +29,10 @@
         "symfony/routing": "2.8.* || ^3.2",
         "roadiz/models": "0.22.* || dev-develop",
         "pimple/pimple": "~3.0",
-        "monolog/monolog":"~1.22.0",
+        "monolog/monolog":"~1.22.0 || ~1.23.0",
         "guzzlehttp/guzzle": "^6.0",
         "enshrined/svg-sanitize": "^0.5.3",
-        "twig/twig": "1.*",
+        "twig/twig": "1.* || 2.*",
         "intervention/image": "~2.4"
     },
     "require-dev": {
