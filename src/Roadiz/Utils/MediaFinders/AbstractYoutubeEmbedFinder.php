@@ -102,7 +102,8 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
+     * @throws APINeedsAuthentificationException
      */
     public function getSearchFeed($searchTerm, $author, $maxResults = 15)
     {
@@ -118,7 +119,8 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
+     * @throws APINeedsAuthentificationException
      */
     public function getMediaFeed($search = null)
     {
@@ -187,6 +189,9 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         }
         if ($options['start']) {
             $queryString['start'] = (int) $options['start'];
+        }
+        if ($options['end']) {
+            $queryString['end'] = (int) $options['end'];
         }
         if ($options['enablejsapi']) {
             $queryString['enablejsapi'] = (int) $options['enablejsapi'];
