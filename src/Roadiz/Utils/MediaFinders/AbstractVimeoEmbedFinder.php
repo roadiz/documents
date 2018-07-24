@@ -182,6 +182,7 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
         }
         if ($options['autoplay']) {
             $queryString['autoplay'] = (int) $options['autoplay'];
+            $queryString['playsinline'] = (int) $options['autoplay'];
         }
         if ($options['fullscreen']) {
             $queryString['fullscreen'] = (int) $options['fullscreen'];
@@ -194,6 +195,7 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
         }
         if ($options['muted']) {
             $queryString['background'] = (int) $options['muted'];
+            $queryString['muted'] = (int) $options['muted'];
         }
         if ($options['autopause']) {
             $queryString['autopause'] = (int) $options['autopause'];

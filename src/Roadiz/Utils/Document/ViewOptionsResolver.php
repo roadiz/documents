@@ -82,6 +82,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'showinfo' => false,
             'start' => false,
             'enablejsapi' => true,
+            'playlist' => false,
         ]);
 
         $this->setAllowedTypes('identifier', ['null', 'string']);
