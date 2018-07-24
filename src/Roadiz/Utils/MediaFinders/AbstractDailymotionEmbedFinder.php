@@ -118,8 +118,11 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
         if ($options['controls']) {
             $queryString['controls'] = (int) $options['controls'];
         }
+        if ($options['muted']) {
+            $queryString['muted'] = (int) $options['muted'];
+        }
 
-        $uri = '//www.dailymotion.com/embed/video/'.$this->embedId . '?' . http_build_query($queryString);
+        $uri = 'https://www.dailymotion.com/embed/video/'.$this->embedId . '?' . http_build_query($queryString);
 
         return $uri;
     }

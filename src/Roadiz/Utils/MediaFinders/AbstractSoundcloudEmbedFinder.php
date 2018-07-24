@@ -81,6 +81,7 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
 
     /**
      * {@inheritdoc}
+     * @throws APINeedsAuthentificationException
      */
     public function getMediaFeed($search = null)
     {

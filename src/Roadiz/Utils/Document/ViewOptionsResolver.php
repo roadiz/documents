@@ -81,7 +81,9 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'rel' => false,
             'showinfo' => false,
             'start' => false,
+            'end' => false,
             'enablejsapi' => true,
+            'playlist' => false,
         ]);
 
         $this->setAllowedTypes('identifier', ['null', 'string']);
@@ -121,7 +123,8 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('modestbranding', ['boolean']);
         $this->setAllowedTypes('rel', ['boolean']);
         $this->setAllowedTypes('showinfo', ['boolean']);
-        $this->setAllowedTypes('start', ['boolean']);
+        $this->setAllowedTypes('start', ['boolean', 'integer']);
+        $this->setAllowedTypes('end', ['boolean', 'integer']);
         $this->setAllowedTypes('enablejsapi', ['boolean']);
     }
 }
