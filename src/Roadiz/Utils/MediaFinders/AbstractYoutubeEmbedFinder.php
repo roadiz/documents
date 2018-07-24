@@ -158,10 +158,13 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 
         if ($options['autoplay']) {
             $queryString['autoplay'] = (int) $options['autoplay'];
+            $queryString['playsinline'] = (int) $options['autoplay'];
         }
         if ($options['loop']) {
             $queryString['loop'] = (int) $options['loop'];
-            $queryString['playlist'] = $this->embedId;
+        }
+        if ($options['playlist']) {
+            $queryString['playlist'] = (int) $options['playlist'];
         }
         if (null !== $options['color']) {
             $queryString['color'] = $options['color'];
@@ -189,7 +192,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
             $queryString['enablejsapi'] = (int) $options['enablejsapi'];
         }
         if ($options['muted']) {
-            $queryString['muted'] = (int) $options['muted'];
+            $queryString['mute'] = (int) $options['muted'];
         }
 
         return 'https://www.youtube.com/embed/'.$this->embedId.'?'.http_build_query($queryString);
