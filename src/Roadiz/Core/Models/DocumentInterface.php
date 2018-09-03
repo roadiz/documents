@@ -221,4 +221,11 @@ interface DocumentInterface
      * @return DocumentInterface
      */
     public function removeFolder(FolderInterface $folder);
+
+    /**
+     * Return true if current document can be processed by intervention-image (GD, Imagick…).
+     *
+     * @return boolean
+     */
+    public function isProcessable();
 }
