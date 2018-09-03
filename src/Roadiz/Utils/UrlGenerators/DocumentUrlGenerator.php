@@ -109,7 +109,7 @@ class DocumentUrlGenerator
      */
     public function getUrl($absolute = false)
     {
-        if ($this->options['noProcess'] === true || !$this->document->isImage()) {
+        if ($this->options['noProcess'] === true || !$this->document->isProcessable()) {
             $documentPackageName = $absolute ? Packages::ABSOLUTE_DOCUMENTS : Packages::DOCUMENTS;
             return $this->packages->getUrl(
                 ltrim($this->document->getRelativePath(), '/'),

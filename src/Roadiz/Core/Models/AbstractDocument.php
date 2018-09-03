@@ -63,6 +63,9 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'image/jpeg' => 'image',
         'image/gif' => 'image',
         'image/tiff' => 'image',
+        'image/webp' => 'image',
+        'image/vnd.microsoft.icon' => 'image',
+        'image/x-icon' => 'image',
         'application/pdf' => 'pdf',
         // Audio types
         'audio/mpeg' => 'audio',
@@ -119,6 +122,17 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'application/vnd.ms-fontobject' => 'font',
         'font/opentype' => 'font',
         'font/ttf' => 'font',
+    ];
+
+    /**
+     * @var array Processable file mime type by GD or Imagick.
+     */
+    protected static $processableMimeTypes = [
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        'image/tiff',
+        'image/webp',
     ];
 
     /**
@@ -233,5 +247,17 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     public function __construct()
     {
         $this->setFolder(substr(hash("crc32b", date('YmdHi')), 0, 12));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isProcessable()
+    {
+        if ($this->isImage() && in_array($this->getMimeType(), static::$processableMimeTypes)) {
+            return true;
+        }
+
+        return false;
     }
 }
