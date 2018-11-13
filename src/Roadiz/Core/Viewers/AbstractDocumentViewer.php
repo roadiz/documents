@@ -323,7 +323,7 @@ abstract class AbstractDocumentViewer
             $assignation['srcset'] = $this->parseSrcSet($options);
             $assignation['sizes'] = $this->parseSizes($options);
             return $this->twig->render($this->getTemplatesBasePath() . '/image.html.twig', $assignation);
-        }  elseif ($this->document->isVideo()) {
+        } elseif ($this->document->isVideo()) {
             $assignation['sources'] = $this->getSourcesFiles();
 
             /*
