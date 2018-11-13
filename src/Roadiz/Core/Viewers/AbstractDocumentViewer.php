@@ -138,11 +138,12 @@ abstract class AbstractDocumentViewer
     }
 
     /**
+     * @param array $options
+     * @param bool $convertToWebP
      *
-     * @param  array   $options
      * @return string
      */
-    protected function parseSrcSet(array &$options = [])
+    protected function parseSrcSet(array &$options = [], $convertToWebP = false)
     {
         if (count($options['srcset']) > 0) {
             $srcset = [];
@@ -150,7 +151,11 @@ abstract class AbstractDocumentViewer
                 if (isset($set['format']) && isset($set['rule'])) {
                     $this->documentUrlGenerator->setOptions($set['format']);
                     $this->documentUrlGenerator->setDocument($this->document);
-                    $srcset[] = $this->documentUrlGenerator->getUrl($options['absolute']) . ' ' . $set['rule'];
+                    $path = $this->documentUrlGenerator->getUrl($options['absolute']);
+                    if ($convertToWebP) {
+                        $path .= '.webp';
+                    }
+                    $srcset[] = $path . ' ' . $set['rule'];
                 }
             }
             return implode(', ', $srcset);
@@ -233,6 +238,7 @@ abstract class AbstractDocumentViewer
      *         - "size1"
      *         - "size2"
      *     ]
+     *  - picture: (false | true) Use picture tag to benefit from WebP
      *
      * ## Audio / Video options
      *
@@ -258,8 +264,6 @@ abstract class AbstractDocumentViewer
         $assignation = [
             'document' => $this->document,
             'url' => $this->documentUrlGenerator->getUrl($options['absolute']),
-            'srcset' => $this->parseSrcSet($options),
-            'sizes' => $this->parseSizes($options),
         ];
 
         $assignation['lazyload'] = $options['lazyload'];
@@ -310,9 +314,16 @@ abstract class AbstractDocumentViewer
             } catch (FileNotFoundException $e) {
                 return false;
             }
-        } elseif ($this->document->isImage()) {
+        } elseif ($this->document->isImage() && $options['picture'] === true) {
+            $assignation['sizes'] = $this->parseSizes($options);
+            $assignation['srcset'] = $this->parseSrcSet($options);
+            $assignation['webp_srcset'] = $this->parseSrcSet($options, true);
+            return $this->twig->render($this->getTemplatesBasePath() . '/picture.html.twig', $assignation);
+        } elseif ($this->document->isImage() && $options['picture'] === false) {
+            $assignation['srcset'] = $this->parseSrcSet($options);
+            $assignation['sizes'] = $this->parseSizes($options);
             return $this->twig->render($this->getTemplatesBasePath() . '/image.html.twig', $assignation);
-        } elseif ($this->document->isVideo()) {
+        }  elseif ($this->document->isVideo()) {
             $assignation['sources'] = $this->getSourcesFiles();
 
             /*

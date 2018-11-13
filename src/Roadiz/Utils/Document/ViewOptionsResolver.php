@@ -56,6 +56,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'fullscreen' => true,
             'srcset' => [],
             'sizes' => [],
+            'picture' => false,
             /*
              * Soundcloud
              */
@@ -102,6 +103,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('fullscreen', ['boolean']);
         $this->setAllowedTypes('srcset', ['array']);
         $this->setAllowedTypes('sizes', ['array']);
+        $this->setAllowedTypes('picture', ['boolean']);
 
         // Soundcloud
         $this->setAllowedTypes('hide_related', ['boolean']);
