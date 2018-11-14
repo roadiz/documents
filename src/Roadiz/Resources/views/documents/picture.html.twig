@@ -49,6 +49,12 @@
         {% if srcset %}
             {% set attributes = attributes|merge({'srcset' : srcset}) %}
         {% endif %}
+        {% if lazyload %}
+            {% if not class %}
+                {% set class = '' %}
+            {% endif %}
+            {% set attributes = attributes|merge({ 'class': class ~ ' ' ~ lazyload_class })  %}
+        {% endif %}
         {% set attributesCompiledFallback = {} %}
         {% for key, value in attributes %}
             {% if value is same as(true)  %}

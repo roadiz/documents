@@ -216,6 +216,7 @@ abstract class AbstractDocumentViewer
      * - width
      * - height
      * - lazyload (true | false) set src in data-src
+     * - lazyload_class : default "lazyload"
      * - crop ({w}x{h}, for example : 100x200)
      * - fit ({w}x{h}, for example : 100x200)
      * - rotate (1-359 degrees, for example : 90)
@@ -267,6 +268,7 @@ abstract class AbstractDocumentViewer
         ];
 
         $assignation['lazyload'] = $options['lazyload'];
+        $assignation['lazyload_class'] = $options['lazyload_class'];
         $assignation['autoplay'] = $options['autoplay'];
         $assignation['loop'] = $options['loop'];
         $assignation['muted'] = $options['muted'];
