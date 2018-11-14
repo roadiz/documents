@@ -46,14 +46,23 @@
             'src' : url,
             'alt' : alt,
         }) %}
-        {% if srcset %}
-            {% set attributes = attributes|merge({'srcset' : srcset}) %}
-        {% endif %}
+
         {% if lazyload %}
             {% if not class %}
                 {% set class = '' %}
             {% endif %}
             {% set attributes = attributes|merge({ 'class': class ~ ' ' ~ lazyload_class })  %}
+            {% set attributes = attributes|merge({
+                'src': "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                'data-src': url
+            })  %}
+            {% if srcset %}
+                {% set attributes = attributes|merge({'data-srcset' : srcset}) %}
+            {% endif %}
+        {% else %}
+            {% if srcset %}
+                {% set attributes = attributes|merge({'srcset' : srcset}) %}
+            {% endif %}
         {% endif %}
         {% set attributesCompiledFallback = {} %}
         {% for key, value in attributes %}
