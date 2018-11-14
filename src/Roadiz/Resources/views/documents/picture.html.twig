@@ -1,12 +1,6 @@
 {% spaceless %}
     {% set attributes = {} %}
 
-    {% if width and not sizes %}
-        {% set attributes = attributes|merge({'width' : width}) %}
-    {% endif %}
-    {% if height and not sizes %}
-        {% set attributes = attributes|merge({'height' : height}) %}
-    {% endif %}
     {% if class %}
         {% set attributes = attributes|merge({'class' : class}) %}
     {% endif %}
@@ -66,6 +60,12 @@
         {% endif %}
         {% if sizes %}
             {% set attributes = attributes|merge({'sizes' : sizes}) %}
+        {% endif %}
+        {% if width and not sizes %}
+            {% set attributes = attributes|merge({'width' : width}) %}
+        {% endif %}
+        {% if height and not sizes %}
+            {% set attributes = attributes|merge({'height' : height}) %}
         {% endif %}
         {% set attributesCompiledFallback = {} %}
         {% for key, value in attributes %}
