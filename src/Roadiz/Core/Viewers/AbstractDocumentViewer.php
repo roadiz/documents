@@ -264,6 +264,7 @@ abstract class AbstractDocumentViewer
 
         $assignation = [
             'document' => $this->document,
+            'mimetype' => $this->document->getMimeType(),
             'url' => $this->documentUrlGenerator->getUrl($options['absolute']),
         ];
 
