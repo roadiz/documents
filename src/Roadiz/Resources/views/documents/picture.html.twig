@@ -53,8 +53,8 @@
             {% endif %}
             {% set attributes = attributes|merge({ 'class': class ~ ' ' ~ lazyload_class })  %}
             {% set attributes = attributes|merge({
-                'src': "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-                'data-src': url
+                'src': "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
+                'data-src': url,
             })  %}
             {% if srcset %}
                 {% set attributes = attributes|merge({'data-srcset' : srcset}) %}
