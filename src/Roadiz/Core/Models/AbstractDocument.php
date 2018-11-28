@@ -211,6 +211,14 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     }
 
     /**
+     * @return bool
+     */
+    public function isWebp()
+    {
+        return $this->getMimeType() == 'image/webp';
+    }
+
+    /**
      * @deprecated Use getRelativePath instead, naming is better.
      * @return string|null
      */
