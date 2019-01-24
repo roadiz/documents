@@ -50,6 +50,7 @@ class UrlOptionsResolver extends OptionsResolver
             'noProcess' => false,
             'interlace' => false,
             'width' => 0,
+            'flip' => null,
             'height' => 0,
             'quality' => 90,
             'blur' => 0,
@@ -61,6 +62,7 @@ class UrlOptionsResolver extends OptionsResolver
         $this->setAllowedTypes('height', ['int']);
         $this->setAllowedTypes('crop', ['null', 'string']);
         $this->setAllowedTypes('fit', ['null', 'string']);
+        $this->setAllowedTypes('flip', ['null', 'string']);
         $this->setAllowedTypes('background', ['null', 'string']);
         $this->setAllowedTypes('quality', ['int']);
         $this->setAllowedTypes('blur', ['int']);

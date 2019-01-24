@@ -71,6 +71,9 @@ class OptionsCompiler
         if (null !== $this->options['fit']) {
             $shortOptions['f'] = 'f' . strip_tags($this->options['fit']);
         }
+        if (null !== $this->options['flip']) {
+            $shortOptions['m'] = 'm' . trim(strip_tags($this->options['flip']));
+        }
         if ($this->options['rotate'] > 0) {
             $shortOptions['r'] = 'r' . ($this->options['rotate']);
         }

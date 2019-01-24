@@ -11,6 +11,11 @@
         {% if sizes %}
             {% set attributes = attributes|merge({'sizes' : sizes}) %}
         {% endif %}
+        {% if class %}
+            {% set class = class ~ ' ' ~ lazyload_class %}
+        {% else %}
+            {% set class = lazyload_class %}
+        {% endif %}
     {% else %}
         {% set attributes = attributes|merge({'src' : url}) %}
         {% if srcset %}
