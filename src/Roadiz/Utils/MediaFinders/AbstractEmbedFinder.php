@@ -30,7 +30,10 @@ namespace RZ\Roadiz\Utils\MediaFinders;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use RZ\Roadiz\Core\Entities\Document;
+use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -255,19 +258,32 @@ abstract class AbstractEmbedFinder
         ObjectManager $objectManager,
         AbstractDocumentFactory $documentFactory
     ) {
-        /** @var File $file */
-        $file = $this->downloadThumbnail();
-
-        if (!$this->exists() || null === $file) {
-            throw new \RuntimeException('no.embed.document.found');
-        }
-
         if ($this->documentExists($objectManager, $this->embedId, static::$platform)) {
             throw new \InvalidArgumentException('embed.document.already_exists');
         }
 
-        $documentFactory->setFile($file);
-        $document = $documentFactory->getDocument();
+        try {
+            /** @var File $file */
+            $file = $this->downloadThumbnail();
+
+            if (!$this->exists() || null === $file) {
+                throw new \RuntimeException('no.embed.document.found');
+            }
+
+            $documentFactory->setFile($file);
+            $document = $documentFactory->getDocument();
+            /*
+             * Create document metas
+             * for each translation
+             */
+            $this->injectMetaInDocument($objectManager, $document);
+        } catch (APINeedsAuthentificationException $exception) {
+            $document = $documentFactory->getDocument(true);
+            $document->setFilename(static::$platform . '_' . $this->embedId);
+        } catch (RequestException $exception) {
+            $document = $documentFactory->getDocument(true);
+            $document->setFilename(static::$platform . '_' . $this->embedId);
+        }
 
         if (null === $document) {
             throw new \RuntimeException('document.cannot_persist');
@@ -275,12 +291,6 @@ abstract class AbstractEmbedFinder
 
         $document->setEmbedId($this->embedId);
         $document->setEmbedPlatform(static::$platform);
-
-        /*
-         * Create document metas
-         * for each translation
-         */
-        $this->injectMetaInDocument($objectManager, $document);
 
         return $document;
     }

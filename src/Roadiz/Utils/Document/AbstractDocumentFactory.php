@@ -163,34 +163,37 @@ abstract class AbstractDocumentFactory
      * Create a document from UploadedFile, Be careful, this method does not flush, only
      * persists current Document.
      *
+     * @param bool $allowEmpty
+     *
      * @return null|DocumentInterface
      */
-    public function getDocument()
+    public function getDocument($allowEmpty = false)
     {
-        if (null === $this->file) {
+        $document = $this->createDocument();
+
+        if ($allowEmpty === false && null === $this->file) {
             throw new \InvalidArgumentException('File must be set before getting document.');
         }
 
-        if ($this->file instanceof UploadedFile && !$this->file->isValid()) {
-            return null;
+        if (null !== $this->file) {
+            if ($this->file instanceof UploadedFile && !$this->file->isValid()) {
+                return null;
+            }
+            $document->setFilename($this->getFileName());
+            $document->setMimeType($this->file->getMimeType());
+            $this->parseSvgMimeType($document);
+            $this->file->move(
+                $this->packages->getDocumentFolderPath($document),
+                $document->getFilename()
+            );
         }
 
-        $document = $this->createDocument();
-        $document->setFilename($this->getFileName());
-        $document->setMimeType($this->file->getMimeType());
         $this->em->persist($document);
-
-        $this->parseSvgMimeType($document);
 
         if (null !== $this->folder) {
             $document->addFolder($this->folder);
             $this->folder->addDocument($document);
         }
-
-        $this->file->move(
-            $this->packages->getDocumentFolderPath($document),
-            $document->getFilename()
-        );
 
         $this->dispatchEvents($document);
 

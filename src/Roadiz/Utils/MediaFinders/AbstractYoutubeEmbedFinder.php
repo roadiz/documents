@@ -128,7 +128,10 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
             $url = "https://www.googleapis.com/youtube/v3/videos?id=".$this->embedId."&part=snippet&key=".$this->getKey()."&maxResults=1";
             return $this->downloadFeedFromAPI($url);
         } else {
-            throw new APINeedsAuthentificationException("YoutubeEmbedFinder needs a Google server key, create a “google_server_id” setting.", 1);
+            throw new APINeedsAuthentificationException(
+                "YoutubeEmbedFinder needs a Google server key, create a “google_server_id” setting.",
+                1
+            );
         }
     }
 
