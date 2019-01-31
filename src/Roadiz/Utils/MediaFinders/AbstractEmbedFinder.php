@@ -279,10 +279,10 @@ abstract class AbstractEmbedFinder
             $this->injectMetaInDocument($objectManager, $document);
         } catch (APINeedsAuthentificationException $exception) {
             $document = $documentFactory->getDocument(true);
-            $document->setFilename(static::$platform . '_' . $this->embedId);
+            $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
         } catch (RequestException $exception) {
             $document = $documentFactory->getDocument(true);
-            $document->setFilename(static::$platform . '_' . $this->embedId);
+            $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
         }
 
         if (null === $document) {
