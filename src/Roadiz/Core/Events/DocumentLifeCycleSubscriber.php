@@ -81,10 +81,12 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
             $document->setRawDocument(null);
             $documentPath = $this->getDocumentPath($document);
 
-            if ($fileSystem->exists($documentPath)) {
-                $fileSystem->remove($documentPath);
+            if ($document->getFilename() !== '') {
+                if ($fileSystem->exists($documentPath) && is_file($documentPath)) {
+                    $fileSystem->remove($documentPath);
+                }
+                $this->cleanFileDirectory($document);
             }
-            $this->cleanFileDirectory($document);
         }
     }
 
