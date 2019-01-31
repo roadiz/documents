@@ -48,6 +48,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'custom_poster' => null,
             'embed' => false,
             'lazyload' => false,
+            'lazyload_class' => 'lazyload',
             'inline' => true,
             'autoplay' => false,
             'muted' => false,
@@ -56,6 +57,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'fullscreen' => true,
             'srcset' => [],
             'sizes' => [],
+            'picture' => false,
             /*
              * Soundcloud
              */
@@ -94,6 +96,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('custom_poster', ['null', 'string']);
         $this->setAllowedTypes('embed', ['boolean']);
         $this->setAllowedTypes('lazyload', ['boolean']);
+        $this->setAllowedTypes('lazyload_class', ['string']);
         $this->setAllowedTypes('inline', ['boolean']);
         $this->setAllowedTypes('autoplay', ['boolean']);
         $this->setAllowedTypes('muted', ['boolean']);
@@ -102,6 +105,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('fullscreen', ['boolean']);
         $this->setAllowedTypes('srcset', ['array']);
         $this->setAllowedTypes('sizes', ['array']);
+        $this->setAllowedTypes('picture', ['boolean']);
 
         // Soundcloud
         $this->setAllowedTypes('hide_related', ['boolean']);
