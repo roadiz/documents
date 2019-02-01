@@ -30,15 +30,13 @@ namespace RZ\Roadiz\Utils\MediaFinders;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
-use RZ\Roadiz\Core\Entities\Document;
 use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use Symfony\Component\HttpFoundation\File\File;
-use RZ\Roadiz\Document\DownloadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

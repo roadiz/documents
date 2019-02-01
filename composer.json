@@ -19,6 +19,8 @@
     ],
     "require": {
         "php": ">=7.1",
+        "ext-json": "*",
+        "ext-simplexml": "*",
         "doctrine/orm": "~2.6.3",
         "symfony/http-foundation": "~3.4.4",
         "symfony/asset": "~3.4.4",
