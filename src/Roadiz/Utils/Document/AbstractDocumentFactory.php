@@ -35,6 +35,7 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Events\DocumentEvents;
 use RZ\Roadiz\Core\Events\FilterDocumentEvent;
 use RZ\Roadiz\Core\Models\FolderInterface;
+use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\StringHandler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -286,10 +287,12 @@ abstract class AbstractDocumentFactory
             throw new \InvalidArgumentException('File must be set before getting its fileName.');
         }
 
-        $fileName = $this->file->getFilename();
-
         if ($this->file instanceof UploadedFile) {
             $fileName = $this->file->getClientOriginalName();
+        } elseif ($this->file instanceof DownloadedFile && $this->file->getOriginalFilename() !== '') {
+            $fileName = $this->file->getOriginalFilename();
+        } else {
+            $fileName = $this->file->getFilename();
         }
 
         return $fileName;

@@ -38,6 +38,7 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use Symfony\Component\HttpFoundation\File\File;
+use RZ\Roadiz\Document\DownloadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -384,7 +385,8 @@ abstract class AbstractEmbedFinder
                     $local->write($original->getContents());
                     $local->close();
 
-                    $file = new File($tmpFile);
+                    $file = new DownloadedFile($tmpFile);
+                    $file->setOriginalFilename($thumbnailName);
 
                     if ($file->isReadable() &&
                         filesize($file->getPathname()) > 0) {
