@@ -99,6 +99,23 @@ class OptionsCompiler
             $shortOptions['i'] = 'i1';
         }
 
+        $availablePosition = [
+            'tl' => 'top-left',
+            't' => 'top',
+            'tr' => 'top-right',
+            'l' => 'left',
+            'c' => 'center',
+            'r' => 'right',
+            'bl' => 'bottom-left',
+            'b' => 'bottom',
+            'br' => 'bottom-right',
+        ];
+        $availablePositionShort = array_flip($availablePosition);
+        if (null !== $this->options['align'] &&
+            isset($availablePositionShort[$this->options['align']])) {
+            $shortOptions['a'] = $availablePositionShort[$this->options['align']];
+        }
+
         return implode('-', $shortOptions);
     }
 }
