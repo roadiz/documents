@@ -113,7 +113,7 @@ class OptionsCompiler
         $availablePositionShort = array_flip($availablePosition);
         if (null !== $this->options['align'] &&
             isset($availablePositionShort[$this->options['align']])) {
-            $shortOptions['a'] = $availablePositionShort[$this->options['align']];
+            $shortOptions['a'] = 'a' . $availablePositionShort[$this->options['align']];
         }
 
         return implode('-', $shortOptions);
