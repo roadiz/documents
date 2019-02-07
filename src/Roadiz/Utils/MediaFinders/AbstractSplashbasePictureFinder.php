@@ -79,7 +79,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
             $url = $this->getBestUrl($this->feed);
 
             if (is_string($url)) {
-                if (false !== strpos($url, '.jpg')) {
+                if (false !== strpos($url, '.jpg') || false !== strpos($url, '.png')) {
                     $this->embedId = $this->feed['id'];
                     return $this->feed;
                 }
@@ -113,7 +113,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
                 $url = $this->getBestUrl($this->feed);
 
                 if (is_string($url)) {
-                    if (false !== strpos($url, '.jpg')) {
+                    if (false !== strpos($url, '.jpg') || false !== strpos($url, '.png')) {
                         $this->embedId = $this->feed['id'];
                         return $this->feed;
                     }
