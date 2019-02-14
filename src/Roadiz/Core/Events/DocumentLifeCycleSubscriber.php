@@ -31,10 +31,12 @@ namespace RZ\Roadiz\Core\Events;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\FileAwareInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 /**
  * Handle file management on documents lifecycle events.
@@ -65,7 +67,27 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     {
         return array(
             Events::postRemove,
+            Events::preUpdate,
         );
+    }
+
+    public function preUpdate(PreUpdateEventArgs $args)
+    {
+        $document = $args->getObject();
+        if ($document instanceof DocumentInterface && $args->hasChangedField('filename')) {
+            $fs = new Filesystem();
+            $oldPath = $this->getDocumentPathForFilename($document, $args->getOldValue('filename'));
+            $newPath = $this->getDocumentPathForFilename($document, $args->getNewValue('filename'));
+
+            if ($oldPath !== $newPath) {
+                if ($fs->exists($oldPath) && is_file($oldPath) && !$fs->exists($newPath)) {
+                    /*
+                     * Only perform IO rename if old file exists and new path is free.
+                     */
+                    $fs->rename($oldPath, $newPath);
+                }
+            }
+        }
     }
 
     /**
@@ -112,15 +134,39 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
+     * @return null|string
+     */
+    protected function getDocumentRelativePathForFilename(DocumentInterface $document, $filename)
+    {
+        return $document->getFolder() . DIRECTORY_SEPARATOR . $filename;
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @return string
+     */
+    protected function getDocumentPathForFilename(DocumentInterface $document, $filename)
+    {
+        if ($document->isPrivate()) {
+            return $this->fileAware->getPrivateFilesPath() .
+                DIRECTORY_SEPARATOR .
+                $this->getDocumentRelativePathForFilename($document, $filename);
+        }
+        return $this->fileAware->getPublicFilesPath() .
+            DIRECTORY_SEPARATOR .
+            $this->getDocumentRelativePathForFilename($document, $filename);
+    }
+
+    /**
      * @param DocumentInterface $document
      * @return string
      */
     protected function getDocumentPath(DocumentInterface $document)
     {
         if ($document->isPrivate()) {
-            return $this->fileAware->getPrivateFilesPath() . '/' . $document->getRelativePath();
+            return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getRelativePath();
         }
-        return $this->fileAware->getPublicFilesPath() . '/' . $document->getRelativePath();
+        return $this->fileAware->getPublicFilesPath() . DIRECTORY_SEPARATOR . $document->getRelativePath();
     }
 
     /**
@@ -130,8 +176,8 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     protected function getDocumentFolderPath(DocumentInterface $document)
     {
         if ($document->isPrivate()) {
-            return $this->fileAware->getPrivateFilesPath() . '/' . $document->getFolder();
+            return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
         }
-        return $this->fileAware->getPublicFilesPath() . '/' . $document->getFolder();
+        return $this->fileAware->getPublicFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
     }
 }
