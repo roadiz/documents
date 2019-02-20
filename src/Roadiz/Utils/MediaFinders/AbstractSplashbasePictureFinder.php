@@ -191,6 +191,10 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
      */
     protected function getBestUrl(array $feed)
     {
-        return !empty($feed['large_url']) ? $feed['large_url'] : $feed['url'];
+        if (!empty($feed['large_url']) &&
+            (false !== strpos($feed['large_url'], '.jpg') || false !== strpos($feed['large_url'], '.png'))) {
+            return $feed['large_url'];
+        }
+        return $feed['url'];
     }
 }
