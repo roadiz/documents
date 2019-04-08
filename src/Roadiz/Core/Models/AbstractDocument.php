@@ -30,10 +30,12 @@
 namespace RZ\Roadiz\Core\Models;
 
 use RZ\Roadiz\Core\AbstractEntities\AbstractDateTimed;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class AbstractDocument
  * @package RZ\Roadiz\Core\Models
+ * @Serializer\ExclusionPolicy("all")
  */
 abstract class AbstractDocument extends AbstractDateTimed implements DocumentInterface
 {
