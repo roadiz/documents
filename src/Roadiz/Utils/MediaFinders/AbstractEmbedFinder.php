@@ -359,6 +359,14 @@ abstract class AbstractEmbedFinder
     }
 
     /**
+     * @return string
+     */
+    public function getThumbnailName($pathinfo)
+    {
+        return $this->embedId.'_'.$pathinfo;
+    }
+
+    /**
      * Download a picture from the embed media platform
      * to get a thumbnail.
      *
@@ -372,7 +380,7 @@ abstract class AbstractEmbedFinder
             $pathinfo = basename($url);
 
             if ($pathinfo != "") {
-                $thumbnailName = $this->embedId.'_'.$pathinfo;
+                $thumbnailName = $this->getThumbnailName($pathinfo);
 
                 try {
                     $original = \GuzzleHttp\Psr7\stream_for(fopen($url, 'r'));

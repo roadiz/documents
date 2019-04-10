@@ -86,6 +86,11 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'end' => false,
             'enablejsapi' => true,
             'playlist' => false,
+            /*
+             * MixCloud
+             */
+            'mini' => false,
+            'hide_cover' => false,
         ]);
 
         $this->setAllowedTypes('identifier', ['null', 'string']);
@@ -130,5 +135,11 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('start', ['boolean', 'integer']);
         $this->setAllowedTypes('end', ['boolean', 'integer']);
         $this->setAllowedTypes('enablejsapi', ['boolean']);
+
+        /*
+         * MixCloud
+         */
+        $this->setAllowedTypes('mini', ['boolean']);
+        $this->setAllowedTypes('hide_cover', ['boolean']);
     }
 }
