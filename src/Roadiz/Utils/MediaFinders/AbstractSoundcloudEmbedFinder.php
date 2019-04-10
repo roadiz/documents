@@ -91,7 +91,6 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
          */
         $this->embedUrl = $this->embedId;
         if (!empty($feed['html']) && preg_match('#url\=(?<realId>[a-zA-Z0-9\%\.]+)\&#', $feed['html'], $matches)) {
-            // https%3A%2F%2Fapi.soundcloud.com%2Fplaylists%2F153889359
             $this->embedId = urldecode($matches['realId']);
         }
 
