@@ -205,6 +205,9 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         if ($options['show_reposts']) {
             $queryString['show_reposts'] = (int) $options['show_reposts'];
         }
+        if ($options['show_artwork'] === true) {
+            $queryString['show_artwork'] = 1;
+        }
         if ($options['visual']) {
             $queryString['visual'] = (int) $options['visual'];
         }

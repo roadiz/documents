@@ -13,10 +13,10 @@ use Doctrine\Common\Persistence\ObjectManager;
 use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 
-abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
+abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
 {
-    protected static $platform = 'mixcloud';
-    protected static $idPattern = '#^https\:\/\/www\.mixcloud\.com\/(?<author>[a-zA-Z0-9\-]+)\/(?<id>[a-zA-Z0-9\-]+)\/?$#';
+    protected static $platform = 'spotify';
+    protected static $idPattern = '#^https\:\/\/open\.spotify\.com\/(?<type>track|playlist|artist|album|show)\/(?<id>[a-zA-Z0-9]+)#';
 
     /**
      * Validate extern Id against platform naming policy.
@@ -37,7 +37,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaFeed($search = null)
     {
-        $endpoint = "https://www.mixcloud.com/oembed/";
+        $endpoint = "https://embed.spotify.com/oembed";
         $query = [
             'url' => $this->embedId,
             'format' => 'json',
@@ -75,7 +75,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaCopyright()
     {
-        return $this->getFeed()['author_name'] . ' (' . $this->getFeed()['author_url']. ')';
+        return $this->getFeed()['provider_name'] . ' (' . $this->getFeed()['provider_url']. ')';
     }
 
     /**
@@ -83,7 +83,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
      */
     public function getThumbnailURL()
     {
-        return $this->getFeed()['image'];
+        return $this->getFeed()['thumbnail_url'];
     }
 
     /**
@@ -97,20 +97,13 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
             $pathinfo = '.jpg';
         }
         if (preg_match(static::$idPattern, $this->embedId, $matches)) {
-            return $matches['author'] . '_' . $matches['id'] . $pathinfo;
+            return $matches['type'] . '_' . $matches['id'] . $pathinfo;
         }
         throw new \InvalidArgumentException('embedId.is_not_valid');
     }
 
     /**
      * Get embed media source URL.
-     *
-     * ### Mixcloud additional embed parameters
-     *
-     * * start
-     * * end
-     * * mini
-     * * hide_cover
      *
      * @param array $options
      *
@@ -120,33 +113,10 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
     {
         parent::getSource($options);
 
-        $queryString = [
-            'feed' => $this->embedId,
-        ];
-
-        if ($options['autoplay']) {
-            $queryString['autoplay'] = (int) $options['autoplay'];
-            $queryString['playsinline'] = (int) $options['autoplay'];
-        }
-        if ($options['start']) {
-            $queryString['start'] = (int) $options['start'];
-        }
-        if ($options['end']) {
-            $queryString['end'] = (int) $options['end'];
-        }
-        if ($options['mini'] === true) {
-            $queryString['mini'] = 1;
-        }
-        if ($options['hide_cover'] === true) {
-            $queryString['hide_cover'] = 1;
-        }
-        if ($options['hide_artwork'] === true) {
-            $queryString['hide_artwork'] = 1;
-        }
-        if ($options['light'] === true) {
-            $queryString['light'] = 1;
+        if (preg_match(static::$idPattern, $this->embedId, $matches)) {
+            return 'https://open.spotify.com/embed/' . $matches['type'] . '/' . $matches['id'];
         }
 
-        return 'https://www.mixcloud.com/widget/iframe/?'.http_build_query($queryString);
+        return $this->embedId;
     }
 }

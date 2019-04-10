@@ -65,6 +65,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'show_comments' => false,
             'show_user' => false,
             'show_reposts' => false,
+            'show_artwork' => false,
             'visual' => false,
             /*
              * Vimeo
@@ -119,6 +120,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('show_comments', ['boolean']);
         $this->setAllowedTypes('show_user', ['boolean']);
         $this->setAllowedTypes('show_reposts', ['boolean']);
+        $this->setAllowedTypes('show_artwork', ['boolean']);
         $this->setAllowedTypes('visual', ['boolean']);
 
         // Vimeo

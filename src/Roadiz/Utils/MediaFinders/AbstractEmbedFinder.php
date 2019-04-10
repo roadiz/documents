@@ -193,7 +193,9 @@ abstract class AbstractEmbedFinder
          * getSource method will resolve all options for us.
          */
         $attributes['src'] = $this->getSource($options);
-        $attributes['allow'] = [];
+        $attributes['allow'] = [
+            'encrypted-media'
+        ];
 
         if ($options['width'] > 0) {
             $attributes['width'] = $options['width'];
