@@ -138,6 +138,12 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
         if ($options['hide_cover'] === true) {
             $queryString['hide_cover'] = 1;
         }
+        if ($options['hide_artwork'] === true) {
+            $queryString['hide_artwork'] = 1;
+        }
+        if ($options['light'] === true) {
+            $queryString['light'] = 1;
+        }
 
         return 'https://www.mixcloud.com/widget/iframe/?'.http_build_query($queryString);
     }
