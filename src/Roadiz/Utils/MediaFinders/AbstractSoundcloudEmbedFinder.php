@@ -41,6 +41,62 @@ use Symfony\Component\HttpFoundation\Response;
 abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'soundcloud';
+    protected static $idPattern = '#^https\:\/\/soundcloud\.com\/(?<user>[a-z0-9\-]+)\/?#';
+    protected static $realIdPattern = '#^https\:\/\/api\.soundcloud\.com\/(?<type>tracks|playlists|users)\/(?<id>[0-9]+)\/?#';
+
+    /**
+     * @var string|null
+     */
+    protected $embedUrl;
+
+    /**
+     * Validate extern Id against platform naming policy.
+     *
+     * @param string $embedId
+     * @return string
+     */
+    protected function validateEmbedId($embedId = "")
+    {
+        if (preg_match(static::$idPattern, $embedId, $matches)) {
+            return $embedId;
+        }
+        if (preg_match(static::$realIdPattern, $embedId, $matches)) {
+            return $embedId;
+        }
+        throw new \InvalidArgumentException('embedId.is_not_valid');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMediaFeed($search = null)
+    {
+        $endpoint = "https://soundcloud.com/oembed";
+        $query = [
+            'url' => $this->embedId,
+            'format' => 'json',
+        ];
+
+        return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFeed()
+    {
+        $feed = parent::getFeed();
+        /*
+         * We need to extract REAL embedId from oEmbed response, from the HTML field.
+         */
+        $this->embedUrl = $this->embedId;
+        if (!empty($feed['html']) && preg_match('#url\=(?<realId>[a-zA-Z0-9\%\.]+)\&#', $feed['html'], $matches)) {
+            // https%3A%2F%2Fapi.soundcloud.com%2Fplaylists%2F153889359
+            $this->embedId = urldecode($matches['realId']);
+        }
+
+        return $feed;
+    }
 
     /**
      * {@inheritdoc}
@@ -57,20 +113,19 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         return $this->getFeed()['description'];
     }
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getMediaCopyright()
     {
-        return "";
+        return $this->getFeed()['author_name'] . ' (' . $this->getFeed()['author_url']. ')';
     }
     /**
      * {@inheritdoc}
      */
     public function getThumbnailURL()
     {
-        return $this->getFeed()['artwork_url'];
+        return $this->getFeed()['thumbnail_url'];
     }
-
     /**
      * {@inheritdoc}
      */
@@ -80,94 +135,24 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
     }
 
     /**
-     * {@inheritdoc}
-     * @throws APINeedsAuthentificationException
+     * @inheritDoc
      */
-    public function getMediaFeed($search = null)
+    public function getThumbnailName($pathinfo)
     {
-        if ($this->getKey() != "") {
-            $endpoint = "https://api.soundcloud.com/tracks/". $this->embedId;
-            $query = [
-                'client_id' => $this->getKey()
-            ];
-
-            return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
+        if (null === $this->embedUrl) {
+            $embed = $this->embedId;
         } else {
-            throw new APINeedsAuthentificationException("Soundcloud need a clientId to perform API calls, create a “soundcloud_client_id” setting.", 1);
+            $embed = $this->embedUrl;
         }
-    }
-
-    /**
-     * Validate extern Id against platform naming policy.
-     *
-     * @param string $embedId
-     * @return string
-     */
-    protected function validateEmbedId($embedId = "")
-    {
-        if (preg_match('#(?<id>[0-9]+)$#', $embedId, $matches)) {
-            return $matches['id'];
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
+            $pathinfo = '.' . $matches['extension'];
+        } else {
+            $pathinfo = '.jpg';
         }
-        /*
-         * Resolve real track ID
-         */
-        if (preg_match('#^https?\:\/\/(www\.)?soundcloud\.com\/(.+)$#', $embedId)) {
-            $endpoint = "https://api.soundcloud.com/resolve";
-            $client = new Client();
-            try {
-                $response = $client->get($endpoint, [
-                    'query' => [
-                        'url' => $embedId,
-                        'client_id' => $this->getKey()
-                    ]
-                ]);
-
-                if (Response::HTTP_OK == $response->getStatusCode()) {
-                    $trackInfo =  json_decode($response->getBody()->getContents(), true);
-                    if (false !== $embedId = $this->getEmbedIdFromPlaylistFeed($trackInfo)) {
-                        return $embedId;
-                    } elseif (false !== $embedId = $this->getEmbedIdFromTrackFeed($trackInfo)) {
-                        return $embedId;
-                    }
-                }
-            } catch (RequestException $exception) {
-                throw new \InvalidArgumentException('embedId.is_not_valid');
-            }
+        if (preg_match(static::$idPattern, $embed, $matches)) {
+            return 'soundcloud_' . $matches['user'] . $pathinfo;
         }
-
         throw new \InvalidArgumentException('embedId.is_not_valid');
-    }
-
-    /**
-     * @param array $feed
-     * @return bool|int
-     */
-    public function getEmbedIdFromPlaylistFeed(array &$feed)
-    {
-        if (isset($feed['tracks']) &&
-            isset($feed['tracks'][0]) &&
-            isset($feed['tracks'][0]['kind']) &&
-            $feed['tracks'][0]['kind'] == 'track' &&
-            isset($feed['tracks'][0]['id'])) {
-            return $feed['tracks'][0]['id'];
-        }
-
-        return false;
-    }
-
-    /**
-     * @param array $feed
-     * @return bool|int
-     */
-    public function getEmbedIdFromTrackFeed(array &$feed)
-    {
-        if (isset($feed['kind']) &&
-            $feed['kind'] == 'track' &&
-            isset($feed['id'])) {
-            return $feed['id'];
-        }
-
-        return false;
     }
 
     /**
@@ -190,7 +175,7 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         parent::getSource($options);
 
         $queryString = [
-            'url' => 'https://api.soundcloud.com/tracks/'.$this->embedId,
+            'url' => $this->embedId,
         ];
 
         if ($options['hide_related']) {

@@ -290,7 +290,7 @@ abstract class AbstractEmbedFinder
             throw new \RuntimeException('document.cannot_persist');
         }
 
-        $document->setEmbedId($this->embedId);
+        $document->setEmbedId($this->getEmbedId());
         $document->setEmbedPlatform(static::$platform);
 
         return $document;
