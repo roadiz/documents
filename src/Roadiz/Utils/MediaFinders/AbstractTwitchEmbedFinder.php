@@ -123,7 +123,7 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
                 $queryString['playsinline'] = (int) $options['autoplay'];
             }
 
-            return 'https://player.twitch.tv/?'.http_build_query($queryString);;
+            return 'https://player.twitch.tv/?'.http_build_query($queryString);
         }
 
         return $this->embedId;
