@@ -39,7 +39,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'youtube';
     protected static $idPattern = '#^https\:\/\/(www\.)?youtube\.com\/watch\?v\=(?<id>[a-zA-Z\-0-9]+)#';
-    protected static $realIdPattern = '#^(?<id>[a-zA-Z\-0-9]+)$#';
+    protected static $realIdPattern = '#^(?<id>[a-zA-Z\-0-9\_]+)$#';
 
     /**
      * @var string|null
