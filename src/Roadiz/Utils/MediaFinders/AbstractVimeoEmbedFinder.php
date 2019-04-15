@@ -155,40 +155,28 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
 
         $queryString = [];
 
-        if ($options['displayTitle']) {
-            $queryString['title'] = (int) $options['displayTitle'];
-        }
-        if ($options['byline']) {
-            $queryString['byline'] = (int) $options['byline'];
-        }
+        $queryString['title'] = (int) $options['displayTitle'];
+        $queryString['byline'] = (int) $options['byline'];
+        $queryString['portrait'] = (int) $options['portrait'];
+        $queryString['api'] = (int) $options['api'];
+        $queryString['loop'] = (int) $options['loop'];
+        $queryString['fullscreen'] = (int) $options['fullscreen'];
+        $queryString['controls'] = (int) $options['controls'];
+        $queryString['autopause'] = (int) $options['autopause'];
+        $queryString['automute'] = (int) $options['automute'];
+
         if (null !== $options['color']) {
             $queryString['color'] = $options['color'];
         }
-        if ($options['portrait']) {
-            $queryString['portrait'] = (int) $options['portrait'];
-        }
-        if ($options['api']) {
-            $queryString['api'] = (int) $options['api'];
-        }
-
         if (null !== $options['id']) {
             $queryString['player_id'] = $options['id'];
         }
         if (null !== $options['identifier']) {
             $queryString['player_id'] = $options['identifier'];
         }
-        if ($options['loop']) {
-            $queryString['loop'] = (int) $options['loop'];
-        }
         if ($options['autoplay']) {
             $queryString['autoplay'] = (int) $options['autoplay'];
             $queryString['playsinline'] = (int) $options['autoplay'];
-        }
-        if ($options['fullscreen']) {
-            $queryString['fullscreen'] = (int) $options['fullscreen'];
-        }
-        if ($options['controls']) {
-            $queryString['controls'] = (int) $options['controls'];
         }
         if (null !== $options['background']) {
             $queryString['background'] = (int) $options['background'];
@@ -196,13 +184,6 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
         if ($options['muted']) {
             $queryString['muted'] = (int) $options['muted'];
         }
-        if ($options['autopause']) {
-            $queryString['autopause'] = (int) $options['autopause'];
-        }
-        if ($options['automute']) {
-            $queryString['automute'] = (int) $options['automute'];
-        }
-
 
         return 'https://player.vimeo.com/video/'.$this->embedId.'?'.http_build_query($queryString);
     }

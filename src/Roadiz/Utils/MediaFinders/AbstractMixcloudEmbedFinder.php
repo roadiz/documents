@@ -9,10 +9,6 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
 
-use Doctrine\Common\Persistence\ObjectManager;
-use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
-use RZ\Roadiz\Core\Models\DocumentInterface;
-
 abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'mixcloud';
@@ -92,7 +88,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
     public function getThumbnailName($pathinfo)
     {
         if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
-            $pathinfo = '.' . $matches['extension'];
+            $pathinfo = '.' . $ext['extension'];
         } else {
             $pathinfo = '.jpg';
         }

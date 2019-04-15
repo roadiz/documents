@@ -191,30 +191,11 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
             $queryString['autoplay'] = (int) $options['autoplay'];
             $queryString['playsinline'] = (int) $options['autoplay'];
         }
-        if ($options['loop']) {
-            $queryString['loop'] = (int) $options['loop'];
-        }
         if ($options['playlist']) {
             $queryString['playlist'] = (int) $options['playlist'];
         }
         if (null !== $options['color']) {
             $queryString['color'] = $options['color'];
-        }
-        if ($options['controls']) {
-            $queryString['controls'] = (int) $options['controls'];
-        }
-        if ($options['fullscreen']) {
-            $queryString['fs'] = (int) $options['fullscreen'];
-        }
-
-        if ($options['modestbranding']) {
-            $queryString['modestbranding'] = (int) $options['modestbranding'];
-        }
-        if ($options['rel']) {
-            $queryString['rel'] = (int) $options['rel'];
-        }
-        if ($options['showinfo']) {
-            $queryString['showinfo'] = (int) $options['showinfo'];
         }
         if ($options['start']) {
             $queryString['start'] = (int) $options['start'];
@@ -222,12 +203,15 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         if ($options['end']) {
             $queryString['end'] = (int) $options['end'];
         }
-        if ($options['enablejsapi']) {
-            $queryString['enablejsapi'] = (int) $options['enablejsapi'];
-        }
-        if ($options['muted']) {
-            $queryString['mute'] = (int) $options['muted'];
-        }
+
+        $queryString['loop'] = (int) $options['loop'];
+        $queryString['controls'] = (int) $options['controls'];
+        $queryString['fs'] = (int) $options['fullscreen'];
+        $queryString['modestbranding'] = (int) $options['modestbranding'];
+        $queryString['rel'] = (int) $options['rel'];
+        $queryString['showinfo'] = (int) $options['showinfo'];
+        $queryString['enablejsapi'] = (int) $options['enablejsapi'];
+        $queryString['mute'] = (int) $options['muted'];
 
         return 'https://www.youtube.com/embed/'.$this->embedId.'?'.http_build_query($queryString);
     }
