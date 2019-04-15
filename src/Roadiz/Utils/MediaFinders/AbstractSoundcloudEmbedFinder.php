@@ -192,29 +192,13 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
             'url' => 'https://api.soundcloud.com/tracks/'.$this->embedId,
         ];
 
-        if ($options['hide_related']) {
-            $queryString['hide_related'] = (int) $options['hide_related'];
-        }
-        if ($options['show_comments']) {
-            $queryString['show_comments'] = (int) $options['show_comments'];
-        }
-        if ($options['show_user']) {
-            $queryString['show_user'] = (int) $options['show_user'];
-        }
-        if ($options['show_reposts']) {
-            $queryString['show_reposts'] = (int) $options['show_reposts'];
-        }
-        if ($options['visual']) {
-            $queryString['visual'] = (int) $options['visual'];
-        }
-
-        if ($options['autoplay']) {
-            $queryString['auto_play'] = (int) $options['autoplay'];
-        }
-        if ($options['controls']) {
-            $queryString['controls'] = (int) $options['controls'];
-        }
-
+        $queryString['hide_related'] = (int) $options['hide_related'];
+        $queryString['show_comments'] = (int) $options['show_comments'];
+        $queryString['show_user'] = (int) $options['show_user'];
+        $queryString['show_reposts'] = (int) $options['show_reposts'];
+        $queryString['visual'] = (int) $options['visual'];
+        $queryString['auto_play'] = (int) $options['autoplay'];
+        $queryString['controls'] = (int) $options['controls'];
 
         return 'https://w.soundcloud.com/player/?' . http_build_query($queryString);
     }
