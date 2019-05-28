@@ -80,10 +80,16 @@ class DocumentUrlGenerator
         $this->setOptions($options);
     }
 
+    /**
+     * @param array $options
+     *
+     * @return DocumentUrlGenerator
+     */
     public function setOptions(array $options = [])
     {
         $resolver = new ViewOptionsResolver();
         $this->options = $resolver->resolve($options);
+        return $this;
     }
 
     /**
