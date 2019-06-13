@@ -29,6 +29,7 @@
 namespace RZ\Roadiz\Utils\Document;
 
 use Doctrine\ORM\EntityManager;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RZ\Roadiz\Core\Models\DocumentInterface;
@@ -296,5 +297,33 @@ abstract class AbstractDocumentFactory
         }
 
         return $fileName;
+    }
+
+    /**
+     * @param string $url
+     * @param string $thumbnailName
+     *
+     * @return DownloadedFile
+     */
+    public function downloadFileFromUrl(string $url, string $thumbnailName): ?DownloadedFile
+    {
+        try {
+            $original = \GuzzleHttp\Psr7\stream_for(fopen($url, 'r'));
+            $tmpFile = tempnam(sys_get_temp_dir(), $thumbnailName);
+            $handle = fopen($tmpFile, 'w');
+            $local = \GuzzleHttp\Psr7\stream_for($handle);
+            $local->write($original->getContents());
+            $local->close();
+
+            $file = new DownloadedFile($tmpFile);
+            $file->setOriginalFilename($thumbnailName);
+
+            if ($file->isReadable() &&
+                filesize($file->getPathname()) > 0) {
+                return $file;
+            }
+        } catch (RequestException $e) {
+            return null;
+        }
     }
 }
