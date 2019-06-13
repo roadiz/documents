@@ -308,7 +308,11 @@ abstract class AbstractDocumentFactory
     public function downloadFileFromUrl(string $url, string $thumbnailName): ?DownloadedFile
     {
         try {
-            $original = \GuzzleHttp\Psr7\stream_for(fopen($url, 'r'));
+            $distantHandle = fopen($url, 'r');
+            if (false === $distantHandle) {
+                return null;
+            }
+            $original = \GuzzleHttp\Psr7\stream_for($distantHandle);
             $tmpFile = tempnam(sys_get_temp_dir(), $thumbnailName);
             $handle = fopen($tmpFile, 'w');
             $local = \GuzzleHttp\Psr7\stream_for($handle);
