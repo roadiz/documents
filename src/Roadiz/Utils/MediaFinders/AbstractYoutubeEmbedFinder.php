@@ -38,7 +38,7 @@ use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'youtube';
-    protected static $idPattern = '#^https\:\/\/(www\.)?youtube\.com\/watch\?v\=(?<id>[a-zA-Z\-0-9]+)#';
+    protected static $idPattern = '#^https\:\/\/(www\.)?youtube\.com\/watch\?v\=(?<id>[a-zA-Z\-0-9\_]+)#';
     protected static $realIdPattern = '#^(?<id>[a-zA-Z\-0-9\_]+)$#';
 
     /**
