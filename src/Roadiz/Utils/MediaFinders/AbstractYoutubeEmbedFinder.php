@@ -38,8 +38,8 @@ use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'youtube';
-    protected static $idPattern = '#^https\:\/\/(www\.)?youtube\.com\/watch\?v\=(?<id>[a-zA-Z\-0-9\_]+)#';
-    protected static $realIdPattern = '#^(?<id>[a-zA-Z\-0-9\_]+)$#';
+    protected static $idPattern = '#^https\:\/\/(www\.)?youtube\.com\/watch\?v\=(?<id>[a-zA-Z0-9\_\-]+)#';
+    protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
 
     /**
      * @var string|null
@@ -87,7 +87,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
          * We need to extract REAL embedId from oEmbed response, from the HTML field.
          */
         $this->embedUrl = $this->embedId;
-        if (!empty($feed['html']) && preg_match('#src\=\"https\:\/\/www\.youtube\.com\/embed\/(?<realId>[a-zA-Z\-0-9]+)#', $feed['html'], $matches)) {
+        if (!empty($feed['html']) && preg_match('#src\=\"https\:\/\/www\.youtube\.com\/embed\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)) {
             $this->embedId = urldecode($matches['realId']);
         }
 
