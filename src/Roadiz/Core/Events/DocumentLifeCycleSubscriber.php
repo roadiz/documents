@@ -45,10 +45,8 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @package Roadiz\Core\Events
  */
-class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInterface
+class DocumentLifeCycleSubscriber implements EventSubscriber
 {
-    use ContainerAwareTrait;
-
     /**
      * @var FileAwareInterface
      */
@@ -58,12 +56,10 @@ class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInte
      * DocumentLifeCycleSubscriber constructor.
      *
      * @param FileAwareInterface $fileAware
-     * @param Container          $container
      */
-    public function __construct(FileAwareInterface $fileAware, Container $container)
+    public function __construct(FileAwareInterface $fileAware)
     {
         $this->fileAware = $fileAware;
-        $this->container = $container;
     }
 
     /**
@@ -96,9 +92,9 @@ class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInte
         }
         if ($document instanceof DocumentInterface && $args->hasChangedField('private')) {
             if ($document->isPrivate() === true) {
-                $this->makePrivate($document);
+                $this->makePrivate($document, $args);
             } else {
-                $this->makePublic($document);
+                $this->makePublic($document, $args);
             }
         }
     }
@@ -106,10 +102,10 @@ class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInte
     /**
      * @param DocumentInterface $document
      */
-    protected function makePublic(DocumentInterface $document)
+    protected function makePublic(DocumentInterface $document, PreUpdateEventArgs $args)
     {
-        $documentPublicPath = $this->get('assetPackages')->getPublicFilesPath($document->getRelativePath());
-        $documentPrivatePath = $this->get('assetPackages')->getPrivateFilesPath($document->getRelativePath());
+        $documentPublicPath = $this->getDocumentPublicPath($document);
+        $documentPrivatePath = $this->getDocumentPrivatePath($document);
 
         $fs = new Filesystem();
 
@@ -125,19 +121,19 @@ class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInte
                 $documentPrivatePath,
                 $documentPublicPath
             );
+            $this->cleanFileDirectory($this->getDocumentPrivateFolderPath($document));
         }
     }
 
     /**
      * @param DocumentInterface $document
      */
-    protected function makePrivate(DocumentInterface $document)
+    protected function makePrivate(DocumentInterface $document, PreUpdateEventArgs $args)
     {
-        $documentPublicPath = $this->get('assetPackages')->getPublicFilesPath($document->getRelativePath());
-        $documentPrivatePath = $this->get('assetPackages')->getPrivateFilesPath($document->getRelativePath());
+        $documentPublicPath = $this->getDocumentPublicPath($document);
+        $documentPrivatePath = $this->getDocumentPrivatePath($document);
 
         $fs = new Filesystem();
-
         if ($fs->exists($documentPublicPath)) {
             /*
              * Create destination folder if not exist
@@ -149,7 +145,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInte
                 $documentPublicPath,
                 $documentPrivatePath
             );
-            $document->setPrivate(true);
+            $this->cleanFileDirectory($this->getDocumentPublicFolderPath($document));
         }
     }
 
@@ -170,7 +166,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInte
                 if ($fileSystem->exists($documentPath) && is_file($documentPath)) {
                     $fileSystem->remove($documentPath);
                 }
-                $this->cleanFileDirectory($document);
+                $this->cleanFileDirectory($this->getDocumentFolderPath($document));
             }
         }
     }
@@ -178,15 +174,14 @@ class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInte
     /**
      * Remove document directory if there is no other file in it.
      *
-     * @param DocumentInterface $document
+     * @param string $documentFolderPath
      * @return bool
      */
-    protected function cleanFileDirectory(DocumentInterface $document)
+    protected function cleanFileDirectory(string $documentFolderPath)
     {
-        $documentFolderPath = $this->getDocumentFolderPath($document);
         $fileSystem = new Filesystem();
 
-        if ($fileSystem->exists($documentFolderPath)) {
+        if ($fileSystem->exists($documentFolderPath) && is_dir($documentFolderPath)) {
             $isDirEmpty = !(new \FilesystemIterator($documentFolderPath))->valid();
             if ($isDirEmpty) {
                 $fileSystem->remove($documentFolderPath);
@@ -227,9 +222,27 @@ class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInte
     protected function getDocumentPath(DocumentInterface $document)
     {
         if ($document->isPrivate()) {
-            return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getRelativePath();
+            return $this->getDocumentPrivatePath($document);
         }
+        return $this->getDocumentPublicPath($document);
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @return string
+     */
+    protected function getDocumentPublicPath(DocumentInterface $document)
+    {
         return $this->fileAware->getPublicFilesPath() . DIRECTORY_SEPARATOR . $document->getRelativePath();
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @return string
+     */
+    protected function getDocumentPrivatePath(DocumentInterface $document)
+    {
+        return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getRelativePath();
     }
 
     /**
@@ -239,8 +252,26 @@ class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInte
     protected function getDocumentFolderPath(DocumentInterface $document)
     {
         if ($document->isPrivate()) {
-            return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
+            return $this->getDocumentPrivateFolderPath($document);
         }
+        return $this->getDocumentPublicFolderPath($document);
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @return string
+     */
+    protected function getDocumentPublicFolderPath(DocumentInterface $document)
+    {
         return $this->fileAware->getPublicFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @return string
+     */
+    protected function getDocumentPrivateFolderPath(DocumentInterface $document)
+    {
+        return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
     }
 }
