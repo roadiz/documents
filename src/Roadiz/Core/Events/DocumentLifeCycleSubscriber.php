@@ -33,18 +33,22 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
+use Pimple\Container;
+use RZ\Roadiz\Core\ContainerAwareInterface;
+use RZ\Roadiz\Core\ContainerAwareTrait;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\FileAwareInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 /**
  * Handle file management on documents lifecycle events.
  *
  * @package Roadiz\Core\Events
  */
-class DocumentLifeCycleSubscriber implements EventSubscriber
+class DocumentLifeCycleSubscriber implements EventSubscriber, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var FileAwareInterface
      */
@@ -54,10 +58,12 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * DocumentLifeCycleSubscriber constructor.
      *
      * @param FileAwareInterface $fileAware
+     * @param Container          $container
      */
-    public function __construct(FileAwareInterface $fileAware)
+    public function __construct(FileAwareInterface $fileAware, Container $container)
     {
         $this->fileAware = $fileAware;
+        $this->container = $container;
     }
 
     /**
@@ -87,6 +93,63 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
                     $fs->rename($oldPath, $newPath);
                 }
             }
+        }
+        if ($document instanceof DocumentInterface && $args->hasChangedField('private')) {
+            if ($document->isPrivate() === true) {
+                $this->makePrivate($document);
+            } else {
+                $this->makePublic($document);
+            }
+        }
+    }
+
+    /**
+     * @param DocumentInterface $document
+     */
+    protected function makePublic(DocumentInterface $document)
+    {
+        $documentPublicPath = $this->get('assetPackages')->getPublicFilesPath($document->getRelativePath());
+        $documentPrivatePath = $this->get('assetPackages')->getPrivateFilesPath($document->getRelativePath());
+
+        $fs = new Filesystem();
+
+        if ($fs->exists($documentPrivatePath)) {
+            /*
+             * Create destination folder if not exist
+             */
+            if (!$fs->exists(dirname($documentPublicPath))) {
+                $fs->mkdir(dirname($documentPublicPath));
+            }
+
+            $fs->rename(
+                $documentPrivatePath,
+                $documentPublicPath
+            );
+        }
+    }
+
+    /**
+     * @param DocumentInterface $document
+     */
+    protected function makePrivate(DocumentInterface $document)
+    {
+        $documentPublicPath = $this->get('assetPackages')->getPublicFilesPath($document->getRelativePath());
+        $documentPrivatePath = $this->get('assetPackages')->getPrivateFilesPath($document->getRelativePath());
+
+        $fs = new Filesystem();
+
+        if ($fs->exists($documentPublicPath)) {
+            /*
+             * Create destination folder if not exist
+             */
+            if (!$fs->exists(dirname($documentPrivatePath))) {
+                $fs->mkdir(dirname($documentPrivatePath));
+            }
+            $fs->rename(
+                $documentPublicPath,
+                $documentPrivatePath
+            );
+            $document->setPrivate(true);
         }
     }
 
