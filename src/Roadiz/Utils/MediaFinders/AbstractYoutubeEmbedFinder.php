@@ -38,20 +38,60 @@ use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'youtube';
+    protected static $idPattern = '#^https\:\/\/(www\.)?youtube\.com\/watch\?v\=(?<id>[a-zA-Z0-9\_\-]+)#';
+    protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
 
     /**
-     * Tell if embed media exists after its API feed.
-     *
-     * @return boolean
+     * @var string|null
      */
-    public function exists()
+    protected $embedUrl;
+
+    /**
+     * Validate extern Id against platform naming policy.
+     *
+     * @param string $embedId
+     * @return string
+     */
+    protected function validateEmbedId($embedId = "")
     {
-        if ($this->getFeed() !== false &&
-            isset($this->getFeed()['items'][0])) {
-            return true;
-        } else {
-            return false;
+        if (preg_match(static::$idPattern, $embedId, $matches)) {
+            return $embedId;
         }
+        if (preg_match(static::$realIdPattern, $embedId, $matches)) {
+            return $embedId;
+        }
+        throw new \InvalidArgumentException('embedId.is_not_valid');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMediaFeed($search = null)
+    {
+        $endpoint = "https://www.youtube.com/oembed";
+        $query = [
+            'url' => $this->embedId,
+            'format' => 'json',
+        ];
+
+        return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFeed()
+    {
+        $feed = parent::getFeed();
+        /*
+         * We need to extract REAL embedId from oEmbed response, from the HTML field.
+         */
+        $this->embedUrl = $this->embedId;
+        if (!empty($feed['html']) && preg_match('#src\=\"https\:\/\/www\.youtube\.com\/embed\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)) {
+            $this->embedId = urldecode($matches['realId']);
+        }
+
+        return $feed;
     }
 
     /**
@@ -59,46 +99,49 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        if (isset($this->getFeed()['items'][0])) {
-            return $this->getFeed()['items'][0]['snippet']['title'];
-        }
-
-        return "";
+        return $this->getFeed()['title'];
     }
     /**
      * {@inheritdoc}
      */
     public function getMediaDescription()
     {
-        if (isset($this->getFeed()['items'][0])) {
-            return $this->getFeed()['items'][0]['snippet']['description'];
-        }
-
-        return "";
+        return $this->getFeed()['description'];
     }
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getMediaCopyright()
     {
-        return "";
+        return $this->getFeed()['author_name'] . ' (' . $this->getFeed()['author_url']. ')';
     }
     /**
      * {@inheritdoc}
      */
     public function getThumbnailURL()
     {
-        if (isset($this->getFeed()['items'][0])) {
-            $thumbnails = $this->getFeed()['items'][0]['snippet']['thumbnails'];
+        return $this->getFeed()['thumbnail_url'];
+    }
 
-            if (isset($thumbnails['maxres'])) {
-                return $thumbnails['maxres']['url'];
-            } else {
-                return $thumbnails['high']['url'];
-            }
+    /**
+     * @inheritDoc
+     */
+    public function getThumbnailName($pathinfo)
+    {
+        if (null === $this->embedUrl) {
+            $embed = $this->embedId;
+        } else {
+            $embed = $this->embedUrl;
         }
-
-        return "";
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
+            $pathinfo = '.' . $matches['extension'];
+        } else {
+            $pathinfo = '.jpg';
+        }
+        if (preg_match(static::$idPattern, $embed, $matches)) {
+            return 'youtube_' . $matches['id'] . $pathinfo;
+        }
+        throw new \InvalidArgumentException('embedId.is_not_valid');
     }
 
     /**
@@ -112,20 +155,6 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
             if (!empty($author)) {
                 $url .= '&author='.$author;
             }
-            return $this->downloadFeedFromAPI($url);
-        } else {
-            throw new APINeedsAuthentificationException("YoutubeEmbedFinder needs a Google server key, create a “google_server_id” setting.", 1);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     * @throws APINeedsAuthentificationException
-     */
-    public function getMediaFeed($search = null)
-    {
-        if ($this->getKey() != "") {
-            $url = "https://www.googleapis.com/youtube/v3/videos?id=".$this->embedId."&part=snippet&key=".$this->getKey()."&maxResults=1";
             return $this->downloadFeedFromAPI($url);
         } else {
             throw new APINeedsAuthentificationException("YoutubeEmbedFinder needs a Google server key, create a “google_server_id” setting.", 1);

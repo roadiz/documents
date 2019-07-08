@@ -76,10 +76,10 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
                 ]
             ]);
             $this->feed = json_decode($response->getBody()->getContents(), true);
-            $url = $this->feed['url'];
+            $url = $this->getBestUrl($this->feed);
 
             if (is_string($url)) {
-                if (false !== strpos($url, '.jpg')) {
+                if (false !== strpos($url, '.jpg') || false !== strpos($url, '.png')) {
                     $this->embedId = $this->feed['id'];
                     return $this->feed;
                 }
@@ -110,10 +110,10 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
             if (isset($multipleFeed['images']) && count($multipleFeed['images']) > 0) {
                 $maxIndex = count($multipleFeed['images']) - 1;
                 $this->feed = $multipleFeed['images'][rand(0, $maxIndex)];
-                $url = $this->feed['url'];
+                $url = $this->getBestUrl($this->feed);
 
                 if (is_string($url)) {
-                    if (false !== strpos($url, '.jpg')) {
+                    if (false !== strpos($url, '.jpg') || false !== strpos($url, '.png')) {
                         $this->embedId = $this->feed['id'];
                         return $this->feed;
                     }
@@ -181,6 +181,20 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
         /*
          * http://www.splashbase.co/api#images_random
          */
-        return !empty($this->feed['large_url']) ? $this->feed['large_url'] : $this->feed['url'];
+        return $this->getBestUrl($this->feed);
+    }
+
+    /**
+     * @param array $feed
+     *
+     * @return mixed
+     */
+    protected function getBestUrl(array $feed)
+    {
+        if (!empty($feed['large_url']) &&
+            (false !== strpos($feed['large_url'], '.jpg') || false !== strpos($feed['large_url'], '.png'))) {
+            return $feed['large_url'];
+        }
+        return $feed['url'];
     }
 }

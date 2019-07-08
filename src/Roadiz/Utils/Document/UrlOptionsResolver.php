@@ -43,6 +43,7 @@ class UrlOptionsResolver extends OptionsResolver
         $this->setDefaults([
             'crop' => null,
             'fit' => null,
+            'align' => null,
             'background' => null,
             'absolute' => false,
             'grayscale' => false,
@@ -63,6 +64,19 @@ class UrlOptionsResolver extends OptionsResolver
         $this->setAllowedTypes('crop', ['null', 'string']);
         $this->setAllowedTypes('fit', ['null', 'string']);
         $this->setAllowedTypes('flip', ['null', 'string']);
+        $this->setAllowedTypes('align', ['null', 'string']);
+        $this->setAllowedValues('align', [
+            null,
+            'top-left',
+            'top',
+            'top-right',
+            'left',
+            'center',
+            'right',
+            'bottom-left',
+            'bottom',
+            'bottom-right',
+        ]);
         $this->setAllowedTypes('background', ['null', 'string']);
         $this->setAllowedTypes('quality', ['int']);
         $this->setAllowedTypes('blur', ['int']);

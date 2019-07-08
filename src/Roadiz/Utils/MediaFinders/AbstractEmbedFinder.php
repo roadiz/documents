@@ -31,7 +31,9 @@ namespace RZ\Roadiz\Utils\MediaFinders;
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use Symfony\Component\HttpFoundation\File\File;
@@ -191,7 +193,9 @@ abstract class AbstractEmbedFinder
          * getSource method will resolve all options for us.
          */
         $attributes['src'] = $this->getSource($options);
-        $attributes['allow'] = [];
+        $attributes['allow'] = [
+            'encrypted-media'
+        ];
 
         if ($options['width'] > 0) {
             $attributes['width'] = $options['width'];
@@ -255,32 +259,39 @@ abstract class AbstractEmbedFinder
         ObjectManager $objectManager,
         AbstractDocumentFactory $documentFactory
     ) {
-        /** @var File $file */
-        $file = $this->downloadThumbnail();
-
-        if (!$this->exists() || null === $file) {
-            throw new \RuntimeException('no.embed.document.found');
-        }
-
         if ($this->documentExists($objectManager, $this->embedId, static::$platform)) {
             throw new \InvalidArgumentException('embed.document.already_exists');
         }
 
-        $documentFactory->setFile($file);
-        $document = $documentFactory->getDocument();
+        try {
+            /** @var File $file */
+            $file = $this->downloadThumbnail();
+
+            if (!$this->exists() || null === $file) {
+                throw new \RuntimeException('no.embed.document.found');
+            }
+
+            $documentFactory->setFile($file);
+            $document = $documentFactory->getDocument();
+            /*
+             * Create document metas
+             * for each translation
+             */
+            $this->injectMetaInDocument($objectManager, $document);
+        } catch (APINeedsAuthentificationException $exception) {
+            $document = $documentFactory->getDocument(true);
+            $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
+        } catch (RequestException $exception) {
+            $document = $documentFactory->getDocument(true);
+            $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
+        }
 
         if (null === $document) {
             throw new \RuntimeException('document.cannot_persist');
         }
 
-        $document->setEmbedId($this->embedId);
+        $document->setEmbedId($this->getEmbedId());
         $document->setEmbedPlatform(static::$platform);
-
-        /*
-         * Create document metas
-         * for each translation
-         */
-        $this->injectMetaInDocument($objectManager, $document);
 
         return $document;
     }
@@ -350,6 +361,14 @@ abstract class AbstractEmbedFinder
     }
 
     /**
+     * @return string
+     */
+    public function getThumbnailName($pathinfo)
+    {
+        return $this->embedId.'_'.$pathinfo;
+    }
+
+    /**
      * Download a picture from the embed media platform
      * to get a thumbnail.
      *
@@ -363,7 +382,7 @@ abstract class AbstractEmbedFinder
             $pathinfo = basename($url);
 
             if ($pathinfo != "") {
-                $thumbnailName = $this->embedId.'_'.$pathinfo;
+                $thumbnailName = $this->getThumbnailName($pathinfo);
 
                 try {
                     $original = \GuzzleHttp\Psr7\stream_for(fopen($url, 'r'));
@@ -374,7 +393,8 @@ abstract class AbstractEmbedFinder
                     $local->write($original->getContents());
                     $local->close();
 
-                    $file = new File($tmpFile);
+                    $file = new DownloadedFile($tmpFile);
+                    $file->setOriginalFilename($thumbnailName);
 
                     if ($file->isReadable() &&
                         filesize($file->getPathname()) > 0) {

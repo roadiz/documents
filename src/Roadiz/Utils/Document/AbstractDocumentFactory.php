@@ -29,12 +29,14 @@
 namespace RZ\Roadiz\Utils\Document;
 
 use Doctrine\ORM\EntityManager;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Events\DocumentEvents;
 use RZ\Roadiz\Core\Events\FilterDocumentEvent;
 use RZ\Roadiz\Core\Models\FolderInterface;
+use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\StringHandler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -163,34 +165,37 @@ abstract class AbstractDocumentFactory
      * Create a document from UploadedFile, Be careful, this method does not flush, only
      * persists current Document.
      *
+     * @param bool $allowEmpty
+     *
      * @return null|DocumentInterface
      */
-    public function getDocument()
+    public function getDocument($allowEmpty = false)
     {
-        if (null === $this->file) {
+        $document = $this->createDocument();
+
+        if ($allowEmpty === false && null === $this->file) {
             throw new \InvalidArgumentException('File must be set before getting document.');
         }
 
-        if ($this->file instanceof UploadedFile && !$this->file->isValid()) {
-            return null;
+        if (null !== $this->file) {
+            if ($this->file instanceof UploadedFile && !$this->file->isValid()) {
+                return null;
+            }
+            $document->setFilename($this->getFileName());
+            $document->setMimeType($this->file->getMimeType());
+            $this->parseSvgMimeType($document);
+            $this->file->move(
+                $this->packages->getDocumentFolderPath($document),
+                $document->getFilename()
+            );
         }
 
-        $document = $this->createDocument();
-        $document->setFilename($this->getFileName());
-        $document->setMimeType($this->file->getMimeType());
         $this->em->persist($document);
-
-        $this->parseSvgMimeType($document);
 
         if (null !== $this->folder) {
             $document->addFolder($this->folder);
             $this->folder->addDocument($document);
         }
-
-        $this->file->move(
-            $this->packages->getDocumentFolderPath($document),
-            $document->getFilename()
-        );
 
         $this->dispatchEvents($document);
 
@@ -283,12 +288,46 @@ abstract class AbstractDocumentFactory
             throw new \InvalidArgumentException('File must be set before getting its fileName.');
         }
 
-        $fileName = $this->file->getFilename();
-
         if ($this->file instanceof UploadedFile) {
             $fileName = $this->file->getClientOriginalName();
+        } elseif ($this->file instanceof DownloadedFile && $this->file->getOriginalFilename() !== '') {
+            $fileName = $this->file->getOriginalFilename();
+        } else {
+            $fileName = $this->file->getFilename();
         }
 
         return $fileName;
+    }
+
+    /**
+     * @param string $url
+     * @param string $thumbnailName
+     *
+     * @return DownloadedFile
+     */
+    public function downloadFileFromUrl(string $url, string $thumbnailName): ?DownloadedFile
+    {
+        try {
+            $distantHandle = fopen($url, 'r');
+            if (false === $distantHandle) {
+                return null;
+            }
+            $original = \GuzzleHttp\Psr7\stream_for($distantHandle);
+            $tmpFile = tempnam(sys_get_temp_dir(), $thumbnailName);
+            $handle = fopen($tmpFile, 'w');
+            $local = \GuzzleHttp\Psr7\stream_for($handle);
+            $local->write($original->getContents());
+            $local->close();
+
+            $file = new DownloadedFile($tmpFile);
+            $file->setOriginalFilename($thumbnailName);
+
+            if ($file->isReadable() &&
+                filesize($file->getPathname()) > 0) {
+                return $file;
+            }
+        } catch (RequestException $e) {
+            return null;
+        }
     }
 }

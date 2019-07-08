@@ -65,6 +65,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'show_comments' => false,
             'show_user' => false,
             'show_reposts' => false,
+            'show_artwork' => false,
             'visual' => false,
             /*
              * Vimeo
@@ -86,6 +87,13 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'end' => false,
             'enablejsapi' => true,
             'playlist' => false,
+            /*
+             * Mixcloud
+             */
+            'mini' => false,
+            'light' => true,
+            'hide_cover' => true,
+            'hide_artwork' => false,
         ]);
 
         $this->setAllowedTypes('identifier', ['null', 'string']);
@@ -112,6 +120,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('show_comments', ['boolean']);
         $this->setAllowedTypes('show_user', ['boolean']);
         $this->setAllowedTypes('show_reposts', ['boolean']);
+        $this->setAllowedTypes('show_artwork', ['boolean']);
         $this->setAllowedTypes('visual', ['boolean']);
 
         // Vimeo
@@ -130,5 +139,13 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('start', ['boolean', 'integer']);
         $this->setAllowedTypes('end', ['boolean', 'integer']);
         $this->setAllowedTypes('enablejsapi', ['boolean']);
+
+        /*
+         * Mixcloud
+         */
+        $this->setAllowedTypes('mini', ['boolean']);
+        $this->setAllowedTypes('light', ['boolean']);
+        $this->setAllowedTypes('hide_cover', ['boolean']);
+        $this->setAllowedTypes('hide_artwork', ['boolean']);
     }
 }
