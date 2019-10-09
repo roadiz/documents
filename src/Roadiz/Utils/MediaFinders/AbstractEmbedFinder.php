@@ -232,6 +232,10 @@ abstract class AbstractEmbedFinder
             $attributes['allow'] = implode('; ', $attributes['allow']);
         }
 
+        if ($options['loading']) {
+            $attributes['loading'] = $options['loading'];
+        }
+        
         $attributes = array_filter($attributes);
 
         $htmlAttrs = [];

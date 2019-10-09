@@ -20,17 +20,17 @@
 
     <picture {{ attributesCompiled|join(' ')|raw }}>
         {% if lazyload %}
-            {% if srcset and sizes and webp_srcset %}
-                {% if not isWebp %}<source sizes="{{ sizes }}" data-srcset="{{ webp_srcset }}" type="image/webp">{% endif %}
-                <source sizes="{{ sizes }}" data-srcset="{{ srcset }}" type="{{ mimetype }}">
+            {% if srcset and webp_srcset %}
+                {% if not isWebp %}<source {% if sizes %}sizes="{{ sizes }}" {% endif %}data-srcset="{{ webp_srcset }}" type="image/webp">{% endif %}
+                <source {% if sizes %}sizes="{{ sizes }}" {% endif %}data-srcset="{{ srcset }}" type="{{ mimetype }}">
             {% else %}
                 {% if not isWebp %}<source data-srcset="{{ url }}.webp" type="image/webp">{% endif %}
                 <source data-srcset="{{ url }}" type="{{ mimetype }}">
             {% endif %}
         {% else %}
-            {% if srcset and sizes and webp_srcset %}
-                {% if not isWebp %}<source sizes="{{ sizes }}" srcset="{{ webp_srcset }}" type="image/webp">{% endif %}
-                <source sizes="{{ sizes }}" srcset="{{ srcset }}" type="{{ mimetype }}">
+            {% if srcset and webp_srcset %}
+                {% if not isWebp %}<source {% if sizes %}sizes="{{ sizes }}" {% endif %}srcset="{{ webp_srcset }}" type="image/webp">{% endif %}
+                <source {% if sizes %}sizes="{{ sizes }}" {% endif %}srcset="{{ srcset }}" type="{{ mimetype }}">
             {% else %}
                 {% if not isWebp %}<source srcset="{{ url }}.webp" type="image/webp">{% endif %}
                 <source srcset="{{ url }}" type="{{ mimetype }}">
@@ -48,11 +48,12 @@
             {% endif %}
             {% set attributes = attributes|merge({ 'class': class ~ ' ' ~ lazyload_class })  %}
             {% set attributes = attributes|merge({
-                'src': "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
+                'src': fallback,
                 'data-src': url,
             })  %}
             {% if srcset %}
                 {% set attributes = attributes|merge({'data-srcset' : srcset}) %}
+                {% set attributes = attributes|merge({'srcset' : fallback}) %}
             {% endif %}
         {% else %}
             {% if srcset %}
@@ -61,6 +62,9 @@
         {% endif %}
         {% if sizes %}
             {% set attributes = attributes|merge({'sizes' : sizes}) %}
+        {% endif %}
+        {% if loading %}
+            {% set attributes = attributes|merge({'loading' : loading}) %}
         {% endif %}
         {% if width and not sizes %}
             {% set attributes = attributes|merge({'width' : width}) %}

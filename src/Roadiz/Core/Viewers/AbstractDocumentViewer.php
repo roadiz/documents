@@ -46,27 +46,46 @@ use Twig\Environment;
  */
 abstract class AbstractDocumentViewer
 {
-    /** @var null|DocumentInterface */
+    /**
+     * @var null|DocumentInterface
+     */
     protected $document;
 
+    /**
+     * @var AbstractEmbedFinder
+     */
     protected $embedFinder;
 
-    /** @var Packages  */
+    /**
+     * @var Packages
+     */
     protected $packages;
 
-    /** @var RequestStack */
+    /**
+     * @var RequestStack
+     * @deprecated Useless and creates dependency
+     */
     protected $requestStack;
 
-    /** @var Environment */
+    /**
+     * @var Environment
+     */
     protected $twig;
 
-    /** @var EntityManager */
+    /**
+     * @var EntityManager
+     * @deprecated Useless and creates dependency
+     */
     protected $entityManager;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $documentPlatforms;
 
-    /** @var SymfonyUrlGeneratorInterface */
+    /**
+     * @var SymfonyUrlGeneratorInterface
+     */
     private $urlGenerator;
 
     /**
@@ -220,6 +239,8 @@ abstract class AbstractDocumentViewer
      * - crop ({w}x{h}, for example : 100x200)
      * - fit ({w}x{h}, for example : 100x200)
      * - rotate (1-359 degrees, for example : 90)
+     * - fallback (string)
+     * - loading ('auto', 'eager', 'lazy')
      * - grayscale (boolean)
      * - quality (1-100)
      * - blur (1-100)
@@ -232,6 +253,11 @@ abstract class AbstractDocumentViewer
      * - srcset : Array
      *     [
      *         - format: Array (same options as image)
+     *         - rule
+     *     ]
+     * - media : Array
+     *     [
+     *         - srcset: Array (same options as image)
      *         - rule
      *     ]
      * - sizes : Array
@@ -253,6 +279,9 @@ abstract class AbstractDocumentViewer
      * @param array $options
      *
      * @return string HTML output
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function getDocumentByArray(array $options = [])
     {
@@ -274,6 +303,7 @@ abstract class AbstractDocumentViewer
         $assignation['loop'] = $options['loop'];
         $assignation['muted'] = $options['muted'];
         $assignation['controls'] = $options['controls'];
+        $assignation['fallback'] = $options['fallback'];
 
         if ($options['width'] > 0) {
             $assignation['width'] = $options['width'];
@@ -289,6 +319,10 @@ abstract class AbstractDocumentViewer
 
         if (!empty($options['class'])) {
             $assignation['class'] = $options['class'];
+        }
+
+        if (null !== $options['loading']) {
+            $assignation['loading'] = $options['loading'];
         }
 
         if (!empty($options['alt'])) {

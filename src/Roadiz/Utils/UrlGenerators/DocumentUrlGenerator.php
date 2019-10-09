@@ -39,14 +39,16 @@ class DocumentUrlGenerator
 {
     /**
      * @var RequestStack
+     * @deprecated Useless and creates dependency
      */
     private $requestStack;
     /**
      * @var DocumentInterface
      */
     private $document;
-
-    /** @var array */
+    /**
+     * @var array
+     */
     private $options;
     /**
      * @var Packages

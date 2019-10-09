@@ -2,6 +2,9 @@
     {% set attributes = {
         'alt': alt,
     } %}
+    {% if loading %}
+        {% set attributes = attributes|merge({'loading' : loading}) %}
+    {% endif %}
     {% if width %}
         {% set attributes = attributes|merge({
             'width': width,

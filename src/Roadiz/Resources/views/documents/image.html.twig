@@ -26,6 +26,10 @@
         {% endif %}
     {% endif %}
 
+    {% if loading %}
+        {% set attributes = attributes|merge({'loading' : loading}) %}
+    {% endif %}
+
     {% if width and not sizes %}
         {% set attributes = attributes|merge({'width' : width}) %}
     {% endif %}
