@@ -2,9 +2,7 @@
     {% set attributes = {
     'alt': alt,
     } %}
-    {% if loading %}
-        {% set attributes = attributes|merge({'loading' : loading}) %}
-    {% endif %}
+
     {% if width %}
         {% set attributes = attributes|merge({
         'width': width,
@@ -45,17 +43,12 @@
     {% endif %}
     {% if loop is same as(true) %}
         {% set attributes = attributes|merge({
-        'loop': true,
+            'loop': true,
         }) %}
     {% endif %}
-    {% if poster and poster.url and not custom_poster %}
+    {% if poster %}
         {% set attributes = attributes|merge({
-        'poster': poster.url,
-        }) %}
-    {% endif %}
-    {% if custom_poster %}
-        {% set attributes = attributes|merge({
-        'poster': custom_poster,
+            'poster': poster,
         }) %}
     {% endif %}
     {% set attributesCompiled = {} %}

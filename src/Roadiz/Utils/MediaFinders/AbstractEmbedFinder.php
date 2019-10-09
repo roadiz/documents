@@ -44,7 +44,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package RZ\Roadiz\Utils\MediaFinders
  */
-abstract class AbstractEmbedFinder
+abstract class AbstractEmbedFinder implements EmbedFinderInterface
 {
     /**
      * @var array|null
@@ -145,7 +145,7 @@ abstract class AbstractEmbedFinder
      *
      * @return string
      */
-    public function getSource(array &$options = [])
+    public function getSource(array &$options = []): string
     {
         $resolver = new ViewOptionsResolver();
         $options = $resolver->resolve($options);
@@ -186,7 +186,7 @@ abstract class AbstractEmbedFinder
      * @final
      * @return string
      */
-    final public function getIFrame(array &$options = [])
+    final public function getIFrame(array &$options = []): string
     {
         $attributes = [];
         /*
@@ -235,7 +235,7 @@ abstract class AbstractEmbedFinder
         if ($options['loading']) {
             $attributes['loading'] = $options['loading'];
         }
-        
+
         $attributes = array_filter($attributes);
 
         $htmlAttrs = [];

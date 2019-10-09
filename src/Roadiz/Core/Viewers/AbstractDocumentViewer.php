@@ -43,6 +43,7 @@ use Twig\Environment;
 /**
  * Class DocumentViewer
  * @package RZ\Roadiz\Core\Viewers
+ * @deprecated Use RZ\Roadiz\Document\Renderer\ChainRenderer
  */
 abstract class AbstractDocumentViewer
 {
@@ -211,13 +212,13 @@ abstract class AbstractDocumentViewer
      * @param string[] $filenames
      * @return DocumentInterface[]
      */
-    abstract protected function getDocumentsByFilenames($filenames);
+    abstract protected function getDocumentsByFilenames($filenames): array;
 
     /**
      * @param string[] $filenames
      * @return DocumentInterface|null
      */
-    abstract protected function getOneDocumentByFilenames($filenames);
+    abstract public function getOneDocumentByFilenames($filenames): ?DocumentInterface;
 
     /**
      * Output a document HTML tag according to its Mime type and
@@ -294,6 +295,7 @@ abstract class AbstractDocumentViewer
         $assignation = [
             'document' => $this->document,
             'mimetype' => $this->document->getMimeType(),
+            'isWebp' => $this->document->isWebp(),
             'url' => $this->documentUrlGenerator->getUrl($options['absolute']),
         ];
 
@@ -325,13 +327,15 @@ abstract class AbstractDocumentViewer
             $assignation['loading'] = $options['loading'];
         }
 
-        if (!empty($options['alt'])) {
-            $assignation['alt'] = $options['alt'];
-        } elseif ("" != $this->getDocumentAlt()) {
-            $assignation['alt'] = $this->getDocumentAlt();
-        } else {
-            $assignation['alt'] = $this->document->getFilename();
-        }
+//        if (!empty($options['alt'])) {
+//            $assignation['alt'] = $options['alt'];
+//        } elseif ("" != $this->getDocumentAlt()) {
+//            $assignation['alt'] = $this->getDocumentAlt();
+//        } else {
+//            $assignation['alt'] = $this->document->getFilename();
+//        }
+
+        $assignation['alt'] = !empty($options['alt']) ? $options['alt'] : $this->document->getAlternativeText();
 
         if ($options['embed'] &&
             $this->isEmbedPlatformSupported()) {
