@@ -133,7 +133,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         } else {
             $embed = $this->embedUrl;
         }
-        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $matches)) {
             $pathinfo = '.' . $matches['extension'];
         } else {
             $pathinfo = '.jpg';
