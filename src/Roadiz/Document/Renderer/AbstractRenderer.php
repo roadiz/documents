@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Document\Renderer;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
-use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGenerator;
+use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
 
 abstract class AbstractRenderer implements RendererInterface
@@ -18,20 +18,20 @@ abstract class AbstractRenderer implements RendererInterface
      */
     protected $templateBasePath;
     /**
-     * @var DocumentUrlGenerator
+     * @var DocumentUrlGeneratorInterface
      */
     protected $documentUrlGenerator;
 
     /**
      * AbstractRenderer constructor.
      *
-     * @param Environment          $templating
-     * @param DocumentUrlGenerator $documentUrlGenerator
-     * @param string               $templateBasePath
+     * @param Environment                   $templating
+     * @param DocumentUrlGeneratorInterface $documentUrlGenerator
+     * @param string                        $templateBasePath
      */
     public function __construct(
         Environment $templating,
-        DocumentUrlGenerator $documentUrlGenerator,
+        DocumentUrlGeneratorInterface $documentUrlGenerator,
         string $templateBasePath = 'documents'
     ) {
         $this->templating = $templating;

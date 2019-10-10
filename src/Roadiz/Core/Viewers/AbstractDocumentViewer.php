@@ -31,6 +31,7 @@ namespace RZ\Roadiz\Core\Viewers;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Document\Renderer\RendererInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use RZ\Roadiz\Utils\MediaFinders\AbstractEmbedFinder;
@@ -45,7 +46,7 @@ use Twig\Environment;
  * @package RZ\Roadiz\Core\Viewers
  * @deprecated Use RZ\Roadiz\Document\Renderer\ChainRenderer
  */
-abstract class AbstractDocumentViewer
+abstract class AbstractDocumentViewer implements RendererInterface
 {
     /**
      * @var null|DocumentInterface
@@ -217,6 +218,8 @@ abstract class AbstractDocumentViewer
     /**
      * @param string[] $filenames
      * @return DocumentInterface|null
+     *
+     * @deprecated Use DocumentFinderInterface
      */
     abstract public function getOneDocumentByFilenames($filenames): ?DocumentInterface;
 
@@ -280,6 +283,8 @@ abstract class AbstractDocumentViewer
      * @param array $options
      *
      * @return string HTML output
+     *
+     * @deprecated
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
@@ -520,5 +525,32 @@ abstract class AbstractDocumentViewer
         }
 
         return false;
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @param array             $options
+     *
+     * @return bool
+     * @deprecated
+     */
+    public function supports(DocumentInterface $document, array $options): bool
+    {
+        return true;
+    }
+
+    /**
+     * Down compatibility method.
+     *
+     * @param DocumentInterface $document
+     * @param array             $options
+     *
+     * @return string
+     * @deprecated
+     */
+    public function render(DocumentInterface $document, array $options): string
+    {
+        $this->setDocument($document);
+        return $this->getDocumentByArray($options);
     }
 }

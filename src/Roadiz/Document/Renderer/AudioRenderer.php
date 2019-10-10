@@ -7,7 +7,7 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Document\DocumentFinderInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
-use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGenerator;
+use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
 
 class AudioRenderer extends AbstractRenderer
@@ -22,19 +22,19 @@ class AudioRenderer extends AbstractRenderer
     private $documentFinder;
 
     /**
-     * VideoRenderer constructor.
+     * AudioRenderer constructor.
      *
-     * @param Packages                $packages
-     * @param DocumentFinderInterface $documentFinder
-     * @param Environment             $templating
-     * @param DocumentUrlGenerator    $documentUrlGenerator
-     * @param string                  $templateBasePath
+     * @param Packages                      $packages
+     * @param DocumentFinderInterface       $documentFinder
+     * @param Environment                   $templating
+     * @param DocumentUrlGeneratorInterface $documentUrlGenerator
+     * @param string                        $templateBasePath
      */
     public function __construct(
         Packages $packages,
         DocumentFinderInterface $documentFinder,
         Environment $templating,
-        DocumentUrlGenerator $documentUrlGenerator,
+        DocumentUrlGeneratorInterface $documentUrlGenerator,
         string $templateBasePath = 'documents'
     ) {
         parent::__construct($templating, $documentUrlGenerator, $templateBasePath);
