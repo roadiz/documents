@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Document\Renderer;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Utils\Document\UrlOptionsResolver;
 
 abstract class AbstractImageRenderer extends AbstractRenderer
 {
@@ -33,7 +34,8 @@ abstract class AbstractImageRenderer extends AbstractRenderer
             $srcset = [];
             foreach ($options['srcset'] as $set) {
                 if (isset($set['format']) && isset($set['rule'])) {
-                    $this->documentUrlGenerator->setOptions($set['format']);
+                    $resolver = new UrlOptionsResolver();
+                    $this->documentUrlGenerator->setOptions($resolver->resolve($set['format']));
                     $this->documentUrlGenerator->setDocument($document);
                     $path = $this->documentUrlGenerator->getUrl($options['absolute']);
                     if ($convertToWebP) {

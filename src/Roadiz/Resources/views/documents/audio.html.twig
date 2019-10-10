@@ -46,7 +46,7 @@
         {% if value is same as(true)  %}
             {% set attributesCompiled = attributesCompiled|merge([key]) %}
         {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|replace({'"': '\\"'}) ~ '"']) %}
         {% endif %}
     {% endfor %}
 <audio data-document {{ attributesCompiled|join(' ')|raw }}>

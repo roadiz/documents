@@ -13,7 +13,7 @@
         {% if value is same as(true)  %}
             {% set attributesCompiled = attributesCompiled|merge([key]) %}
         {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|replace({'"': '\\"'}) ~ '"']) %}
         {% endif %}
     {% endfor %}
 
@@ -76,7 +76,7 @@
             {% if value is same as(true)  %}
                 {% set attributesCompiledFallback = attributesCompiledFallback|merge([key]) %}
             {% else %}
-                {% set attributesCompiledFallback = attributesCompiledFallback|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+                {% set attributesCompiledFallback = attributesCompiledFallback|merge([key ~ '="' ~ value|replace({'"': '\\"'}) ~ '"']) %}
             {% endif %}
         {% endfor %}
         <img {{ attributesCompiledFallback|join(' ')|raw }} />

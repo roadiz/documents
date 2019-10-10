@@ -7,7 +7,6 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Viewers\SvgDocumentViewer;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
-use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class SvgRenderer implements RendererInterface
 {
@@ -28,7 +27,7 @@ class SvgRenderer implements RendererInterface
 
     public function supports(DocumentInterface $document, array $options): bool
     {
-        return $document->isSvg();
+        return $document->isSvg() && (!isset($options['inline']) || $options['inline'] === false);
     }
 
     public function render(DocumentInterface $document, array $options): string
@@ -37,19 +36,7 @@ class SvgRenderer implements RendererInterface
         $options = $resolver->resolve($options);
         $assignation = array_filter($options);
 
-        if ($options['inline']) {
-            try {
-                $viewer = new SvgDocumentViewer(
-                    $this->packages->getDocumentFilePath($document),
-                    $assignation
-                );
-                return $viewer->getContent();
-            } catch (FileNotFoundException $e) {
-                return '<p>SVG file was not found</p>';
-            }
-        }
-
-        $attributes = $this->getAttributes($options);
+        $attributes = $this->getAttributes($assignation);
         $attributes['data'] = $this->packages->getUrl($document->getRelativePath(), Packages::DOCUMENTS);
 
         $attrs = [];

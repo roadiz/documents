@@ -148,9 +148,9 @@ class SvgDocumentViewer
                     $xml->addAttribute($key, $value);
                 }
             }
-
-            $svg = preg_replace('#^<\?xml[^\?]+\?>#', '', $xml->asXML());
+            $svg = $xml->asXML();
         }
+        $svg = preg_replace('#^\<\?xml[^\?]+\?\>#', '', $svg);
 
         return $svg;
     }

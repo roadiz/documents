@@ -124,7 +124,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
 
         // Native lazyload support
         $this->setAllowedTypes('loading', ['null', 'string']);
-        $this->setAllowedValues('loading', ['auto', 'eager', 'lazy']);
+        $this->setAllowedValues('loading', [null, 'auto', 'eager', 'lazy']);
 
         // Soundcloud
         $this->setAllowedTypes('hide_related', ['boolean']);
