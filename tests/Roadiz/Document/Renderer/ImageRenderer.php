@@ -38,6 +38,8 @@ class ImageRenderer extends atoum
             ->isEqualTo('image/jpeg')
             ->boolean($renderer->supports($mockValidDocument, []))
             ->isEqualTo(true)
+            ->boolean($renderer->supports($mockValidDocument, ['embed' => true]))
+            ->isEqualTo(true)
             ->boolean($renderer->supports($mockValidDocument, ['picture' => true]))
             ->isEqualTo(false)
             ->string($mockInvalidDocument->getMimeType())

@@ -40,6 +40,11 @@ class PictureRenderer extends atoum
             ->isEqualTo(false)
             ->boolean($renderer->supports($mockValidDocument, ['picture' => true]))
             ->isEqualTo(true)
+            ->boolean($renderer->supports($mockValidDocument, [
+                'picture' => true,
+                'embed' => true,
+            ]))
+            ->isEqualTo(true)
             ->string($mockInvalidDocument->getMimeType())
             ->isEqualTo('image/vnd.adobe.photoshop')
             ->boolean($renderer->supports($mockInvalidDocument, []))
