@@ -7,6 +7,7 @@ use atoum;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\SimpleFileAware;
 use RZ\Roadiz\Utils\Asset\Packages;
+use RZ\Roadiz\Utils\MediaFinders\EmbedFinderFactory;
 use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,14 @@ class ImageRenderer extends atoum
         $mockValidDocument->setFilename('file.jpg');
         $mockValidDocument->setMimeType('image/jpeg');
 
+
+        /** @var DocumentInterface $mockExternalValidDocument */
+        $mockExternalValidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockExternalValidDocument->setFilename('file.jpg');
+        $mockExternalValidDocument->setMimeType('image/jpeg');
+        $mockExternalValidDocument->setEmbedId('xxxxx');
+        $mockExternalValidDocument->setEmbedPlatform('getty');
+
         /** @var DocumentInterface $mockInvalidDocument */
         $mockInvalidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
         $mockInvalidDocument->setFilename('file.psd');
@@ -30,6 +39,7 @@ class ImageRenderer extends atoum
 
         $this
             ->given($renderer = $this->newTestedInstance(
+                $this->getEmbedFinderFactory(),
                 $this->getEnvironment(),
                 $this->getUrlGenerator()
             ))
@@ -39,6 +49,8 @@ class ImageRenderer extends atoum
             ->boolean($renderer->supports($mockValidDocument, []))
             ->isEqualTo(true)
             ->boolean($renderer->supports($mockValidDocument, ['embed' => true]))
+            ->isEqualTo(true)
+            ->boolean($renderer->supports($mockExternalValidDocument, ['embed' => true]))
             ->isEqualTo(true)
             ->boolean($renderer->supports($mockValidDocument, ['picture' => true]))
             ->isEqualTo(false)
@@ -58,6 +70,7 @@ class ImageRenderer extends atoum
 
         $this
             ->given($renderer = $this->newTestedInstance(
+                $this->getEmbedFinderFactory(),
                 $this->getEnvironment(),
                 $this->getUrlGenerator()
             ))
@@ -383,6 +396,19 @@ EOT
         return new Environment($loader, [
             'autoescape' => false,
             'debug' => true
+        ]);
+    }
+
+    /**
+     * @return EmbedFinderFactory
+     */
+    private function getEmbedFinderFactory(): EmbedFinderFactory
+    {
+        return new EmbedFinderFactory([
+            'youtube' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractYoutubeEmbedFinder::class,
+            'vimeo' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractVimeoEmbedFinder::class,
+            'dailymotion' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractDailymotionEmbedFinder::class,
+            'soundcloud' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractSoundcloudEmbedFinder::class,
         ]);
     }
 }

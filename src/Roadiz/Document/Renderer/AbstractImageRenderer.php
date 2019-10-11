@@ -5,9 +5,40 @@ namespace RZ\Roadiz\Document\Renderer;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Document\UrlOptionsResolver;
+use RZ\Roadiz\Utils\MediaFinders\EmbedFinderFactory;
+use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
+use Twig\Environment;
 
 abstract class AbstractImageRenderer extends AbstractRenderer
 {
+    /**
+     * @var EmbedFinderFactory
+     */
+    protected $embedFinderFactory;
+
+    public function __construct(
+        EmbedFinderFactory $embedFinderFactory,
+        Environment $templating,
+        DocumentUrlGeneratorInterface $documentUrlGenerator,
+        string $templateBasePath = 'documents'
+    ) {
+        parent::__construct($templating, $documentUrlGenerator, $templateBasePath);
+        $this->embedFinderFactory = $embedFinderFactory;
+    }
+
+    public function supports(DocumentInterface $document, array $options): bool
+    {
+        return $document->isImage() && !$this->isEmbeddable($document, $options);
+    }
+
+    public function isEmbeddable(DocumentInterface $document, array $options): bool
+    {
+        return isset($options['embed']) &&
+            $options['embed'] === true &&
+            null !== $document->getEmbedPlatform() &&
+            $this->embedFinderFactory->supports($document->getEmbedPlatform());
+    }
+
     /**
      * @param array $options
      * @return string|null

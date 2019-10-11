@@ -23,6 +23,13 @@ class EmbedRenderer extends atoum
         $mockInvalidDocument->setFilename('file.jpg');
         $mockInvalidDocument->setMimeType('image/jpeg');
 
+        /** @var DocumentInterface $mockExternalInvalidDocument */
+        $mockExternalInvalidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockExternalInvalidDocument->setFilename('file.jpg');
+        $mockExternalInvalidDocument->setMimeType('image/jpeg');
+        $mockExternalInvalidDocument->setEmbedId('xxxxx');
+        $mockExternalInvalidDocument->setEmbedPlatform('getty');
+
         $this
             ->given($renderer = $this->newTestedInstance(
                 $this->getEmbedFinderFactory()
@@ -34,6 +41,8 @@ class EmbedRenderer extends atoum
             ->isEqualTo(false)
             ->boolean($renderer->supports($mockValidDocument, ['embed' => true]))
             ->isEqualTo(true)
+            ->boolean($renderer->supports($mockExternalInvalidDocument, ['embed' => true]))
+            ->isEqualTo(false)
             ->boolean($mockInvalidDocument->isEmbed())
             ->isEqualTo(false)
             ->boolean($renderer->supports($mockInvalidDocument, []))
