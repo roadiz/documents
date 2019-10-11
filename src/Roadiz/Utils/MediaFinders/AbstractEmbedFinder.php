@@ -44,7 +44,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package RZ\Roadiz\Utils\MediaFinders
  */
-abstract class AbstractEmbedFinder
+abstract class AbstractEmbedFinder implements EmbedFinderInterface
 {
     /**
      * @var array|null
@@ -145,7 +145,7 @@ abstract class AbstractEmbedFinder
      *
      * @return string
      */
-    public function getSource(array &$options = [])
+    public function getSource(array &$options = []): string
     {
         $resolver = new ViewOptionsResolver();
         $options = $resolver->resolve($options);
@@ -186,7 +186,7 @@ abstract class AbstractEmbedFinder
      * @final
      * @return string
      */
-    final public function getIFrame(array &$options = [])
+    final public function getIFrame(array &$options = []): string
     {
         $attributes = [];
         /*
@@ -194,7 +194,10 @@ abstract class AbstractEmbedFinder
          */
         $attributes['src'] = $this->getSource($options);
         $attributes['allow'] = [
-            'encrypted-media'
+            'accelerometer',
+            'encrypted-media',
+            'gyroscope',
+            'picture-in-picture'
         ];
 
         if ($options['width'] > 0) {
@@ -215,16 +218,13 @@ abstract class AbstractEmbedFinder
         $attributes['title'] = $options['title'];
         $attributes['id'] = $options['id'];
         $attributes['class'] = $options['class'];
-        $attributes['frameborder'] = "0";
 
         if ($options['autoplay']) {
             $attributes['allow'][] = 'autoplay';
         }
 
         if ($options['fullscreen']) {
-            $attributes['webkitAllowFullScreen'] = "1";
-            $attributes['mozallowfullscreen'] = "1";
-            $attributes['allowFullScreen'] = "1";
+            $attributes['allowFullScreen'] = true;
             $attributes['allow'][] = 'fullscreen';
         }
 
@@ -232,11 +232,15 @@ abstract class AbstractEmbedFinder
             $attributes['allow'] = implode('; ', $attributes['allow']);
         }
 
+        if ($options['loading']) {
+            $attributes['loading'] = $options['loading'];
+        }
+
         $attributes = array_filter($attributes);
 
         $htmlAttrs = [];
         foreach ($attributes as $key => $value) {
-            if ($value == '') {
+            if ($value == '' || $value === true) {
                 $htmlAttrs[] = $key;
             } else {
                 $htmlAttrs[] = $key.'="'.addslashes($value).'"';

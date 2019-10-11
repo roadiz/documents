@@ -7,7 +7,8 @@
 /google*.html
 
 # PHPCS report
-report.txt
+/report.txt
+/score.txt
 
 # Cloverage build folder
 /build

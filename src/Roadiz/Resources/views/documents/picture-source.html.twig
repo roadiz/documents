@@ -1,0 +1,25 @@
+{% if lazyload %}
+    {% if srcset %}
+        {%- if webp_srcset -%}
+            <source {% if sizes %}sizes="{{ sizes }}" {% endif %}{% if media %}media="{{ media }}" {% endif %}srcset="{{ fallback }}" data-srcset="{{ webp_srcset }}" type="image/webp">
+        {%- endif -%}
+        <source {% if sizes %}sizes="{{ sizes }}" {% endif %}{% if media %}media="{{ media }}" {% endif %}srcset="{{ fallback }}" data-srcset="{{ srcset }}" type="{{ mimetype }}">
+    {% else %}
+        {%- if not isWebp -%}
+            <source srcset="{{ fallback }}" {% if media %}media="{{ media }}" {% endif %}data-srcset="{{ url }}.webp" type="image/webp">
+        {%- endif -%}
+        <source srcset="{{ fallback }}" {% if media %}media="{{ media }}" {% endif %}data-srcset="{{ url }}" type="{{ mimetype }}">
+    {% endif %}
+{% else %}
+    {% if srcset %}
+        {%- if webp_srcset -%}
+            <source {% if sizes %}sizes="{{ sizes }}" {% endif %}{% if media %}media="{{ media }}" {% endif %}srcset="{{ webp_srcset }}" type="image/webp">
+        {%- endif -%}
+        <source {% if sizes %}sizes="{{ sizes }}" {% endif %}{% if media %}media="{{ media }}" {% endif %}srcset="{{ srcset }}" type="{{ mimetype }}">
+    {% else %}
+        {%- if not isWebp -%}
+            <source srcset="{{ url }}.webp" {% if media %}media="{{ media }}" {% endif %}type="image/webp">
+        {%- endif -%}
+        <source srcset="{{ url }}" {% if media %}media="{{ media }}" {% endif %}type="{{ mimetype }}">
+    {% endif %}
+{% endif %}
