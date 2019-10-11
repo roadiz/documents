@@ -12,7 +12,7 @@ class ImageRenderer extends AbstractImageRenderer
     {
         return $document->isImage() &&
             (!isset($options['picture']) || $options['picture'] === false) &&
-            (!isset($options['embed']) || $options['embed'] === false || null === $document->getEmbedId());
+            (!isset($options['embed']) || $options['embed'] === false || null === $document->getEmbedPlatform());
     }
 
     public function render(DocumentInterface $document, array $options): string
