@@ -31,21 +31,38 @@ abstract class AbstractImageRenderer extends AbstractRenderer
     protected function parseSrcSet(DocumentInterface $document, array $options = [], $convertToWebP = false): ?string
     {
         if (count($options['srcset']) > 0) {
-            $srcset = [];
-            foreach ($options['srcset'] as $set) {
-                if (isset($set['format']) && isset($set['rule'])) {
-                    $resolver = new UrlOptionsResolver();
-                    $this->documentUrlGenerator->setOptions($resolver->resolve($set['format']));
-                    $this->documentUrlGenerator->setDocument($document);
-                    $path = $this->documentUrlGenerator->getUrl($options['absolute']);
-                    if ($convertToWebP) {
-                        $path .= '.webp';
-                    }
-                    $srcset[] = $path . ' ' . $set['rule'];
-                }
-            }
-            return implode(', ', $srcset);
+            return $this->parseSrcSetInner($document, $options['srcset'], $convertToWebP, $options['absolute']);
         }
         return null;
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @param array             $srcSetArray
+     * @param bool              $convertToWebP
+     * @param bool              $absolute
+     *
+     * @return string
+     */
+    protected function parseSrcSetInner(
+        DocumentInterface $document,
+        array $srcSetArray = [],
+        $convertToWebP = false,
+        $absolute = false
+    ): string {
+        $output = [];
+        foreach ($srcSetArray as $set) {
+            if (isset($set['format']) && isset($set['rule'])) {
+                $resolver = new UrlOptionsResolver();
+                $this->documentUrlGenerator->setOptions($resolver->resolve($set['format']));
+                $this->documentUrlGenerator->setDocument($document);
+                $path = $this->documentUrlGenerator->getUrl($absolute);
+                if ($convertToWebP) {
+                    $path .= '.webp';
+                }
+                $output[] = $path . ' ' . $set['rule'];
+            }
+        }
+        return implode(', ', $output);
     }
 }

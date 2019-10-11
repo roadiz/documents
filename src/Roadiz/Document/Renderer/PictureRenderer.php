@@ -22,14 +22,42 @@ class PictureRenderer extends AbstractImageRenderer
             'mimetype' => $document->getMimeType(),
             'isWebp' => $document->isWebp(),
             'url' => $this->getSource($document, $options),
+            'media' => null,
+            'srcset' => null,
+            'webp_srcset' => null,
+            'mediaList' => null,
         ]);
         $assignation['alt'] = !empty($options['alt']) ? $options['alt'] : $document->getAlternativeText();
         $assignation['sizes'] = $this->parseSizes($options);
-        $assignation['srcset'] = $this->parseSrcSet($document, $options);
-        if (!$document->isWebp()) {
-            $assignation['webp_srcset'] = $this->parseSrcSet($document, $options, true);
+
+        if (count($options['media']) > 0) {
+            $assignation['mediaList'] = $this->parseMedia($document, $options);
+        } else {
+            $assignation['srcset'] = $this->parseSrcSet($document, $options);
+            if (!$document->isWebp()) {
+                $assignation['webp_srcset'] = $this->parseSrcSet($document, $options, true);
+            }
         }
 
         return $this->renderHtmlElement('picture.html.twig', $assignation);
+    }
+
+    private function parseMedia(DocumentInterface $document, array $options = []): array
+    {
+        $mediaList = [];
+        foreach ($options['media'] as $media) {
+            if (!isset($media['srcset'])) {
+                throw new \InvalidArgumentException('Picture media list must have srcset option.');
+            }
+            if (!isset($media['rule'])) {
+                throw new \InvalidArgumentException('Picture media list must have rule option.');
+            }
+            $mediaList[] = [
+                'srcset' => $this->parseSrcSetInner($document, $media['srcset'], false, $options['absolute']),
+                'webp_srcset' => !$document->isWebp() ? $this->parseSrcSetInner($document, $media['srcset'], true, $options['absolute']) : null,
+                'rule' => $media['rule']
+            ];
+        }
+        return $mediaList;
     }
 }
