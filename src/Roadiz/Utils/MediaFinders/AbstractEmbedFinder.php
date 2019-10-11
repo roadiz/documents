@@ -194,7 +194,10 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
          */
         $attributes['src'] = $this->getSource($options);
         $attributes['allow'] = [
-            'encrypted-media'
+            'accelerometer',
+            'encrypted-media',
+            'gyroscope',
+            'picture-in-picture'
         ];
 
         if ($options['width'] > 0) {
@@ -215,16 +218,13 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         $attributes['title'] = $options['title'];
         $attributes['id'] = $options['id'];
         $attributes['class'] = $options['class'];
-        $attributes['frameborder'] = "0";
 
         if ($options['autoplay']) {
             $attributes['allow'][] = 'autoplay';
         }
 
         if ($options['fullscreen']) {
-            $attributes['webkitAllowFullScreen'] = "1";
-            $attributes['mozallowfullscreen'] = "1";
-            $attributes['allowFullScreen'] = "1";
+            $attributes['allowFullScreen'] = true;
             $attributes['allow'][] = 'fullscreen';
         }
 
@@ -240,7 +240,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
 
         $htmlAttrs = [];
         foreach ($attributes as $key => $value) {
-            if ($value == '') {
+            if ($value == '' || $value === true) {
                 $htmlAttrs[] = $key;
             } else {
                 $htmlAttrs[] = $key.'="'.addslashes($value).'"';

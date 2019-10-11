@@ -3,8 +3,24 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
 
+/**
+ * Class EmbedFinderFactory
+ *
+ * @package RZ\Roadiz\Utils\MediaFinders
+ */
 class EmbedFinderFactory
 {
+    /**
+     * Embed platform classes, for example:
+     *
+     * [
+     *    youtube => YoutubeEmbedFinder::class,
+     *    vimeo => VimeoEmbedFinder::class
+     * ]
+     *
+     * @var array
+     *
+     */
     private $embedPlatforms = [];
 
     /**
