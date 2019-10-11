@@ -8,6 +8,7 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Document\Renderer;
 use RZ\Roadiz\Core\Models\SimpleFileAware;
 use RZ\Roadiz\Utils\Asset\Packages;
+use RZ\Roadiz\Utils\MediaFinders\EmbedFinderFactory;
 use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,12 +32,26 @@ class ChainRenderer extends atoum
         $mockPdfDocument->setFolder('folder');
         $mockPdfDocument->setMimeType('application/pdf');
 
+        /** @var DocumentInterface $mockDocumentYoutube */
+        $mockDocumentYoutube = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockDocumentYoutube->setFilename('poster.jpg');
+        $mockDocumentYoutube->setEmbedId('xxxxxxx');
+        $mockDocumentYoutube->setEmbedPlatform('youtube');
+        $mockDocumentYoutube->setMimeType('image/jpeg');
+
+        /** @var DocumentInterface $mockPictureDocument */
+        $mockPictureDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockPictureDocument->setFilename('file.jpg');
+        $mockPictureDocument->setFolder('folder');
+        $mockPictureDocument->setMimeType('image/jpeg');
+
         $renderers = [
             new Renderer\InlineSvgRenderer($this->getPackages()),
             new Renderer\SvgRenderer($this->getPackages()),
             new Renderer\PdfRenderer($this->getEnvironment(), $this->getUrlGenerator()),
             new Renderer\ImageRenderer($this->getEnvironment(), $this->getUrlGenerator()),
             new Renderer\PictureRenderer($this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\EmbedRenderer($this->getEmbedFinderFactory()),
         ];
 
         $this
@@ -58,12 +73,34 @@ EOT
 </svg>
 EOT
             ))
+            ->boolean($mockDocumentYoutube->isEmbed())
+            ->isEqualTo(true)
+            ->string($renderer->render($mockDocumentYoutube, ['embed' => true]))
+            ->isEqualTo($this->htmlTidy(<<<EOT
+<iframe src="https://www.youtube.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0" 
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+        allowFullScreen></iframe>
+EOT
+            ))
+            ->string($renderer->render($mockPictureDocument, [
+                'width' => 300,
+                'picture' => true
+            ]))
+            ->isEqualTo($this->htmlTidy(<<<EOT
+<picture>
+<source srcset="/assets/w300-q90/folder/file.jpg.webp" type="image/webp">
+<source srcset="/assets/w300-q90/folder/file.jpg" type="image/jpeg">
+<img alt="file.jpg" src="/assets/w300-q90/folder/file.jpg" width="300" />
+</picture>
+EOT
+            ))
         ;
     }
 
     private function htmlTidy(string $body): string
     {
-        return preg_replace('#\>[\n\r\s]+\<#', '><', $body);
+        $body = preg_replace('#[\n\r\t\s]{2,}#', ' ', $body);
+        return preg_replace('#\>[\n\r\t\s]+\<#', '><', $body);
     }
 
     /**
@@ -97,6 +134,19 @@ EOT
         ]);
         return new Environment($loader, [
             'autoescape' => false
+        ]);
+    }
+
+    /**
+     * @return EmbedFinderFactory
+     */
+    private function getEmbedFinderFactory(): EmbedFinderFactory
+    {
+        return new EmbedFinderFactory([
+            'youtube' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractYoutubeEmbedFinder::class,
+            'vimeo' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractVimeoEmbedFinder::class,
+            'dailymotion' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractDailymotionEmbedFinder::class,
+            'soundcloud' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractSoundcloudEmbedFinder::class,
         ]);
     }
 }

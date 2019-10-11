@@ -10,7 +10,9 @@ class ImageRenderer extends AbstractImageRenderer
 {
     public function supports(DocumentInterface $document, array $options): bool
     {
-        return $document->isImage() && (!isset($options['picture']) || $options['picture'] === false);
+        return $document->isImage() &&
+            (!isset($options['picture']) || $options['picture'] === false) &&
+            (!isset($options['embed']) || $options['embed'] === false);
     }
 
     public function render(DocumentInterface $document, array $options): string
