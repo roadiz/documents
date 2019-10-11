@@ -15,17 +15,17 @@
 {% endfor %}
 
 <picture{% if attributesCompiled|length %} {{ attributesCompiled|join(' ')|raw }}{% endif %}>
-    {% if not mediaList %}
+    {%- if not mediaList -%}
         {%- include 'documents/picture-source.html.twig' -%}
-    {% else %}
-        {% for media in mediaList  %}
+    {%- else -%}
+        {%- for media in mediaList -%}
             {%- include 'documents/picture-source.html.twig' with {
                 srcset: media.srcset,
                 webp_srcset: media.webp_srcset,
                 media: media.rule
             } -%}
-        {% endfor %}
-    {% endif %}
+        {%- endfor -%}
+    {%- endif -%}
 
     {%- include 'documents/image.html.twig' with {
         'avoidNoScript': true

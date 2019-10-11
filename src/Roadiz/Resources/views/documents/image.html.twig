@@ -12,11 +12,14 @@
             {% set attributes = attributes|merge({'sizes' : sizes}) %}
         {% endif %}
         {% if class %}
+            {% set originalClass = class %}
             {% set class = class ~ ' ' ~ lazyload_class %}
         {% else %}
+            {% set originalClass = '' %}
             {% set class = lazyload_class %}
         {% endif %}
     {% else %}
+        {% set originalClass = class %}
         {% set attributes = attributes|merge({'src' : url}) %}
         {% if srcset %}
             {% set attributes = attributes|merge({'srcset' : srcset}) %}
@@ -56,6 +59,7 @@
         <noscript>
             {% include 'documents/image.html.twig' with {
                 'lazyload': false,
+                'class': originalClass,
                 'avoidNoScript': true
             } %}
         </noscript>
