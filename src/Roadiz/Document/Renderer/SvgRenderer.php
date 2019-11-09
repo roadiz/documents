@@ -41,7 +41,10 @@ class SvgRenderer implements RendererInterface
 
         $attrs = [];
         foreach ($attributes as $key => $value) {
-            $attrs[] = $key . '="' . htmlspecialchars($value) . '"';
+            if (is_string($value)) {
+                $value = htmlspecialchars($value);
+            }
+            $attrs[] = $key . '="' . $value . '"';
         }
 
         return '<object ' . implode(' ', $attrs) . '></object>';
