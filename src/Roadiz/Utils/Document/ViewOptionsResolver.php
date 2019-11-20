@@ -57,6 +57,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'fullscreen' => true,
             'loading' => null,
             'fallback' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==',
+            'blurredFallback' => false,
             'media' => [],
             'srcset' => [],
             'sizes' => [],
@@ -111,6 +112,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('inline', ['boolean']);
         $this->setAllowedTypes('autoplay', ['boolean']);
         $this->setAllowedTypes('muted', ['boolean']);
+        $this->setAllowedTypes('blurredFallback', ['boolean']);
         $this->setAllowedTypes('loop', ['boolean']);
         $this->setAllowedTypes('controls', ['boolean']);
         $this->setAllowedTypes('fullscreen', ['boolean']);

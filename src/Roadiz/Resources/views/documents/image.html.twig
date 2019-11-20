@@ -37,11 +37,22 @@
             'data-average-color': averageColor
         }) %}
     {% endif %}
+    {% if ratio %}
+        {% set attributes = attributes|merge({
+            'data-ratio': ratio
+        }) %}
+    {% endif %}
     {% if width and not sizes %}
         {% set attributes = attributes|merge({'width' : width}) %}
     {% endif %}
     {% if height and not sizes %}
         {% set attributes = attributes|merge({'height' : height}) %}
+    {% endif %}
+    {% if width and ratio and not height and not sizes %}
+        {% set attributes = attributes|merge({'height' : (width / ratio)|round}) %}
+    {% endif %}
+    {% if height and ratio and not width and not sizes %}
+        {% set attributes = attributes|merge({'width' : (height * ratio)|round}) %}
     {% endif %}
     {% if class %}
         {% set attributes = attributes|merge({'class' : class}) %}

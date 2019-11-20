@@ -41,13 +41,7 @@ class PictureRenderer extends AbstractImageRenderer
             }
         }
 
-        if (method_exists($document, 'getImageAverageColor') &&
-            null !== $document->getImageAverageColor() &&
-            $document->getImageAverageColor() !== '#ffffff' &&
-            $document->getImageAverageColor() !== '#000000') {
-            $assignation['averageColor'] = $document->getImageAverageColor();
-            $assignation['fallback'] = $this->createTransparentDataURI($document->getImageAverageColor());
-        }
+        $this->additionalAssignation($document, $options, $assignation);
 
         return $this->renderHtmlElement('picture.html.twig', $assignation);
     }

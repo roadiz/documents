@@ -102,15 +102,47 @@ abstract class AbstractImageRenderer extends AbstractRenderer
      *
      * @return string
      */
-    protected function createTransparentDataURI($hexColor) {
+    protected function createTransparentDataURI(string $hexColor, int $width = 1, int $height = 1) {
         list($r, $g, $b) = \sscanf($hexColor, "#%02x%02x%02x");
-        $im = \imageCreateTrueColor(1, 1);
+        $im = \imageCreateTrueColor($width, $height);
         \imageFill($im, 0, 0, \imageColorAllocate($im,$r,$g,$b));
         \ob_start();
-        \imagePng($im);
+        \imagejpeg($im, null, 30);
         $img = \ob_get_contents();
         \ob_end_clean();
 
-        return 'data:image/png;base64,' . \base64_encode($img);
+        return 'data:image/jpeg;base64,' . \base64_encode($img);
+    }
+
+    /**
+     * @param array $assignation
+     */
+    protected function additionalAssignation(DocumentInterface $document, array $options, array &$assignation): void
+    {
+        if (method_exists($document, 'getImageRatio') &&
+            null !== $document->getImageRatio()) {
+            $assignation['ratio'] = $document->getImageRatio();
+        }
+        if (method_exists($document, 'getImageAverageColor') &&
+            null !== $document->getImageAverageColor() &&
+            $document->getImageAverageColor() !== '#ffffff' &&
+            $document->getImageAverageColor() !== '#000000') {
+            $assignation['averageColor'] = $document->getImageAverageColor();
+        }
+        if ($options['blurredFallback'] === true) {
+            if (!empty($options['fit'])) {
+                // Both Fit and Width cannot be explicitly set
+                // need to revert on Crop
+                $options['crop'] = $options['fit'];
+                unset($options['fit']);
+            }
+            if (!empty($options['height'])) {
+                unset($options['height']);
+            }
+            $assignation['fallback'] = $this->getSource($document, array_merge($options, [
+                'quality' => 10,
+                'width' => 60
+            ]));
+        }
     }
 }

@@ -27,13 +27,8 @@ class ImageRenderer extends AbstractImageRenderer
         $assignation['alt'] = !empty($options['alt']) ? $options['alt'] : $document->getAlternativeText();
         $assignation['sizes'] = $this->parseSizes($options);
         $assignation['srcset'] = $this->parseSrcSet($document, $options);
-        if (method_exists($document, 'getImageAverageColor') &&
-            null !== $document->getImageAverageColor() &&
-            $document->getImageAverageColor() !== '#ffffff' &&
-            $document->getImageAverageColor() !== '#000000') {
-            $assignation['averageColor'] = $document->getImageAverageColor();
-            $assignation['fallback'] = $this->createTransparentDataURI($document->getImageAverageColor());
-        }
+
+        $this->additionalAssignation($document, $options, $assignation);
 
         return $this->renderHtmlElement('image.html.twig', $assignation);
     }

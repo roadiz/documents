@@ -39,6 +39,12 @@ abstract class AbstractRenderer implements RendererInterface
         $this->documentUrlGenerator = $documentUrlGenerator;
     }
 
+    /**
+     * @param DocumentInterface $document
+     * @param array             $options
+     *
+     * @return string
+     */
     protected function getSource(DocumentInterface $document, array $options): string
     {
         $this->documentUrlGenerator->setOptions($options);
