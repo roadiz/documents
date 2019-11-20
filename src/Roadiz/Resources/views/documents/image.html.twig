@@ -32,6 +32,12 @@
     {% if loading %}
         {% set attributes = attributes|merge({'loading' : loading}) %}
     {% endif %}
+    {% if averageColor %}
+        {% set attributes = attributes|merge({
+            'style': 'background-color: ' ~ averageColor ~ ';',
+            'data-average-color': averageColor
+        }) %}
+    {% endif %}
     {% if width and not sizes %}
         {% set attributes = attributes|merge({'width' : width}) %}
     {% endif %}

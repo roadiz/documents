@@ -96,4 +96,21 @@ abstract class AbstractImageRenderer extends AbstractRenderer
         }
         return implode(', ', $output);
     }
+
+    /**
+     * @param string $hexColor
+     *
+     * @return string
+     */
+    protected function createTransparentDataURI($hexColor) {
+        list($r, $g, $b) = \sscanf($hexColor, "#%02x%02x%02x");
+        $im = \imageCreateTrueColor(1, 1);
+        \imageFill($im, 0, 0, \imageColorAllocate($im,$r,$g,$b));
+        \ob_start();
+        \imagePng($im);
+        $img = \ob_get_contents();
+        \ob_end_clean();
+
+        return 'data:image/png;base64,' . \base64_encode($img);
+    }
 }
