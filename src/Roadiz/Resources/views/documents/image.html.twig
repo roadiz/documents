@@ -34,7 +34,6 @@
     {% endif %}
     {% if averageColor %}
         {% set attributes = attributes|merge({
-            'style': 'background-color: ' ~ averageColor ~ ';',
             'data-average-color': averageColor
         }) %}
     {% endif %}
