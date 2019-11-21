@@ -220,6 +220,11 @@ abstract class AbstractDocumentFactory
                 new FilterDocumentEvent($document)
             );
         }
+
+        $this->dispatcher->dispatch(
+            DocumentEvents::DOCUMENT_FILE_UPLOADED,
+            new FilterDocumentEvent($document)
+        );
     }
 
     /**
