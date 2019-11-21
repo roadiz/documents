@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Document\Renderer;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Core\Models\AdvancedDocumentInterface;
 use RZ\Roadiz\Utils\Document\UrlOptionsResolver;
 use RZ\Roadiz\Utils\MediaFinders\EmbedFinderFactory;
 use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
@@ -119,30 +120,30 @@ abstract class AbstractImageRenderer extends AbstractRenderer
      */
     protected function additionalAssignation(DocumentInterface $document, array $options, array &$assignation): void
     {
-        if (method_exists($document, 'getImageRatio') &&
-            null !== $document->getImageRatio()) {
-            $assignation['ratio'] = $document->getImageRatio();
-        }
-        if (method_exists($document, 'getImageAverageColor') &&
-            null !== $document->getImageAverageColor() &&
-            $document->getImageAverageColor() !== '#ffffff' &&
-            $document->getImageAverageColor() !== '#000000') {
-            $assignation['averageColor'] = $document->getImageAverageColor();
-        }
-        if ($options['blurredFallback'] === true) {
-            if (!empty($options['fit'])) {
-                // Both Fit and Width cannot be explicitly set
-                // need to revert on Crop
-                $options['crop'] = $options['fit'];
-                unset($options['fit']);
+        if ($document instanceof AdvancedDocumentInterface) {
+            if (null !== $document->getImageRatio()) {
+                $assignation['ratio'] = $document->getImageRatio();
             }
-            if (!empty($options['height'])) {
-                unset($options['height']);
+            if (null !== $document->getImageAverageColor() &&
+                $document->getImageAverageColor() !== '#ffffff' &&
+                $document->getImageAverageColor() !== '#000000') {
+                $assignation['averageColor'] = $document->getImageAverageColor();
             }
-            $assignation['fallback'] = $this->getSource($document, array_merge($options, [
-                'quality' => 10,
-                'width' => 60
-            ]));
+            if ($options['blurredFallback'] === true) {
+                if (!empty($options['fit'])) {
+                    // Both Fit and Width cannot be explicitly set
+                    // need to revert on Crop
+                    $options['crop'] = $options['fit'];
+                    unset($options['fit']);
+                }
+                if (!empty($options['height'])) {
+                    unset($options['height']);
+                }
+                $assignation['fallback'] = $this->getSource($document, array_merge($options, [
+                    'quality' => 10,
+                    'width' => 60
+                ]));
+            }
         }
     }
 }
