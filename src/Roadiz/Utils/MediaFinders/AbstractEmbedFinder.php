@@ -383,31 +383,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         $url = $this->getThumbnailURL();
 
         if (false !== $url && '' !== $url) {
-            $pathinfo = basename($url);
-
-            if ($pathinfo != "") {
-                $thumbnailName = $this->getThumbnailName($pathinfo);
-
-                try {
-                    $original = \GuzzleHttp\Psr7\stream_for(fopen($url, 'r'));
-
-                    $tmpFile = tempnam(sys_get_temp_dir(), $thumbnailName);
-                    $handle = fopen($tmpFile, 'w');
-                    $local = \GuzzleHttp\Psr7\stream_for($handle);
-                    $local->write($original->getContents());
-                    $local->close();
-
-                    $file = new DownloadedFile($tmpFile);
-                    $file->setOriginalFilename($thumbnailName);
-
-                    if ($file->isReadable() &&
-                        filesize($file->getPathname()) > 0) {
-                        return $file;
-                    }
-                } catch (RequestException $e) {
-                    return null;
-                }
-            }
+            $thumbnailName = $this->getThumbnailName(basename($url));
+            return DownloadedFile::fromUrl($url, $thumbnailName);
         }
 
         return null;
@@ -417,7 +394,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * Gets the value of key.
      *
      * Key is the access_token which could be asked to consume an API.
-     * For example, for Youtube it must be your API server key. For Soundcloud
+     * For example, for Youtube it must be your API server key. For SoundCloud
      * it should be you app client Id.
      *
      * @return string

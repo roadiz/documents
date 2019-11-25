@@ -29,12 +29,11 @@
 namespace RZ\Roadiz\Utils\Document;
 
 use Doctrine\ORM\EntityManager;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Events\DocumentEvents;
 use RZ\Roadiz\Core\Events\FilterDocumentEvent;
+use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\FolderInterface;
 use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Asset\Packages;
@@ -309,30 +308,27 @@ abstract class AbstractDocumentFactory
      * @param string $thumbnailName
      *
      * @return DownloadedFile
+     * @deprecated Use DownloadedFile::fromUrl($url);
      */
     public function downloadFileFromUrl(string $url, string $thumbnailName): ?DownloadedFile
     {
-        try {
-            $distantHandle = fopen($url, 'r');
-            if (false === $distantHandle) {
-                return null;
-            }
-            $original = \GuzzleHttp\Psr7\stream_for($distantHandle);
-            $tmpFile = tempnam(sys_get_temp_dir(), $thumbnailName);
-            $handle = fopen($tmpFile, 'w');
-            $local = \GuzzleHttp\Psr7\stream_for($handle);
-            $local->write($original->getContents());
-            $local->close();
+        return DownloadedFile::fromUrl($url, $thumbnailName);
+    }
 
-            $file = new DownloadedFile($tmpFile);
-            $file->setOriginalFilename($thumbnailName);
-
-            if ($file->isReadable() &&
-                filesize($file->getPathname()) > 0) {
-                return $file;
-            }
-        } catch (RequestException $e) {
-            return null;
+    /**
+     * Create a Document from an external URL.
+     *
+     * @param string $downloadUrl
+     *
+     * @return DocumentInterface|null
+     */
+    public function getDocumentFromUrl(string $downloadUrl): ?DocumentInterface
+    {
+        $downloadedFile = DownloadedFile::fromUrl($downloadUrl);
+        if (null !== $downloadedFile) {
+            $document = $this->setFile($downloadedFile)->getDocument();
+            return $document;
         }
+        return null;
     }
 }
