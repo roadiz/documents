@@ -31,8 +31,9 @@ namespace RZ\Roadiz\Utils\Document;
 use Doctrine\ORM\EntityManager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use RZ\Roadiz\Core\Events\DocumentEvents;
-use RZ\Roadiz\Core\Events\FilterDocumentEvent;
+use RZ\Roadiz\Core\Events\DocumentFileUploadedEvent;
+use RZ\Roadiz\Core\Events\DocumentImageUploadedEvent;
+use RZ\Roadiz\Core\Events\DocumentSvgUploadedEvent;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\FolderInterface;
 use RZ\Roadiz\Document\DownloadedFile;
@@ -208,21 +209,18 @@ abstract class AbstractDocumentFactory
     {
         if ($document->isImage()) {
             $this->dispatcher->dispatch(
-                DocumentEvents::DOCUMENT_IMAGE_UPLOADED,
-                new FilterDocumentEvent($document)
+                new DocumentImageUploadedEvent($document)
             );
         }
 
         if ($document->getMimeType() == 'image/svg+xml') {
             $this->dispatcher->dispatch(
-                DocumentEvents::DOCUMENT_SVG_UPLOADED,
-                new FilterDocumentEvent($document)
+                new DocumentSvgUploadedEvent($document)
             );
         }
 
         $this->dispatcher->dispatch(
-            DocumentEvents::DOCUMENT_FILE_UPLOADED,
-            new FilterDocumentEvent($document)
+            new DocumentFileUploadedEvent($document)
         );
     }
 
@@ -326,8 +324,7 @@ abstract class AbstractDocumentFactory
     {
         $downloadedFile = DownloadedFile::fromUrl($downloadUrl);
         if (null !== $downloadedFile) {
-            $document = $this->setFile($downloadedFile)->getDocument();
-            return $document;
+            return $this->setFile($downloadedFile)->getDocument();
         }
         return null;
     }

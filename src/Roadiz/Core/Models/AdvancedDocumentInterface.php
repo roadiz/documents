@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Core\Models;
 
-use RZ\Roadiz\Core\Entities\Document;
-
 interface AdvancedDocumentInterface extends DocumentInterface
 {
     /**

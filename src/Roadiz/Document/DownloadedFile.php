@@ -66,5 +66,6 @@ class DownloadedFile extends File
         } catch (RequestException $e) {
             return null;
         }
+        return null;
     }
 }

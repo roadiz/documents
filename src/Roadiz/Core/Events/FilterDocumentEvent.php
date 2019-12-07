@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright (c) 2017. Ambroise Maupate and Julien Blanchet
  *
@@ -29,7 +30,7 @@
 namespace RZ\Roadiz\Core\Events;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class FilterDocumentEvent.
