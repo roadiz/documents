@@ -172,9 +172,9 @@ abstract class AbstractDocumentHandler extends AbstractHandler
      *
      * **Be careful, this method will send headers.**
      *
-     * @return Response
+     * @return Response|null
      */
-    public function getDownloadResponse()
+    public function getDownloadResponse(): ?Response
     {
         $fs = new Filesystem();
 

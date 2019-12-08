@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright (c) 2017. Ambroise Maupate and Julien Blanchet
  *
@@ -31,6 +32,7 @@ namespace RZ\Roadiz\Utils\MediaFinders;
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\StreamInterface;
 use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Document\DownloadedFile;
@@ -130,9 +132,12 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     public function getFeed()
     {
         if (null === $this->feed) {
-            $this->feed = $this->getMediaFeed();
-            if (false !== $this->feed) {
-                $this->feed = json_decode($this->feed, true);
+            $rawFeed = $this->getMediaFeed();
+            if ($rawFeed instanceof StreamInterface) {
+                $rawFeed = $rawFeed->getContents();
+            }
+            if (false !== $rawFeed) {
+                $this->feed = json_decode($rawFeed, true);
             }
         }
         return $this->feed;
@@ -158,7 +163,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @param string|bool $search
      *
-     * @return string
+     * @return string|\Psr\Http\Message\StreamInterface
      */
     abstract public function getMediaFeed($search = null);
 
@@ -169,7 +174,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @param string  $author
      * @param integer $maxResults
      *
-     * @return string
+     * @return string|null
      */
     abstract public function getSearchFeed($searchTerm, $author, $maxResults = 15);
 
@@ -302,8 +307,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
 
     /**
      * @param ObjectManager $objectManager
-     * @param $embedId
-     * @param $embedPlatform
+     * @param string $embedId
+     * @param string $embedPlatform
      * @return bool
      */
     abstract protected function documentExists(ObjectManager $objectManager, $embedId, $embedPlatform);
@@ -341,14 +346,14 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Get media thumbnail external URL from its feed.
      *
-     * @return string
+     * @return string|bool
      */
     abstract public function getThumbnailURL();
 
     /**
      * Send a CURL request and get its string output.
      *
-     * @param $url
+     * @param string $url
      * @return \Psr\Http\Message\StreamInterface
      * @throws \RuntimeException
      */

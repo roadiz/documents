@@ -28,8 +28,7 @@
  */
 namespace RZ\Roadiz\Core\Viewers;
 
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Document\Renderer\RendererInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
@@ -54,7 +53,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
     protected $document;
 
     /**
-     * @var AbstractEmbedFinder
+     * @var AbstractEmbedFinder|bool
      */
     protected $embedFinder;
 
@@ -75,7 +74,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
     protected $twig;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      * @deprecated Useless and creates dependency
      */
     protected $entityManager;
@@ -96,18 +95,20 @@ abstract class AbstractDocumentViewer implements RendererInterface
     private $documentUrlGenerator;
 
     /**
-     * @param RequestStack $requestStack
-     * @param Environment $environment
-     * @param ObjectManager $objectManager
+     * AbstractDocumentViewer constructor.
+     *
+     * @param RequestStack                 $requestStack
+     * @param Environment                  $environment
+     * @param EntityManagerInterface       $entityManager
      * @param SymfonyUrlGeneratorInterface $urlGenerator
-     * @param DocumentUrlGenerator $documentUrlGenerator
-     * @param Packages $packages
-     * @param $availablePlatforms
+     * @param DocumentUrlGenerator         $documentUrlGenerator
+     * @param Packages                     $packages
+     * @param array                        $availablePlatforms
      */
     public function __construct(
         RequestStack $requestStack,
         Environment $environment,
-        ObjectManager $objectManager,
+        EntityManagerInterface $entityManager,
         SymfonyUrlGeneratorInterface $urlGenerator,
         DocumentUrlGenerator $documentUrlGenerator,
         Packages $packages,
@@ -116,7 +117,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
         $this->packages = $packages;
         $this->requestStack = $requestStack;
         $this->twig = $environment;
-        $this->entityManager = $objectManager;
+        $this->entityManager = $entityManager;
         $this->documentPlatforms = $availablePlatforms;
         $this->urlGenerator = $urlGenerator;
         $this->documentUrlGenerator = $documentUrlGenerator;
@@ -162,7 +163,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
      * @param array $options
      * @param bool $convertToWebP
      *
-     * @return string
+     * @return string|bool
      */
     protected function parseSrcSet(array &$options = [], $convertToWebP = false)
     {
@@ -188,7 +189,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
     /**
      *
      * @param  array  $options sizes
-     * @return string
+     * @return string|bool
      */
     protected function parseSizes(array &$options = [])
     {
@@ -282,7 +283,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
      *
      * @param array $options
      *
-     * @return string HTML output
+     * @return string|false HTML output
      *
      * @deprecated
      * @throws \Twig\Error\LoaderError
@@ -331,14 +332,6 @@ abstract class AbstractDocumentViewer implements RendererInterface
         if (null !== $options['loading']) {
             $assignation['loading'] = $options['loading'];
         }
-
-//        if (!empty($options['alt'])) {
-//            $assignation['alt'] = $options['alt'];
-//        } elseif ("" != $this->getDocumentAlt()) {
-//            $assignation['alt'] = $this->getDocumentAlt();
-//        } else {
-//            $assignation['alt'] = $this->document->getFilename();
-//        }
 
         $assignation['alt'] = !empty($options['alt']) ? $options['alt'] : $this->document->getAlternativeText();
 
@@ -431,7 +424,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
     /**
      * Output an external media with an iframe according to the arguments array.
      *
-     * @param array|null $options
+     * @param array $options
      *
      * @return string|boolean
      * @see \RZ\Roadiz\Utils\MediaFinders\AbstractEmbedFinder::getIFrame
