@@ -187,7 +187,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * * id
      * * class
      *
-     * @param  array $options
+     * @param array $options
      * @final
      * @return string
      */
@@ -248,7 +248,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
             if ($value == '' || $value === true) {
                 $htmlAttrs[] = $key;
             } else {
-                $htmlAttrs[] = $key.'="'.addslashes($value).'"';
+                $htmlAttrs[] = $key.'="'.addslashes((string) $value).'"';
             }
         }
 
