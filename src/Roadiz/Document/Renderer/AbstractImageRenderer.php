@@ -100,12 +100,14 @@ abstract class AbstractImageRenderer extends AbstractRenderer
 
     /**
      * @param string $hexColor
+     * @param int    $width
+     * @param int    $height
      *
      * @return string
      */
     protected function createTransparentDataURI(string $hexColor, int $width = 1, int $height = 1)
     {
-        list($r, $g, $b) = \sscanf($hexColor, "#%02x%02x%02x");
+        [$r, $g, $b] = \sscanf($hexColor, "#%02x%02x%02x");
         $im = \imageCreateTrueColor($width, $height);
         \imageFill($im, 0, 0, \imageColorAllocate($im, $r, $g, $b));
         \ob_start();
@@ -117,7 +119,9 @@ abstract class AbstractImageRenderer extends AbstractRenderer
     }
 
     /**
-     * @param array $assignation
+     * @param DocumentInterface $document
+     * @param array             $options
+     * @param array             $assignation
      */
     protected function additionalAssignation(DocumentInterface $document, array $options, array &$assignation): void
     {

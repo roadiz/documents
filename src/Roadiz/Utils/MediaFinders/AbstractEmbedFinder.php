@@ -370,6 +370,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     }
 
     /**
+     * @param $pathinfo
+     *
      * @return string
      */
     public function getThumbnailName($pathinfo)

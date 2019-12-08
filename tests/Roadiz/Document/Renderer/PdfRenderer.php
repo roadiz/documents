@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Document\Renderer\tests\units;
 
 use atoum;
-use RZ\Roadiz\Core\Models\AbstractDocument;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\SimpleFileAware;
 use RZ\Roadiz\Utils\Asset\Packages;
