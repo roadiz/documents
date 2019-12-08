@@ -370,7 +370,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     }
 
     /**
-     * @param $pathinfo
+     * @param string $pathinfo
      *
      * @return string
      */
