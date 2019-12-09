@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright (c) 2017. Ambroise Maupate and Julien Blanchet
  *
@@ -309,7 +310,7 @@ class Packages extends BasePackages
     /**
      * Shortcut for $this->getUrl($relativePath, static::FONTS_PATH).
      *
-     * @param $relativePath
+     * @param string $relativePath
      * @return string
      */
     public function getFontsPath($relativePath)
@@ -320,7 +321,7 @@ class Packages extends BasePackages
     /**
      * Shortcut for $this->getUrl($relativePath, static::PUBLIC_PATH).
      *
-     * @param $relativePath
+     * @param string $relativePath
      * @return string
      */
     public function getPublicFilesPath($relativePath)
@@ -331,7 +332,7 @@ class Packages extends BasePackages
     /**
      * Shortcut for $this->getUrl($relativePath, static::PRIVATE_PATH).
      *
-     * @param $relativePath
+     * @param string $relativePath
      * @return string
      */
     public function getPrivateFilesPath($relativePath)

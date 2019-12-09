@@ -1,7 +1,6 @@
 {% spaceless %}
-    {% set attributes = {
-        'alt': alt,
-    } %}
+    {% set attributes = {} %}
+
     {% if width %}
         {% set attributes = attributes|merge({
             'width': width,
@@ -23,19 +22,19 @@
         }) %}
     {% endif %}
     {# Add controls by default #}
-    {% if controls is not same as(false) %}
+    {% if controls is same as(true) %}
         {% set attributes = attributes|merge({
-        'controls': true,
+            'controls': true,
         }) %}
     {% endif %}
     {% if autoplay is same as(true) %}
         {% set attributes = attributes|merge({
-        'autoplay': true,
+            'autoplay': true,
         }) %}
     {% endif %}
     {% if loop is same as(true) %}
         {% set attributes = attributes|merge({
-        'loop': true,
+            'loop': true,
         }) %}
     {% endif %}
     {% set attributesCompiled = {} %}
@@ -43,13 +42,13 @@
         {% if value is same as(true)  %}
             {% set attributesCompiled = attributesCompiled|merge([key]) %}
         {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|replace({'"': '\\"'}) ~ '"']) %}
         {% endif %}
     {% endfor %}
-<audio data-document {{ attributesCompiled|join(' ')|raw }}>
+<audio{% if attributesCompiled|length %} {{ attributesCompiled|join(' ')|raw }}{% endif %}>
     {% for source in sources %}
     <source type="{{ source.mime }}" src="{{ source.url }}">
     {% endfor %}
-    Your browser does not support the audio tag.
+    <p>Your browser does not support native audio.</p>
 </audio>
 {% endspaceless %}

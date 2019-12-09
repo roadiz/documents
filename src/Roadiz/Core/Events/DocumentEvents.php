@@ -43,7 +43,7 @@ final class DocumentEvents
      *
      * @var string
      */
-    const DOCUMENT_CREATED = 'document.created';
+    const DOCUMENT_CREATED = DocumentCreatedEvent::class;
 
     /**
      * Event document.updated is triggered each time a document
@@ -54,7 +54,7 @@ final class DocumentEvents
      *
      * @var string
      */
-    const DOCUMENT_UPDATED = 'document.updated';
+    const DOCUMENT_UPDATED = DocumentUpdatedEvent::class;
 
     /**
      * Event document_translation.updated is triggered each time a document
@@ -65,7 +65,7 @@ final class DocumentEvents
      *
      * @var string
      */
-    const DOCUMENT_TRANSLATION_UPDATED = 'document_translation.updated';
+    const DOCUMENT_TRANSLATION_UPDATED = DocumentTranslationUpdatedEvent::class;
 
     /**
      * Event document.deleted is triggered each time a document
@@ -76,7 +76,7 @@ final class DocumentEvents
      *
      * @var string
      */
-    const DOCUMENT_DELETED = 'document.deleted';
+    const DOCUMENT_DELETED = DocumentDeletedEvent::class;
 
     /**
      * Event document.image.uploaded is triggered each time a document
@@ -87,7 +87,20 @@ final class DocumentEvents
      *
      * @var string
      */
-    const DOCUMENT_IMAGE_UPLOADED = 'document.image.uploaded';
+    const DOCUMENT_IMAGE_UPLOADED = DocumentImageUploadedEvent::class;
+
+    /**
+     * Event document.file.uploaded is triggered each time a document
+     * valid file is uploaded. Even if the document is new or existing.
+     * Be careful, this event can be triggered along side document.image.uploaded
+     * or document.svg.uploaded events.
+     *
+     * Event listener will be given a:
+     * RZ\Roadiz\Core\Events\FilterDocumentEvent instance
+     *
+     * @var string
+     */
+    const DOCUMENT_FILE_UPLOADED = DocumentFileUploadedEvent::class;
 
     /**
      * Event document.svg.uploaded is triggered each time a document
@@ -98,7 +111,7 @@ final class DocumentEvents
      *
      * @var string
      */
-    const DOCUMENT_SVG_UPLOADED = 'document.svg.uploaded';
+    const DOCUMENT_SVG_UPLOADED = DocumentSvgUploadedEvent::class;
 
     /**
      * Event document.in.folder is triggered each time a document is linked to a folder.
@@ -108,7 +121,7 @@ final class DocumentEvents
      *
      * @var string
      */
-    const DOCUMENT_IN_FOLDER = 'document.in.folder';
+    const DOCUMENT_IN_FOLDER = DocumentInFolderEvent::class;
 
     /**
      * Event document.out.folder is triggered each time a document is linked to a folder.
@@ -118,5 +131,5 @@ final class DocumentEvents
      *
      * @var string
      */
-    const DOCUMENT_OUT_FOLDER = 'document.out.folder';
+    const DOCUMENT_OUT_FOLDER = DocumentOutFolderEvent::class;
 }

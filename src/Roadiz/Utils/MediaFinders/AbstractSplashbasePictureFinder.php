@@ -75,19 +75,18 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
                     'images_only' => 'true'
                 ]
             ]);
-            $this->feed = json_decode($response->getBody()->getContents(), true);
-            $url = $this->getBestUrl($this->feed);
+            $feed = json_decode($response->getBody()->getContents(), true);
+            $url = $this->getBestUrl($feed);
 
             if (is_string($url)) {
                 if (false !== strpos($url, '.jpg') || false !== strpos($url, '.png')) {
-                    $this->embedId = $this->feed['id'];
+                    $this->embedId = $feed['id'];
+                    $this->feed = $feed;
                     return $this->feed;
                 }
             }
-            $this->feed = false;
             return false;
         } catch (ClientException $e) {
-            $this->feed = false;
             return false;
         }
     }
@@ -109,20 +108,19 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
             $multipleFeed = json_decode($response->getBody()->getContents(), true);
             if (isset($multipleFeed['images']) && count($multipleFeed['images']) > 0) {
                 $maxIndex = count($multipleFeed['images']) - 1;
-                $this->feed = $multipleFeed['images'][rand(0, $maxIndex)];
-                $url = $this->getBestUrl($this->feed);
+                $feed = $multipleFeed['images'][rand(0, $maxIndex)];
+                $url = $this->getBestUrl($feed);
 
                 if (is_string($url)) {
                     if (false !== strpos($url, '.jpg') || false !== strpos($url, '.png')) {
-                        $this->embedId = $this->feed['id'];
+                        $this->embedId = $feed['id'];
+                        $this->feed = $feed;
                         return $this->feed;
                     }
                 }
             }
-            $this->feed = false;
             return false;
         } catch (ClientException $e) {
-            $this->feed = false;
             return false;
         }
     }

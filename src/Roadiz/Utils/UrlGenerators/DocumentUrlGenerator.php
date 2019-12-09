@@ -35,18 +35,20 @@ use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface as SymfonyUrlGeneratorInterface;
 
-class DocumentUrlGenerator
+class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
 {
     /**
      * @var RequestStack
+     * @deprecated Useless and creates dependency
      */
     private $requestStack;
     /**
      * @var DocumentInterface
      */
     private $document;
-
-    /** @var array */
+    /**
+     * @var array
+     */
     private $options;
     /**
      * @var Packages
@@ -111,9 +113,11 @@ class DocumentUrlGenerator
     }
 
     /**
-     * @inheritDoc
+     * @param bool $absolute
+     *
+     * @return string
      */
-    public function getUrl($absolute = false)
+    public function getUrl(bool $absolute = false): string
     {
         if ($this->options['noProcess'] === true || !$this->document->isProcessable()) {
             $documentPackageName = $absolute ? Packages::ABSOLUTE_DOCUMENTS : Packages::DOCUMENTS;

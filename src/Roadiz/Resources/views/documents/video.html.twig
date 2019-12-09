@@ -1,31 +1,29 @@
 {% spaceless %}
-    {% set attributes = {
-    'alt': alt,
-    } %}
+    {% set attributes = {} %}
     {% if width %}
         {% set attributes = attributes|merge({
-        'width': width,
+            'width': width,
         }) %}
     {% endif %}
     {% if height %}
         {% set attributes = attributes|merge({
-        'height': height,
+            'height': height,
         }) %}
     {% endif %}
     {% if class %}
         {% set attributes = attributes|merge({
-        'class': class,
+            'class': class,
         }) %}
     {% endif %}
     {% if identifier %}
         {% set attributes = attributes|merge({
-        'id': identifier,
+            'id': identifier,
         }) %}
     {% endif %}
     {# Add controls by default #}
-    {% if controls is not same as(false) %}
+    {% if controls is same as(true) %}
         {% set attributes = attributes|merge({
-        'controls': true,
+            'controls': true,
         }) %}
     {% endif %}
     {% if autoplay is same as(true) %}
@@ -42,17 +40,12 @@
     {% endif %}
     {% if loop is same as(true) %}
         {% set attributes = attributes|merge({
-        'loop': true,
+            'loop': true,
         }) %}
     {% endif %}
-    {% if poster and poster.url and not custom_poster %}
+    {% if poster %}
         {% set attributes = attributes|merge({
-        'poster': poster.url,
-        }) %}
-    {% endif %}
-    {% if custom_poster %}
-        {% set attributes = attributes|merge({
-        'poster': custom_poster,
+            'poster': poster,
         }) %}
     {% endif %}
     {% set attributesCompiled = {} %}
@@ -60,13 +53,13 @@
         {% if value is same as(true)  %}
             {% set attributesCompiled = attributesCompiled|merge([key]) %}
         {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|replace({'"': '\\"'}) ~ '"']) %}
         {% endif %}
     {% endfor %}
-<video data-document {{ attributesCompiled|join(' ')|raw }}>
+<video{% if attributesCompiled|length %} {{ attributesCompiled|join(' ')|raw }}{% endif %}>
     {% for source in sources %}
     <source type="{{ source.mime }}" src="{{ source.url }}">
     {% endfor %}
-    Your browser does not support the video tag.
+    <p>Your browser does not support native video.</p>
 </video>
 {% endspaceless %}

@@ -55,6 +55,10 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'loop' => false,
             'controls' => true,
             'fullscreen' => true,
+            'loading' => null,
+            'fallback' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==',
+            'blurredFallback' => false,
+            'media' => [],
             'srcset' => [],
             'sizes' => [],
             'picture' => false,
@@ -108,12 +112,21 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('inline', ['boolean']);
         $this->setAllowedTypes('autoplay', ['boolean']);
         $this->setAllowedTypes('muted', ['boolean']);
+        $this->setAllowedTypes('blurredFallback', ['boolean']);
         $this->setAllowedTypes('loop', ['boolean']);
         $this->setAllowedTypes('controls', ['boolean']);
         $this->setAllowedTypes('fullscreen', ['boolean']);
         $this->setAllowedTypes('srcset', ['array']);
+        $this->setAllowedTypes('media', ['array']);
         $this->setAllowedTypes('sizes', ['array']);
         $this->setAllowedTypes('picture', ['boolean']);
+
+        // Fallback src content when using lazyload with data-src
+        $this->setAllowedTypes('fallback', ['string']);
+
+        // Native lazyload support
+        $this->setAllowedTypes('loading', ['null', 'string']);
+        $this->setAllowedValues('loading', [null, 'auto', 'eager', 'lazy']);
 
         // Soundcloud
         $this->setAllowedTypes('hide_related', ['boolean']);

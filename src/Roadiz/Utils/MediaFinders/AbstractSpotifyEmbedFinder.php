@@ -105,7 +105,7 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
      *
      * @return string
      */
-    public function getSource(array &$options = [])
+    public function getSource(array &$options = []): string
     {
         parent::getSource($options);
 

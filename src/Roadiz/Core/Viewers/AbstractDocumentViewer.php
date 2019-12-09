@@ -28,9 +28,9 @@
  */
 namespace RZ\Roadiz\Core\Viewers;
 
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Document\Renderer\RendererInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use RZ\Roadiz\Utils\MediaFinders\AbstractEmbedFinder;
@@ -43,30 +43,50 @@ use Twig\Environment;
 /**
  * Class DocumentViewer
  * @package RZ\Roadiz\Core\Viewers
+ * @deprecated Use RZ\Roadiz\Document\Renderer\ChainRenderer
  */
-abstract class AbstractDocumentViewer
+abstract class AbstractDocumentViewer implements RendererInterface
 {
-    /** @var null|DocumentInterface */
+    /**
+     * @var null|DocumentInterface
+     */
     protected $document;
 
+    /**
+     * @var AbstractEmbedFinder|bool
+     */
     protected $embedFinder;
 
-    /** @var Packages  */
+    /**
+     * @var Packages
+     */
     protected $packages;
 
-    /** @var RequestStack */
+    /**
+     * @var RequestStack
+     * @deprecated Useless and creates dependency
+     */
     protected $requestStack;
 
-    /** @var Environment */
+    /**
+     * @var Environment
+     */
     protected $twig;
 
-    /** @var EntityManager */
+    /**
+     * @var EntityManagerInterface
+     * @deprecated Useless and creates dependency
+     */
     protected $entityManager;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $documentPlatforms;
 
-    /** @var SymfonyUrlGeneratorInterface */
+    /**
+     * @var SymfonyUrlGeneratorInterface
+     */
     private $urlGenerator;
 
     /**
@@ -75,18 +95,20 @@ abstract class AbstractDocumentViewer
     private $documentUrlGenerator;
 
     /**
-     * @param RequestStack $requestStack
-     * @param Environment $environment
-     * @param ObjectManager $objectManager
+     * AbstractDocumentViewer constructor.
+     *
+     * @param RequestStack                 $requestStack
+     * @param Environment                  $environment
+     * @param EntityManagerInterface       $entityManager
      * @param SymfonyUrlGeneratorInterface $urlGenerator
-     * @param DocumentUrlGenerator $documentUrlGenerator
-     * @param Packages $packages
-     * @param $availablePlatforms
+     * @param DocumentUrlGenerator         $documentUrlGenerator
+     * @param Packages                     $packages
+     * @param array                        $availablePlatforms
      */
     public function __construct(
         RequestStack $requestStack,
         Environment $environment,
-        ObjectManager $objectManager,
+        EntityManagerInterface $entityManager,
         SymfonyUrlGeneratorInterface $urlGenerator,
         DocumentUrlGenerator $documentUrlGenerator,
         Packages $packages,
@@ -95,7 +117,7 @@ abstract class AbstractDocumentViewer
         $this->packages = $packages;
         $this->requestStack = $requestStack;
         $this->twig = $environment;
-        $this->entityManager = $objectManager;
+        $this->entityManager = $entityManager;
         $this->documentPlatforms = $availablePlatforms;
         $this->urlGenerator = $urlGenerator;
         $this->documentUrlGenerator = $documentUrlGenerator;
@@ -141,7 +163,7 @@ abstract class AbstractDocumentViewer
      * @param array $options
      * @param bool $convertToWebP
      *
-     * @return string
+     * @return string|bool
      */
     protected function parseSrcSet(array &$options = [], $convertToWebP = false)
     {
@@ -167,7 +189,7 @@ abstract class AbstractDocumentViewer
     /**
      *
      * @param  array  $options sizes
-     * @return string
+     * @return string|bool
      */
     protected function parseSizes(array &$options = [])
     {
@@ -192,13 +214,15 @@ abstract class AbstractDocumentViewer
      * @param string[] $filenames
      * @return DocumentInterface[]
      */
-    abstract protected function getDocumentsByFilenames($filenames);
+    abstract protected function getDocumentsByFilenames($filenames): array;
 
     /**
      * @param string[] $filenames
      * @return DocumentInterface|null
+     *
+     * @deprecated Use DocumentFinderInterface
      */
-    abstract protected function getOneDocumentByFilenames($filenames);
+    abstract public function getOneDocumentByFilenames($filenames): ?DocumentInterface;
 
     /**
      * Output a document HTML tag according to its Mime type and
@@ -220,6 +244,8 @@ abstract class AbstractDocumentViewer
      * - crop ({w}x{h}, for example : 100x200)
      * - fit ({w}x{h}, for example : 100x200)
      * - rotate (1-359 degrees, for example : 90)
+     * - fallback (string)
+     * - loading ('auto', 'eager', 'lazy')
      * - grayscale (boolean)
      * - quality (1-100)
      * - blur (1-100)
@@ -232,6 +258,11 @@ abstract class AbstractDocumentViewer
      * - srcset : Array
      *     [
      *         - format: Array (same options as image)
+     *         - rule
+     *     ]
+     * - media : Array
+     *     [
+     *         - srcset: Array (same options as image)
      *         - rule
      *     ]
      * - sizes : Array
@@ -252,7 +283,12 @@ abstract class AbstractDocumentViewer
      *
      * @param array $options
      *
-     * @return string HTML output
+     * @return string|false HTML output
+     *
+     * @deprecated
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function getDocumentByArray(array $options = [])
     {
@@ -265,6 +301,7 @@ abstract class AbstractDocumentViewer
         $assignation = [
             'document' => $this->document,
             'mimetype' => $this->document->getMimeType(),
+            'isWebp' => $this->document->isWebp(),
             'url' => $this->documentUrlGenerator->getUrl($options['absolute']),
         ];
 
@@ -274,6 +311,7 @@ abstract class AbstractDocumentViewer
         $assignation['loop'] = $options['loop'];
         $assignation['muted'] = $options['muted'];
         $assignation['controls'] = $options['controls'];
+        $assignation['fallback'] = $options['fallback'];
 
         if ($options['width'] > 0) {
             $assignation['width'] = $options['width'];
@@ -291,13 +329,11 @@ abstract class AbstractDocumentViewer
             $assignation['class'] = $options['class'];
         }
 
-        if (!empty($options['alt'])) {
-            $assignation['alt'] = $options['alt'];
-        } elseif ("" != $this->getDocumentAlt()) {
-            $assignation['alt'] = $this->getDocumentAlt();
-        } else {
-            $assignation['alt'] = $this->document->getFilename();
+        if (null !== $options['loading']) {
+            $assignation['loading'] = $options['loading'];
         }
+
+        $assignation['alt'] = !empty($options['alt']) ? $options['alt'] : $this->document->getAlternativeText();
 
         if ($options['embed'] &&
             $this->isEmbedPlatformSupported()) {
@@ -388,7 +424,7 @@ abstract class AbstractDocumentViewer
     /**
      * Output an external media with an iframe according to the arguments array.
      *
-     * @param array|null $options
+     * @param array $options
      *
      * @return string|boolean
      * @see \RZ\Roadiz\Utils\MediaFinders\AbstractEmbedFinder::getIFrame
@@ -482,5 +518,32 @@ abstract class AbstractDocumentViewer
         }
 
         return false;
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @param array             $options
+     *
+     * @return bool
+     * @deprecated
+     */
+    public function supports(DocumentInterface $document, array $options): bool
+    {
+        return true;
+    }
+
+    /**
+     * Down compatibility method.
+     *
+     * @param DocumentInterface $document
+     * @param array             $options
+     *
+     * @return string
+     * @deprecated
+     */
+    public function render(DocumentInterface $document, array $options): string
+    {
+        $this->setDocument($document);
+        return $this->getDocumentByArray($options);
     }
 }
