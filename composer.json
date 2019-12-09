@@ -21,7 +21,6 @@
         "php": ">=7.2",
         "ext-json": "*",
         "ext-simplexml": "*",
-        "ext-gd": "*",
         "ext-fileinfo": "*",
         "doctrine/orm": "^2.6.3",
         "symfony/http-foundation": "~3.4.29 || ~4.4.1",
