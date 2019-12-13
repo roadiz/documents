@@ -30,6 +30,7 @@ namespace RZ\Roadiz\Core\Viewers;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -253,6 +254,9 @@ abstract class AbstractDocumentViewer
      * @param array $options
      *
      * @return string HTML output
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function getDocumentByArray(array $options = [])
     {
@@ -395,10 +399,14 @@ abstract class AbstractDocumentViewer
      */
     protected function getEmbedByArray(array $options = [])
     {
-        if ($this->isEmbedPlatformSupported()) {
-            return $this->getEmbedFinder()->getIFrame($options);
-        } else {
-            return false;
+        try {
+            if ($this->isEmbedPlatformSupported()) {
+                return $this->getEmbedFinder()->getIFrame($options);
+            } else {
+                return false;
+            }
+        } catch (InvalidEmbedId $e) {
+            return '<p>' . $e->getMessage() . '</p>';
         }
     }
 
