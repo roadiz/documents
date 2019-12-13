@@ -31,7 +31,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Core\Events;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use RZ\Roadiz\Core\Models\DocumentInterface;

@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 namespace RZ\Roadiz\Utils\MediaFinders;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\StreamInterface;
