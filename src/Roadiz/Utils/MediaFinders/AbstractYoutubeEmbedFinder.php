@@ -29,6 +29,7 @@
 namespace RZ\Roadiz\Utils\MediaFinders;
 
 use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 /**
  * Youtube tools class.
@@ -47,10 +48,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
     protected $embedUrl;
 
     /**
-     * Validate extern Id against platform naming policy.
-     *
-     * @param string $embedId
-     * @return string
+     * @inheritDoc
      */
     protected function validateEmbedId($embedId = "")
     {
@@ -60,7 +58,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         if (preg_match(static::$realIdPattern, $embedId, $matches)) {
             return $embedId;
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($embedId, static::$platform);
     }
 
     /**
@@ -141,7 +139,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         if (preg_match(static::$idPattern, $embed, $matches)) {
             return 'youtube_' . $matches['id'] . $pathinfo;
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($embed, static::$platform);
     }
 
     /**

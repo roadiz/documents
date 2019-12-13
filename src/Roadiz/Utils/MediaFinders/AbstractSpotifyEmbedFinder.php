@@ -9,23 +9,22 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
 
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
+
 abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'spotify';
     protected static $idPattern = '#^https\:\/\/open\.spotify\.com\/(?<type>track|playlist|artist|album|show)\/(?<id>[a-zA-Z0-9]+)#';
 
     /**
-     * Validate extern Id against platform naming policy.
-     *
-     * @param string $embedId
-     * @return string
+     * @inheritDoc
      */
     protected function validateEmbedId($embedId = "")
     {
         if (preg_match(static::$idPattern, $embedId, $matches)) {
             return $embedId;
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($embedId, static::$platform);
     }
 
     /**
@@ -95,7 +94,7 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
         if (preg_match(static::$idPattern, $this->embedId, $matches)) {
             return $matches['type'] . '_' . $matches['id'] . $pathinfo;
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($this->embedId, static::$platform);
     }
 
     /**

@@ -9,23 +9,22 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
 
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
+
 abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'ted';
     protected static $idPattern = '#^https\:\/\/(www\.)?ted\.com\/talks\/(?<id>[a-zA-Z0-9\-\_]+)#';
 
     /**
-     * Validate extern Id against platform naming policy.
-     *
-     * @param string $embedId
-     * @return string
+     * @inheritDoc
      */
     protected function validateEmbedId($embedId = "")
     {
         if (preg_match(static::$idPattern, $embedId, $matches)) {
             return $embedId;
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($embedId, static::$platform);
     }
 
     /**
@@ -94,7 +93,7 @@ abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
         if (preg_match(static::$idPattern, $this->embedId, $matches)) {
             return 'ted_talk_' . $matches['id'] . $pathinfo;
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($this->embedId, static::$platform);
     }
 
     /**
