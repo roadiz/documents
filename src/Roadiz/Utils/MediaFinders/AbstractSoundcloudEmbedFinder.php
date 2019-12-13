@@ -28,6 +28,8 @@
  */
 namespace RZ\Roadiz\Utils\MediaFinders;
 
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
+
 /**
  * Soundcloud tools class.
  *
@@ -45,10 +47,7 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
     protected $embedUrl;
 
     /**
-     * Validate extern Id against platform naming policy.
-     *
-     * @param string $embedId
-     * @return string
+     * @inheritDoc
      */
     protected function validateEmbedId($embedId = "")
     {
@@ -58,7 +57,7 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         if (preg_match(static::$realIdPattern, $embedId, $matches)) {
             return $embedId;
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($embedId, static::$platform);
     }
 
     /**
@@ -146,7 +145,7 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         if (preg_match(static::$idPattern, $embed, $matches)) {
             return 'soundcloud_' . $matches['user'] . $pathinfo;
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($embed, static::$platform);
     }
 
     /**

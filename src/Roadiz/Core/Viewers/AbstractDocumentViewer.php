@@ -29,6 +29,7 @@
 namespace RZ\Roadiz\Core\Viewers;
 
 use Doctrine\ORM\EntityManagerInterface;
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Document\Renderer\RendererInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
@@ -431,10 +432,14 @@ abstract class AbstractDocumentViewer implements RendererInterface
      */
     protected function getEmbedByArray(array $options = [])
     {
-        if ($this->isEmbedPlatformSupported()) {
-            return $this->getEmbedFinder()->getIFrame($options);
-        } else {
-            return false;
+        try {
+            if ($this->isEmbedPlatformSupported()) {
+                return $this->getEmbedFinder()->getIFrame($options);
+            } else {
+                return false;
+            }
+        } catch (InvalidEmbedId $e) {
+            return '<p>' . $e->getMessage() . '</p>';
         }
     }
 

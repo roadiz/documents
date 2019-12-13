@@ -28,6 +28,8 @@
  */
 namespace RZ\Roadiz\Utils\MediaFinders;
 
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
+
 /**
  * Vimeo tools class.
  *
@@ -38,17 +40,14 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     protected static $platform = 'vimeo';
 
     /**
-     * Validate extern Id against platform naming policy.
-     *
-     * @param string $embedId
-     * @return string
+     * @inheritDoc
      */
     protected function validateEmbedId($embedId = "")
     {
         if (preg_match('#(?<id>[0-9]+)$#', $embedId, $matches)) {
             return $matches['id'];
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($embedId, static::$platform);
     }
 
     /**

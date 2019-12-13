@@ -34,6 +34,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\StreamInterface;
 use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
@@ -67,9 +68,9 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     protected static $platform = 'abstract';
 
     /**
-     * AbstractEmbedFinder constructor.
      * @param string $embedId
      * @param bool $validate Validate the embed id passed at the constructor [default: true].
+     * @throws InvalidEmbedId When embedId string is malformed
      */
     public function __construct($embedId = '', $validate = true)
     {
@@ -101,13 +102,14 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @param string $embedId
      * @return string
+     * @throws InvalidEmbedId When embedId string is malformed
      */
     protected function validateEmbedId($embedId = "")
     {
         if (preg_match('#(?<id>[^\/^=^?]+)$#', $embedId, $matches)) {
             return $matches['id'];
         }
-        throw new \InvalidArgumentException('embedId.is_not_valid');
+        throw new InvalidEmbedId($embedId);
     }
 
     /**

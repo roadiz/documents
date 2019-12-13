@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Document\Renderer;
 
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\MediaFinders\EmbedFinderFactory;
 
@@ -38,7 +39,11 @@ class EmbedRenderer implements RendererInterface
 
     public function render(DocumentInterface $document, array $options): string
     {
-        $finder = $this->embedFinderFactory->createForPlatform($document->getEmbedPlatform(), $document->getEmbedId());
-        return $finder->getIFrame($options);
+        try {
+            $finder = $this->embedFinderFactory->createForPlatform($document->getEmbedPlatform(), $document->getEmbedId());
+            return $finder->getIFrame($options);
+        } catch (InvalidEmbedId $exception) {
+            return '<p>'.$exception->getMessage().'</p>';
+        }
     }
 }
