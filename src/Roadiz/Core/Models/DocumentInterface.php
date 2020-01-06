@@ -84,6 +84,13 @@ interface DocumentInterface
     public function isSvg();
 
     /**
+     * Is current document a Webp image.
+     *
+     * @return boolean
+     */
+    public function isWebp();
+
+    /**
      * Is current document a video.
      *
      * @return boolean
@@ -228,4 +235,9 @@ interface DocumentInterface
      * @return boolean
      */
     public function isProcessable();
+
+    /**
+     * @return string
+     */
+    public function getAlternativeText(): string;
 }

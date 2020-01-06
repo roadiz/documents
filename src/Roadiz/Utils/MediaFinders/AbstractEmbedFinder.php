@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright (c) 2017. Ambroise Maupate and Julien Blanchet
  *
@@ -28,9 +29,10 @@
  */
 namespace RZ\Roadiz\Utils\MediaFinders;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\StreamInterface;
 use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Core\Models\DocumentInterface;
@@ -45,7 +47,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package RZ\Roadiz\Utils\MediaFinders
  */
-abstract class AbstractEmbedFinder
+abstract class AbstractEmbedFinder implements EmbedFinderInterface
 {
     /**
      * @var array|null
@@ -132,9 +134,12 @@ abstract class AbstractEmbedFinder
     public function getFeed()
     {
         if (null === $this->feed) {
-            $this->feed = $this->getMediaFeed();
-            if (false !== $this->feed) {
-                $this->feed = json_decode($this->feed, true);
+            $rawFeed = $this->getMediaFeed();
+            if ($rawFeed instanceof StreamInterface) {
+                $rawFeed = $rawFeed->getContents();
+            }
+            if (null !== $rawFeed && false !== $rawFeed) {
+                $this->feed = json_decode($rawFeed, true);
             }
         }
         return $this->feed;
@@ -147,7 +152,7 @@ abstract class AbstractEmbedFinder
      *
      * @return string
      */
-    public function getSource(array &$options = [])
+    public function getSource(array &$options = []): string
     {
         $resolver = new ViewOptionsResolver();
         $options = $resolver->resolve($options);
@@ -160,7 +165,7 @@ abstract class AbstractEmbedFinder
      *
      * @param string|bool $search
      *
-     * @return string
+     * @return string|\Psr\Http\Message\StreamInterface
      */
     abstract public function getMediaFeed($search = null);
 
@@ -171,7 +176,7 @@ abstract class AbstractEmbedFinder
      * @param string  $author
      * @param integer $maxResults
      *
-     * @return string
+     * @return string|null
      */
     abstract public function getSearchFeed($searchTerm, $author, $maxResults = 15);
 
@@ -184,11 +189,11 @@ abstract class AbstractEmbedFinder
      * * id
      * * class
      *
-     * @param  array $options
+     * @param array $options
      * @final
      * @return string
      */
-    final public function getIFrame(array &$options = [])
+    final public function getIFrame(array &$options = []): string
     {
         $attributes = [];
         /*
@@ -196,7 +201,10 @@ abstract class AbstractEmbedFinder
          */
         $attributes['src'] = $this->getSource($options);
         $attributes['allow'] = [
-            'encrypted-media'
+            'accelerometer',
+            'encrypted-media',
+            'gyroscope',
+            'picture-in-picture'
         ];
 
         if ($options['width'] > 0) {
@@ -217,16 +225,13 @@ abstract class AbstractEmbedFinder
         $attributes['title'] = $options['title'];
         $attributes['id'] = $options['id'];
         $attributes['class'] = $options['class'];
-        $attributes['frameborder'] = "0";
 
         if ($options['autoplay']) {
             $attributes['allow'][] = 'autoplay';
         }
 
         if ($options['fullscreen']) {
-            $attributes['webkitAllowFullScreen'] = "1";
-            $attributes['mozallowfullscreen'] = "1";
-            $attributes['allowFullScreen'] = "1";
+            $attributes['allowFullScreen'] = true;
             $attributes['allow'][] = 'fullscreen';
         }
 
@@ -234,14 +239,18 @@ abstract class AbstractEmbedFinder
             $attributes['allow'] = implode('; ', $attributes['allow']);
         }
 
+        if ($options['loading']) {
+            $attributes['loading'] = $options['loading'];
+        }
+
         $attributes = array_filter($attributes);
 
         $htmlAttrs = [];
         foreach ($attributes as $key => $value) {
-            if ($value == '') {
+            if ($value == '' || $value === true) {
                 $htmlAttrs[] = $key;
             } else {
-                $htmlAttrs[] = $key.'="'.addslashes($value).'"';
+                $htmlAttrs[] = $key.'="'.addslashes((string) $value).'"';
             }
         }
 
@@ -300,8 +309,8 @@ abstract class AbstractEmbedFinder
 
     /**
      * @param ObjectManager $objectManager
-     * @param $embedId
-     * @param $embedPlatform
+     * @param string $embedId
+     * @param string $embedPlatform
      * @return bool
      */
     abstract protected function documentExists(ObjectManager $objectManager, $embedId, $embedPlatform);
@@ -339,14 +348,14 @@ abstract class AbstractEmbedFinder
     /**
      * Get media thumbnail external URL from its feed.
      *
-     * @return string
+     * @return string|bool
      */
     abstract public function getThumbnailURL();
 
     /**
      * Send a CURL request and get its string output.
      *
-     * @param $url
+     * @param string $url
      * @return \Psr\Http\Message\StreamInterface
      * @throws \RuntimeException
      */
@@ -363,6 +372,8 @@ abstract class AbstractEmbedFinder
     }
 
     /**
+     * @param string $pathinfo
+     *
      * @return string
      */
     public function getThumbnailName($pathinfo)
@@ -381,31 +392,8 @@ abstract class AbstractEmbedFinder
         $url = $this->getThumbnailURL();
 
         if (false !== $url && '' !== $url) {
-            $pathinfo = basename($url);
-
-            if ($pathinfo != "") {
-                $thumbnailName = $this->getThumbnailName($pathinfo);
-
-                try {
-                    $original = \GuzzleHttp\Psr7\stream_for(fopen($url, 'r'));
-
-                    $tmpFile = tempnam(sys_get_temp_dir(), $thumbnailName);
-                    $handle = fopen($tmpFile, 'w');
-                    $local = \GuzzleHttp\Psr7\stream_for($handle);
-                    $local->write($original->getContents());
-                    $local->close();
-
-                    $file = new DownloadedFile($tmpFile);
-                    $file->setOriginalFilename($thumbnailName);
-
-                    if ($file->isReadable() &&
-                        filesize($file->getPathname()) > 0) {
-                        return $file;
-                    }
-                } catch (RequestException $e) {
-                    return null;
-                }
-            }
+            $thumbnailName = $this->getThumbnailName(basename($url));
+            return DownloadedFile::fromUrl($url, $thumbnailName);
         }
 
         return null;
@@ -415,7 +403,7 @@ abstract class AbstractEmbedFinder
      * Gets the value of key.
      *
      * Key is the access_token which could be asked to consume an API.
-     * For example, for Youtube it must be your API server key. For Soundcloud
+     * For example, for Youtube it must be your API server key. For SoundCloud
      * it should be you app client Id.
      *
      * @return string

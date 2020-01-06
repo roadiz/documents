@@ -217,7 +217,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isWebp()
     {
-        return $this->getMimeType() == 'image/webp';
+        return $this->getMimeType() === 'image/webp';
     }
 
     /**
@@ -269,5 +269,10 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         }
 
         return false;
+    }
+
+    public function getAlternativeText(): string
+    {
+        return $this->getFilename();
     }
 }

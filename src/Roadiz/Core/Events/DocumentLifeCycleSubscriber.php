@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright (c) 2017. Ambroise Maupate and Julien Blanchet
  *
@@ -30,12 +31,9 @@
 namespace RZ\Roadiz\Core\Events;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
-use Pimple\Container;
-use RZ\Roadiz\Core\ContainerAwareInterface;
-use RZ\Roadiz\Core\ContainerAwareTrait;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\FileAwareInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -100,7 +98,8 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param DocumentInterface  $document
+     * @param PreUpdateEventArgs $args
      */
     protected function makePublic(DocumentInterface $document, PreUpdateEventArgs $args)
     {
@@ -126,7 +125,8 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param DocumentInterface  $document
+     * @param PreUpdateEventArgs $args
      */
     protected function makePrivate(DocumentInterface $document, PreUpdateEventArgs $args)
     {
@@ -192,6 +192,9 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
+     * @param DocumentInterface $document
+     * @param string $filename
+     *
      * @return null|string
      */
     protected function getDocumentRelativePathForFilename(DocumentInterface $document, $filename)
@@ -201,6 +204,8 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
 
     /**
      * @param DocumentInterface $document
+     * @param string $filename
+     *
      * @return string
      */
     protected function getDocumentPathForFilename(DocumentInterface $document, $filename)

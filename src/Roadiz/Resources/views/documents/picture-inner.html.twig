@@ -1,0 +1,33 @@
+{% set attributes = {} %}
+{% if class %}
+    {% set attributes = attributes|merge({'class' : class}) %}
+{% endif %}
+{% if identifier %}
+    {% set attributes = attributes|merge({'id' : identifier}) %}
+{% endif %}
+{% set attributesCompiled = {} %}
+{% for key, value in attributes %}
+    {% if value is same as(true)  %}
+        {% set attributesCompiled = attributesCompiled|merge([key]) %}
+    {% else %}
+        {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|replace({'"': '\\"'}) ~ '"']) %}
+    {% endif %}
+{% endfor %}
+
+<picture{% if attributesCompiled|length %} {{ attributesCompiled|join(' ')|raw }}{% endif %}>
+    {%- if not mediaList -%}
+        {%- include 'documents/picture-source.html.twig' -%}
+    {%- else -%}
+        {%- for media in mediaList -%}
+            {%- include 'documents/picture-source.html.twig' with {
+                srcset: media.srcset,
+                webp_srcset: media.webp_srcset,
+                media: media.rule
+            } -%}
+        {%- endfor -%}
+    {%- endif -%}
+
+    {%- include 'documents/image.html.twig' with {
+        'avoidNoScript': true
+    } -%}
+</picture>

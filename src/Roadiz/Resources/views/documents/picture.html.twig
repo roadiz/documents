@@ -1,81 +1,12 @@
 {% spaceless %}
-    {% set attributes = {} %}
 
-    {% if class %}
-        {% set attributes = attributes|merge({'class' : class}) %}
-    {% endif %}
-    {% if identifier %}
-        {% set attributes = attributes|merge({'id' : identifier}) %}
-    {% endif %}
+{%- include 'documents/picture-inner.html.twig' -%}
+{%- if lazyload -%}
+    <noscript>
+        {%- include 'documents/picture-inner.html.twig' with {
+            'lazyload': false
+        } -%}
+    </noscript>
+{%- endif -%}
 
-    {% set attributesCompiled = {} %}
-    {% for key, value in attributes %}
-        {% if value is same as(true)  %}
-            {% set attributesCompiled = attributesCompiled|merge([key]) %}
-        {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
-        {% endif %}
-    {% endfor %}
-    {% set isWebp = document.isWebp %}
-
-    <picture {{ attributesCompiled|join(' ')|raw }}>
-        {% if lazyload %}
-            {% if srcset and sizes and webp_srcset %}
-                {% if not isWebp %}<source sizes="{{ sizes }}" data-srcset="{{ webp_srcset }}" type="image/webp">{% endif %}
-                <source sizes="{{ sizes }}" data-srcset="{{ srcset }}" type="{{ mimetype }}">
-            {% else %}
-                {% if not isWebp %}<source data-srcset="{{ url }}.webp" type="image/webp">{% endif %}
-                <source data-srcset="{{ url }}" type="{{ mimetype }}">
-            {% endif %}
-        {% else %}
-            {% if srcset and sizes and webp_srcset %}
-                {% if not isWebp %}<source sizes="{{ sizes }}" srcset="{{ webp_srcset }}" type="image/webp">{% endif %}
-                <source sizes="{{ sizes }}" srcset="{{ srcset }}" type="{{ mimetype }}">
-            {% else %}
-                {% if not isWebp %}<source srcset="{{ url }}.webp" type="image/webp">{% endif %}
-                <source srcset="{{ url }}" type="{{ mimetype }}">
-            {% endif %}
-        {% endif %}
-
-        {% set attributes = attributes|merge({
-            'src' : url,
-            'alt' : alt,
-        }) %}
-
-        {% if lazyload %}
-            {% if not class %}
-                {% set class = '' %}
-            {% endif %}
-            {% set attributes = attributes|merge({ 'class': class ~ ' ' ~ lazyload_class })  %}
-            {% set attributes = attributes|merge({
-                'src': "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
-                'data-src': url,
-            })  %}
-            {% if srcset %}
-                {% set attributes = attributes|merge({'data-srcset' : srcset}) %}
-            {% endif %}
-        {% else %}
-            {% if srcset %}
-                {% set attributes = attributes|merge({'srcset' : srcset}) %}
-            {% endif %}
-        {% endif %}
-        {% if sizes %}
-            {% set attributes = attributes|merge({'sizes' : sizes}) %}
-        {% endif %}
-        {% if width and not sizes %}
-            {% set attributes = attributes|merge({'width' : width}) %}
-        {% endif %}
-        {% if height and not sizes %}
-            {% set attributes = attributes|merge({'height' : height}) %}
-        {% endif %}
-        {% set attributesCompiledFallback = {} %}
-        {% for key, value in attributes %}
-            {% if value is same as(true)  %}
-                {% set attributesCompiledFallback = attributesCompiledFallback|merge([key]) %}
-            {% else %}
-                {% set attributesCompiledFallback = attributesCompiledFallback|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
-            {% endif %}
-        {% endfor %}
-        <img {{ attributesCompiledFallback|join(' ')|raw }} />
-    </picture>
 {% endspaceless %}

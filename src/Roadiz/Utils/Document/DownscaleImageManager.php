@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright (c) 2017. Ambroise Maupate and Julien Blanchet
  *
@@ -131,10 +132,10 @@ class DownscaleImageManager
      * Get downscaled image if size is higher than limit,
      * returns original image if lower or if image is a GIF.
      *
-     * @param  Image  $processImage
-     * @return Image
+     * @param Image $processImage
+     * @return Image|null
      */
-    protected function getDownscaledImage(Image $processImage)
+    protected function getDownscaledImage(Image $processImage): ?Image
     {
         if ($processImage->mime() != 'image/gif' &&
             ($processImage->width() > $this->maxPixelSize || $processImage->height() > $this->maxPixelSize)) {
@@ -143,7 +144,6 @@ class DownscaleImageManager
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
-
             return $processImage;
         } else {
             return null;
@@ -156,8 +156,11 @@ class DownscaleImageManager
      * @param  boolean $keepExistingRaw
      * @return DocumentInterface|bool Return new Document or FALSE
      */
-    protected function createDocumentFromImage(DocumentInterface $originalDocument, Image $processImage = null, $keepExistingRaw = false)
-    {
+    protected function createDocumentFromImage(
+        DocumentInterface $originalDocument,
+        Image $processImage = null,
+        $keepExistingRaw = false
+    ) {
         $fs = new Filesystem();
 
         if (false === $keepExistingRaw && null !== $formerRawDoc = $originalDocument->getRawDocument()) {

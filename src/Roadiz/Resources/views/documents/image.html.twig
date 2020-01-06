@@ -4,7 +4,7 @@
     } %}
     {% if lazyload %}
         {% set attributes = attributes|merge({'data-src' : url}) %}
-        {% set attributes = attributes|merge({src: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="}) %}
+        {% set attributes = attributes|merge({'src' : fallback}) %}
         {% if srcset %}
             {% set attributes = attributes|merge({'data-srcset' : srcset}) %}
         {% endif %}
@@ -12,11 +12,14 @@
             {% set attributes = attributes|merge({'sizes' : sizes}) %}
         {% endif %}
         {% if class %}
+            {% set originalClass = class %}
             {% set class = class ~ ' ' ~ lazyload_class %}
         {% else %}
+            {% set originalClass = '' %}
             {% set class = lazyload_class %}
         {% endif %}
     {% else %}
+        {% set originalClass = class %}
         {% set attributes = attributes|merge({'src' : url}) %}
         {% if srcset %}
             {% set attributes = attributes|merge({'srcset' : srcset}) %}
@@ -26,11 +29,30 @@
         {% endif %}
     {% endif %}
 
+    {% if loading %}
+        {% set attributes = attributes|merge({'loading' : loading}) %}
+    {% endif %}
+    {% if averageColor %}
+        {% set attributes = attributes|merge({
+            'data-average-color': averageColor
+        }) %}
+    {% endif %}
+    {% if ratio %}
+        {% set attributes = attributes|merge({
+            'data-ratio': ratio
+        }) %}
+    {% endif %}
     {% if width and not sizes %}
         {% set attributes = attributes|merge({'width' : width}) %}
     {% endif %}
     {% if height and not sizes %}
         {% set attributes = attributes|merge({'height' : height}) %}
+    {% endif %}
+    {% if width and ratio and not height and not sizes %}
+        {% set attributes = attributes|merge({'height' : (width / ratio)|round}) %}
+    {% endif %}
+    {% if height and ratio and not width and not sizes %}
+        {% set attributes = attributes|merge({'width' : (height * ratio)|round}) %}
     {% endif %}
     {% if class %}
         {% set attributes = attributes|merge({'class' : class}) %}
@@ -44,26 +66,18 @@
         {% if value is same as(true)  %}
             {% set attributesCompiled = attributesCompiled|merge([key]) %}
         {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|replace({'"': '\\"'}) ~ '"']) %}
         {% endif %}
     {% endfor %}
 
     <img {{ attributesCompiled|join(' ')|raw }} />
-    {% if lazyload %}
-        {% set attributes = attributes|merge({'src' : url}) %}
-        {% if srcset %}
-            {% set attributes = attributes|merge({'srcset' : srcset}) %}
-        {% endif %}
-        {% set attributesCompiledFallback = {} %}
-        {% for key, value in attributes %}
-            {% if value is same as(true)  %}
-                {% set attributesCompiledFallback = attributesCompiledFallback|merge([key]) %}
-            {% else %}
-                {% set attributesCompiledFallback = attributesCompiledFallback|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
-            {% endif %}
-        {% endfor %}
+    {% if lazyload and not avoidNoScript %}
         <noscript>
-            <img {{ attributesCompiledFallback|join(' ')|raw }} />
+            {% include 'documents/image.html.twig' with {
+                'lazyload': false,
+                'class': originalClass,
+                'avoidNoScript': true
+            } %}
         </noscript>
     {% endif %}
 {% endspaceless %}

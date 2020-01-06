@@ -39,7 +39,7 @@ class SvgDocumentViewer
     protected $asObject = false;
     protected $imageUrl;
 
-    protected static $allowedAttributes = [
+    public static $allowedAttributes = [
         'width',
         'height',
         'identifier',
@@ -62,10 +62,6 @@ class SvgDocumentViewer
         $this->imageUrl = $imageUrl;
         $this->attributes = $attributes;
         $this->asObject = $asObject;
-
-        if (!file_exists($this->imagePath)) {
-            throw new FileNotFoundException('SVG file does not exist: ' . $this->imagePath);
-        }
     }
 
     /**
@@ -105,6 +101,9 @@ class SvgDocumentViewer
      */
     protected function getInlineSvg()
     {
+        if (!file_exists($this->imagePath)) {
+            throw new FileNotFoundException('SVG file does not exist: ' . $this->imagePath);
+        }
         // Create a new sanitizer instance
         $sanitizer = new Sanitizer();
         $sanitizer->minify(true);
@@ -149,13 +148,17 @@ class SvgDocumentViewer
                     $xml->addAttribute($key, $value);
                 }
             }
-
-            $svg = preg_replace('#^<\?xml[^\?]+\?>#', '', $xml->asXML());
+            $svg = $xml->asXML();
         }
+        $svg = preg_replace('#^\<\?xml[^\?]+\?\>#', '', $svg);
 
         return $svg;
     }
 
+    /**
+     * @return string
+     * @deprecated  Use SvgRenderer to render HTML object.
+     */
     protected function getObjectSvg()
     {
         $attributes = $this->getAllowedAttributes();
