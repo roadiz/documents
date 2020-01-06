@@ -76,6 +76,9 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
                 ]
             ]);
             $feed = json_decode($response->getBody()->getContents(), true);
+            if (!is_array($feed)) {
+                return false;
+            }
             $url = $this->getBestUrl($feed);
 
             if (is_string($url)) {
@@ -106,7 +109,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
                 'query' => $query
             ]);
             $multipleFeed = json_decode($response->getBody()->getContents(), true);
-            if (isset($multipleFeed['images']) && count($multipleFeed['images']) > 0) {
+            if (is_array($multipleFeed) && isset($multipleFeed['images']) && count($multipleFeed['images']) > 0) {
                 $maxIndex = count($multipleFeed['images']) - 1;
                 $feed = $multipleFeed['images'][rand(0, $maxIndex)];
                 $url = $this->getBestUrl($feed);
@@ -183,16 +186,19 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     }
 
     /**
-     * @param array $feed
+     * @param array|null $feed
      *
-     * @return mixed
+     * @return string|bool
      */
-    protected function getBestUrl(array $feed)
+    protected function getBestUrl(?array $feed)
     {
+        if (!is_array($feed)) {
+            return false;
+        }
         if (!empty($feed['large_url']) &&
             (false !== strpos($feed['large_url'], '.jpg') || false !== strpos($feed['large_url'], '.png'))) {
             return $feed['large_url'];
         }
-        return $feed['url'];
+        return isset($feed['url']) ? $feed['url'] : false;
     }
 }
