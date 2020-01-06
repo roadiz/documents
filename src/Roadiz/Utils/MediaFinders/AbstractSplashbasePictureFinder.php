@@ -186,16 +186,19 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     }
 
     /**
-     * @param array $feed
+     * @param array|null $feed
      *
-     * @return mixed
+     * @return string|bool
      */
-    protected function getBestUrl(array $feed)
+    protected function getBestUrl(?array $feed)
     {
+        if (!is_array($feed)) {
+            return false;
+        }
         if (!empty($feed['large_url']) &&
             (false !== strpos($feed['large_url'], '.jpg') || false !== strpos($feed['large_url'], '.png'))) {
             return $feed['large_url'];
         }
-        return $feed['url'];
+        return isset($feed['url']) ? $feed['url'] : false;
     }
 }

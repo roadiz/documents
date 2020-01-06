@@ -138,7 +138,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
             if ($rawFeed instanceof StreamInterface) {
                 $rawFeed = $rawFeed->getContents();
             }
-            if (false !== $rawFeed) {
+            if (null !== $rawFeed && false !== $rawFeed) {
                 $this->feed = json_decode($rawFeed, true);
             }
         }
