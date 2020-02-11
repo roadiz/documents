@@ -10,7 +10,9 @@ class PdfRenderer extends AbstractRenderer
 {
     public function supports(DocumentInterface $document, array $options): bool
     {
-        return $document->isPdf();
+        return $document->isPdf() &&
+            key_exists('embed', $options) &&
+            $options['embed'] === true;
     }
 
     public function render(DocumentInterface $document, array $options): string

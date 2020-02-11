@@ -79,6 +79,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'audio/ogg' => 'audio',
         'audio/vorbis' => 'audio',
         'audio/ac3' => 'audio',
+        'audio/x-matroska' => 'audio',
         // Video types
         'application/ogg' => 'video',
         'video/ogg' => 'video',
@@ -92,6 +93,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'video/3gpp2' => 'video',
         'video/3gpp-tt' => 'video',
         'video/VP8' => 'video',
+        'video/x-matroska' => 'video',
         // Epub type
         'application/epub+zip' => 'epub',
         // Archives types

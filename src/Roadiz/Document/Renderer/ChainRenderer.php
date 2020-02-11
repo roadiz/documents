@@ -28,6 +28,17 @@ class ChainRenderer implements RendererInterface
         $this->renderers = $renderers;
     }
 
+    /**
+     * @param RendererInterface $renderer
+     *
+     * @return $this
+     */
+    public function addRenderer(RendererInterface $renderer)
+    {
+        $this->renderers[] = $renderer;
+        return $this;
+    }
+
     public function supports(DocumentInterface $document, array $options): bool
     {
         return true;
