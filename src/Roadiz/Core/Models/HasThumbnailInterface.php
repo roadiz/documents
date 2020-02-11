@@ -8,13 +8,13 @@ use Doctrine\Common\Collections\Collection;
 interface HasThumbnailInterface
 {
     /**
-     * @return HasThumbnailInterface
+     * @return HasThumbnailInterface|null
      */
-    public function getOriginal(): HasThumbnailInterface;
+    public function getOriginal(): ?HasThumbnailInterface;
 
     /**
      * @param HasThumbnailInterface $hasThumbnail
-     * 
+     *
      * @return self
      */
     public function setOriginal(HasThumbnailInterface $hasThumbnail);
