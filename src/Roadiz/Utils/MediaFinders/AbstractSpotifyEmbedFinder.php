@@ -14,7 +14,7 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'spotify';
-    protected static $idPattern = '#^https\:\/\/open\.spotify\.com\/(?<type>track|playlist|artist|album|show)\/(?<id>[a-zA-Z0-9]+)#';
+    protected static $idPattern = '#^https\:\/\/open\.spotify\.com\/(?<type>track|playlist|artist|album|show|episode)\/(?<id>[a-zA-Z0-9]+)#';
 
     /**
      * @inheritDoc
@@ -54,7 +54,7 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return $this->getFeed()['title'];
+        return isset($this->getFeed()['title']) ? $this->getFeed()['title'] : '';
     }
 
     /**
@@ -62,7 +62,7 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription()
     {
-        return $this->getFeed()['description'];
+        return isset($this->getFeed()['description']) ? $this->getFeed()['description'] : '';
     }
 
     /**
