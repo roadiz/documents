@@ -177,7 +177,9 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         $queryString['show_user'] = (int) $options['show_user'];
         $queryString['show_reposts'] = (int) $options['show_reposts'];
         $queryString['visual'] = (int) $options['visual'];
-        $queryString['auto_play'] = (int) $options['autoplay'];
+        if (true === $options['autoplay']) {
+            $queryString['auto_play'] = (int) $options['autoplay'];
+        }
         $queryString['controls'] = (int) $options['controls'];
 
         return 'https://w.soundcloud.com/player/?' . http_build_query($queryString);
