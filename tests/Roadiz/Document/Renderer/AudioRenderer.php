@@ -72,7 +72,7 @@ class AudioRenderer extends atoum
             ->then
             ->string($mockDocument->getMimeType())
             ->isEqualTo('audio/mpeg')
-            ->string($renderer->render($mockDocument, []))
+            ->string($this->htmlTidy($renderer->render($mockDocument, [])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <audio controls>
     <source type="audio/ogg" src="/files/folder/file.ogg">
@@ -81,7 +81,7 @@ class AudioRenderer extends atoum
 </audio>
 EOT
             ))
-            ->string($renderer->render($mockDocument2, []))
+            ->string($this->htmlTidy($renderer->render($mockDocument2, [])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <audio controls>
     <source type="audio/mpeg" src="/files/folder/file2.mp3">
@@ -89,11 +89,11 @@ EOT
 </audio>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'controls' => true,
                 'loop' => true,
                 'autoplay' => true,
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <audio controls autoplay loop>
     <source type="audio/ogg" src="/files/folder/file.ogg">
@@ -102,9 +102,9 @@ EOT
 </audio>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'controls' => false
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <audio>
     <source type="audio/ogg" src="/files/folder/file.ogg">
@@ -179,9 +179,16 @@ EOT
         ]);
     }
 
+    /**
+     * @param string $body
+     *
+     * @return string
+     */
     private function htmlTidy(string $body): string
     {
         $body = preg_replace('#[\n\r\t\s]{2,}#', ' ', $body);
+        $body = str_replace("&#x2F;", '/', $body);
+        $body = html_entity_decode($body);
         return preg_replace('#\>[\n\r\t\s]+\<#', '><', $body);
     }
 }
