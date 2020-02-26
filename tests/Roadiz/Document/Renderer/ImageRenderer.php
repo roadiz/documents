@@ -75,115 +75,115 @@ class ImageRenderer extends atoum
                 $this->getUrlGenerator()
             ))
             ->then
-            ->string($renderer->render($mockDocument, ['noProcess' => true]))
-            ->isEqualTo(<<<EOT
+            ->string($this->htmlTidy($renderer->render($mockDocument, ['noProcess' => true])))
+            ->isEqualTo($this->htmlTidy(<<<EOT
 <img alt="file.jpg" src="/files/folder/file.jpg" />
 EOT
-            )
-            ->string($renderer->render($mockDocument, ['absolute' => true, 'noProcess' => true]))
-            ->isEqualTo(<<<EOT
+            ))
+            ->string($this->htmlTidy($renderer->render($mockDocument, ['absolute' => true, 'noProcess' => true])))
+            ->isEqualTo($this->htmlTidy(<<<EOT
 <img alt="file.jpg" src="http://dummy.test/files/folder/file.jpg" />
 EOT
-            )
-            ->string($renderer->render($mockDocument, [
+            ))
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'absolute' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <img alt="file.jpg" src="http://dummy.test/assets/w300-q90/folder/file.jpg" width="300" />
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'class' => 'awesome-image responsive',
                 'absolute' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-    src="http://dummy.test/assets/w300-q90/folder/file.jpg" 
-    width="300" 
+<img alt="file.jpg"
+    src="http://dummy.test/assets/w300-q90/folder/file.jpg"
+    width="300"
     class="awesome-image responsive" />
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'lazyload' => true
-            ]))
+            ])))
             ->contains('noscript')
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-    data-src="/assets/w300-q90/folder/file.jpg" 
-    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-    width="300" 
+<img alt="file.jpg"
+    data-src="/assets/w300-q90/folder/file.jpg"
+    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+    width="300"
     class="lazyload" />
 <noscript>
-    <img alt="file.jpg" 
-        src="/assets/w300-q90/folder/file.jpg" 
+    <img alt="file.jpg"
+        src="/assets/w300-q90/folder/file.jpg"
         width="300" />
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'lazyload' => true,
                 'fallback' => 'https://test.test/fallback.png'
-            ]))
+            ])))
             ->contains('noscript')
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-    data-src="/assets/w300-q90/folder/file.jpg" 
-    src="https://test.test/fallback.png" 
-    width="300" 
+<img alt="file.jpg"
+    data-src="/assets/w300-q90/folder/file.jpg"
+    src="https://test.test/fallback.png"
+    width="300"
     class="lazyload" />
 <noscript>
-    <img alt="file.jpg" 
-         src="/assets/w300-q90/folder/file.jpg" 
+    <img alt="file.jpg"
+         src="/assets/w300-q90/folder/file.jpg"
          width="300" />
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'fallback' => 'https://test.test/fallback.png'
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-src="/assets/w300-q90/folder/file.jpg" 
-width="300" />
+<img alt="file.jpg"
+    src="/assets/w300-q90/folder/file.jpg"
+    width="300" />
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'quality' => 70
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-     src="/assets/f600x400-q70/folder/file.jpg" 
-     width="600" 
+<img alt="file.jpg"
+     src="/assets/f600x400-q70/folder/file.jpg"
+     width="600"
      height="400" />
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'lazyload' => true,
                 'class' => 'awesome-image responsive',
-            ]))
+            ])))
             ->contains('noscript')
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-data-src="/assets/w300-q90/folder/file.jpg" 
-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-width="300" 
-class="awesome-image responsive lazyload" />
+<img alt="file.jpg"
+    data-src="/assets/w300-q90/folder/file.jpg"
+    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+    width="300"
+    class="awesome-image responsive lazyload" />
 <noscript>
-    <img alt="file.jpg" 
-    src="/assets/w300-q90/folder/file.jpg" 
-    width="300" 
+    <img alt="file.jpg"
+    src="/assets/w300-q90/folder/file.jpg"
+    width="300"
     class="awesome-image responsive" />
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'srcset' => [[
                     'format' => [
@@ -196,15 +196,15 @@ EOT
                     ],
                     'rule' => '2x'
                 ]]
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-     src="/assets/w300-q90/folder/file.jpg" 
-     srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x" 
+<img alt="file.jpg"
+     src="/assets/w300-q90/folder/file.jpg"
+     srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x"
      width="300" />
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'srcset' => [[
                     'format' => [
@@ -221,15 +221,15 @@ EOT
                     '(max-width: 767px) 300px',
                     '(min-width: 768px) 400px'
                 ]
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-     src="/assets/w300-q90/folder/file.jpg" 
-     srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x" 
+<img alt="file.jpg"
+     src="/assets/w300-q90/folder/file.jpg"
+     srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x"
      sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" />
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'srcset' => [[
                     'format' => [
@@ -246,16 +246,16 @@ EOT
                     '(max-width: 767px) 300px',
                     '(min-width: 768px) 400px'
                 ]
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-     src="/assets/f600x400-q90/folder/file.jpg" 
-     srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
+<img alt="file.jpg"
+     src="/assets/f600x400-q90/folder/file.jpg"
+     srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
      sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" />
 EOT
             ))
 
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'loading' => 'lazy',
                 'srcset' => [[
@@ -273,16 +273,16 @@ EOT
                     '(max-width: 767px) 300px',
                     '(min-width: 768px) 400px'
                 ]
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-     src="/assets/f600x400-q90/folder/file.jpg" 
-     srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-     sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
+<img alt="file.jpg"
+     src="/assets/f600x400-q90/folder/file.jpg"
+     srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
+     sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
      loading="lazy" />
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'lazyload' => true,
                 'srcset' => [[
@@ -300,24 +300,24 @@ EOT
                     '(max-width: 767px) 300px',
                     '(min-width: 768px) 400px'
                 ]
-            ]))
+            ])))
             ->contains('noscript')
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-     data-src="/assets/f600x400-q90/folder/file.jpg" 
-     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-     data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-     sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
+<img alt="file.jpg"
+     data-src="/assets/f600x400-q90/folder/file.jpg"
+     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+     data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
+     sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
      class="lazyload" />
 <noscript>
-    <img alt="file.jpg" 
-         src="/assets/f600x400-q90/folder/file.jpg" 
-         srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
+    <img alt="file.jpg"
+         src="/assets/f600x400-q90/folder/file.jpg"
+         srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
          sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" />
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'lazyload' => true,
                 'loading' => 'lazy',
@@ -336,21 +336,21 @@ EOT
                     '(max-width: 767px) 300px',
                     '(min-width: 768px) 400px'
                 ]
-            ]))
+            ])))
             ->contains('noscript')
             ->isEqualTo($this->htmlTidy(<<<EOT
-<img alt="file.jpg" 
-     data-src="/assets/f600x400-q90/folder/file.jpg" 
-     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-     data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-     sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
-     loading="lazy" 
+<img alt="file.jpg"
+     data-src="/assets/f600x400-q90/folder/file.jpg"
+     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+     data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
+     sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+     loading="lazy"
      class="lazyload" />
 <noscript>
-    <img alt="file.jpg" 
-         src="/assets/f600x400-q90/folder/file.jpg" 
-         srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-         sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
+    <img alt="file.jpg"
+         src="/assets/f600x400-q90/folder/file.jpg"
+         srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
+         sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
          loading="lazy" />
 </noscript>
 EOT
@@ -385,6 +385,8 @@ EOT
     private function htmlTidy(string $body): string
     {
         $body = preg_replace('#[\n\r\s]{2,}#', ' ', $body);
+        $body = str_replace("&#x2F;", '/', $body);
+        $body = html_entity_decode($body);
         return preg_replace('#\>[\n\r\s]+\<#', '><', $body);
     }
 

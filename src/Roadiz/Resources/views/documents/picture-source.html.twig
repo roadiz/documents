@@ -1,25 +1,62 @@
+{% import _self as macro %}
+
+{%- macro source(sizes, media, srcset, datasrcset, type) -%}
+    {% set attributes = {
+        'type': type
+    } %}
+    {% if sizes %}
+        {% set attributes = attributes|merge({
+            'sizes': sizes
+        }) %}
+    {% endif %}
+    {% if media %}
+        {% set attributes = attributes|merge({
+            'media': media
+        }) %}
+    {% endif %}
+    {% if srcset %}
+        {% set attributes = attributes|merge({
+            'srcset': srcset
+        }) %}
+    {% endif %}
+    {% if datasrcset %}
+        {% set attributes = attributes|merge({
+            'data-srcset': datasrcset
+        }) %}
+    {% endif %}
+    {% set attributesCompiled = {} %}
+    {% for key, value in attributes %}
+        {% if value is same as(true)  %}
+            {% set attributesCompiled = attributesCompiled|merge([key]) %}
+        {% else %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+        {% endif %}
+    {% endfor %}
+    <source {% if attributesCompiled|length %}{{ attributesCompiled|join(' ')|raw }}{% endif %}>
+{%- endmacro -%}
+
 {% if lazyload %}
     {% if srcset %}
         {%- if webp_srcset -%}
-            <source {% if sizes %}sizes="{{ sizes }}" {% endif %}{% if media %}media="{{ media }}" {% endif %}srcset="{{ fallback }}" data-srcset="{{ webp_srcset }}" type="image/webp">
+            {{ macro.source(sizes, media, fallback, webp_srcset, 'image/webp') }}
         {%- endif -%}
-        <source {% if sizes %}sizes="{{ sizes }}" {% endif %}{% if media %}media="{{ media }}" {% endif %}srcset="{{ fallback }}" data-srcset="{{ srcset }}" type="{{ mimetype|escape('html_attr') }}">
+        {{ macro.source(sizes, media, fallback, srcset, mimetype) }}
     {% else %}
         {%- if not isWebp -%}
-            <source srcset="{{ fallback }}" {% if media %}media="{{ media }}" {% endif %}data-srcset="{{ url }}.webp" type="image/webp">
+            {{ macro.source(null, media, fallback, url ~ '.webp' , 'image/webp') }}
         {%- endif -%}
-        <source srcset="{{ fallback }}" {% if media %}media="{{ media }}" {% endif %}data-srcset="{{ url }}" type="{{ mimetype|escape('html_attr') }}">
+        {{ macro.source(null, media, fallback, url, mimetype) }}
     {% endif %}
 {% else %}
     {% if srcset %}
         {%- if webp_srcset -%}
-            <source {% if sizes %}sizes="{{ sizes }}" {% endif %}{% if media %}media="{{ media }}" {% endif %}srcset="{{ webp_srcset }}" type="image/webp">
+            {{ macro.source(sizes, media, webp_srcset, null, 'image/webp') }}
         {%- endif -%}
-        <source {% if sizes %}sizes="{{ sizes }}" {% endif %}{% if media %}media="{{ media }}" {% endif %}srcset="{{ srcset }}" type="{{ mimetype|escape('html_attr') }}">
+        {{ macro.source(sizes, media, srcset, null, mimetype) }}
     {% else %}
         {%- if not isWebp -%}
-            <source srcset="{{ url }}.webp" {% if media %}media="{{ media }}" {% endif %}type="image/webp">
+            {{ macro.source(null, media, url ~ '.webp', null, 'image/webp') }}
         {%- endif -%}
-        <source srcset="{{ url }}" {% if media %}media="{{ media }}" {% endif %}type="{{ mimetype|escape('html_attr') }}">
+        {{ macro.source(null, media, url, null, mimetype) }}
     {% endif %}
 {% endif %}

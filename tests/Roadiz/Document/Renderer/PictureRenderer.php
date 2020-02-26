@@ -128,194 +128,194 @@ class PictureRenderer extends atoum
                 $this->getUrlGenerator()
             ))
             ->then
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'noProcess' => true,
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="/files/folder/file.jpg.webp" type="image/webp">
-    <source srcset="/files/folder/file.jpg" type="image/jpeg">
+    <source type="image/webp" srcset="/files/folder/file.jpg.webp">
+    <source type="image/jpeg" srcset="/files/folder/file.jpg">
     <img alt="file.jpg" src="/files/folder/file.jpg" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'noProcess' => true,
                 'picture' => true,
                 'loading' => 'lazy',
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="/files/folder/file.jpg.webp" type="image/webp">
-    <source srcset="/files/folder/file.jpg" type="image/jpeg">
+    <source type="image/webp" srcset="/files/folder/file.jpg.webp">
+    <source type="image/jpeg" srcset="/files/folder/file.jpg">
     <img alt="file.jpg" src="/files/folder/file.jpg" loading="lazy" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockWebpDocument, [
+            ->string($this->htmlTidy($renderer->render($mockWebpDocument, [
                 'noProcess' => true,
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="/files/folder/file.webp" type="image/webp">
+    <source type="image/webp" srcset="/files/folder/file.webp">
     <img alt="file.webp" src="/files/folder/file.webp" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'absolute' => true,
                 'noProcess' => true,
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="http://dummy.test/files/folder/file.jpg.webp" type="image/webp">
-    <source srcset="http://dummy.test/files/folder/file.jpg" type="image/jpeg">
+    <source type="image/webp" srcset="http://dummy.test/files/folder/file.jpg.webp">
+    <source type="image/jpeg" srcset="http://dummy.test/files/folder/file.jpg">
     <img alt="file.jpg" src="http://dummy.test/files/folder/file.jpg" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'absolute' => true,
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-<source srcset="http://dummy.test/assets/w300-q90/folder/file.jpg.webp" type="image/webp">
-<source srcset="http://dummy.test/assets/w300-q90/folder/file.jpg" type="image/jpeg">
+<source type="image/webp" srcset="http://dummy.test/assets/w300-q90/folder/file.jpg.webp">
+<source type="image/jpeg" srcset="http://dummy.test/assets/w300-q90/folder/file.jpg">
 <img alt="file.jpg" src="http://dummy.test/assets/w300-q90/folder/file.jpg" width="300" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'class' => 'awesome-image responsive',
                 'absolute' => true,
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture class="awesome-image responsive">
-<source srcset="http://dummy.test/assets/w300-q90/folder/file.jpg.webp" type="image/webp">
-<source srcset="http://dummy.test/assets/w300-q90/folder/file.jpg" type="image/jpeg">
+<source type="image/webp" srcset="http://dummy.test/assets/w300-q90/folder/file.jpg.webp">
+<source type="image/jpeg" srcset="http://dummy.test/assets/w300-q90/folder/file.jpg">
 <img alt="file.jpg" src="http://dummy.test/assets/w300-q90/folder/file.jpg" width="300" class="awesome-image responsive" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'lazyload' => true,
                 'picture' => true
-            ]))
+            ])))
             ->endWith('</noscript>')
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-            data-srcset="/assets/w300-q90/folder/file.jpg.webp" 
-            type="image/webp">
-    <source srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-            data-srcset="/assets/w300-q90/folder/file.jpg" 
-            type="image/jpeg">
-    <img alt="file.jpg" 
-         data-src="/assets/w300-q90/folder/file.jpg" 
-         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-         width="300" 
+    <source type="image/webp"
+            srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+            data-srcset="/assets/w300-q90/folder/file.jpg.webp">
+    <source type="image/jpeg"
+            srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+            data-srcset="/assets/w300-q90/folder/file.jpg">
+    <img alt="file.jpg"
+         data-src="/assets/w300-q90/folder/file.jpg"
+         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+         width="300"
          class="lazyload" />
 </picture>
 <noscript>
     <picture>
-        <source srcset="/assets/w300-q90/folder/file.jpg.webp" 
-                type="image/webp">
-        <source srcset="/assets/w300-q90/folder/file.jpg" 
-                type="image/jpeg">
-        <img alt="file.jpg" 
-             src="/assets/w300-q90/folder/file.jpg" 
+        <source type="image/webp"
+                srcset="/assets/w300-q90/folder/file.jpg.webp">
+        <source type="image/jpeg"
+                srcset="/assets/w300-q90/folder/file.jpg">
+        <img alt="file.jpg"
+             src="/assets/w300-q90/folder/file.jpg"
              width="300" />
     </picture>
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'lazyload' => true,
                 'picture' => true,
                 'fallback' => 'https://test.test/fallback.png'
-            ]))
+            ])))
             ->endWith('</noscript>')
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="https://test.test/fallback.png" data-srcset="/assets/w300-q90/folder/file.jpg.webp" type="image/webp">
-    <source srcset="https://test.test/fallback.png" data-srcset="/assets/w300-q90/folder/file.jpg" type="image/jpeg">
-    <img alt="file.jpg" 
-         data-src="/assets/w300-q90/folder/file.jpg" 
-         src="https://test.test/fallback.png" 
-         width="300" 
+    <source type="image/webp" srcset="https://test.test/fallback.png" data-srcset="/assets/w300-q90/folder/file.jpg.webp">
+    <source type="image/jpeg" srcset="https://test.test/fallback.png" data-srcset="/assets/w300-q90/folder/file.jpg">
+    <img alt="file.jpg"
+         data-src="/assets/w300-q90/folder/file.jpg"
+         src="https://test.test/fallback.png"
+         width="300"
          class="lazyload" />
 </picture>
 <noscript>
     <picture>
-        <source srcset="/assets/w300-q90/folder/file.jpg.webp" type="image/webp">
-        <source srcset="/assets/w300-q90/folder/file.jpg" type="image/jpeg">
-        <img alt="file.jpg"  
-            src="/assets/w300-q90/folder/file.jpg" 
+        <source type="image/webp" srcset="/assets/w300-q90/folder/file.jpg.webp">
+        <source type="image/jpeg" srcset="/assets/w300-q90/folder/file.jpg">
+        <img alt="file.jpg"
+            src="/assets/w300-q90/folder/file.jpg"
             width="300" />
     </picture>
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'fallback' => 'https://test.test/fallback.png',
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="/assets/w300-q90/folder/file.jpg.webp" type="image/webp">
-    <source srcset="/assets/w300-q90/folder/file.jpg" type="image/jpeg">
-    <img alt="file.jpg" 
-        src="/assets/w300-q90/folder/file.jpg" 
+    <source type="image/webp" srcset="/assets/w300-q90/folder/file.jpg.webp">
+    <source type="image/jpeg" srcset="/assets/w300-q90/folder/file.jpg">
+    <img alt="file.jpg"
+        src="/assets/w300-q90/folder/file.jpg"
         width="300" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'lazyload' => true,
                 'class' => 'awesome-image responsive',
                 'picture' => true
-            ]))
+            ])))
             ->endWith('</noscript>')
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture class="awesome-image responsive">
-    <source srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-            data-srcset="/assets/w300-q90/folder/file.jpg.webp" 
-            type="image/webp">
-    <source srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-            data-srcset="/assets/w300-q90/folder/file.jpg" 
-            type="image/jpeg">
-    <img alt="file.jpg" 
-         data-src="/assets/w300-q90/folder/file.jpg" 
-         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-         width="300" 
+    <source type="image/webp"
+            srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+            data-srcset="/assets/w300-q90/folder/file.jpg.webp">
+    <source type="image/jpeg"
+            srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+            data-srcset="/assets/w300-q90/folder/file.jpg">
+    <img alt="file.jpg"
+         data-src="/assets/w300-q90/folder/file.jpg"
+         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+         width="300"
          class="awesome-image responsive lazyload" />
 </picture>
 <noscript>
     <picture class="awesome-image responsive">
-        <source srcset="/assets/w300-q90/folder/file.jpg.webp" 
-                type="image/webp">
-        <source srcset="/assets/w300-q90/folder/file.jpg" 
-                type="image/jpeg">
-        <img alt="file.jpg" 
-             src="/assets/w300-q90/folder/file.jpg" 
-             width="300" 
+        <source type="image/webp"
+                srcset="/assets/w300-q90/folder/file.jpg.webp">
+        <source type="image/jpeg"
+                srcset="/assets/w300-q90/folder/file.jpg">
+        <img alt="file.jpg"
+             src="/assets/w300-q90/folder/file.jpg"
+             width="300"
              class="awesome-image responsive" />
     </picture>
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'srcset' => [[
                     'format' => [
@@ -329,21 +329,21 @@ EOT
                     'rule' => '2x'
                 ]],
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="/assets/w300-q90/folder/file.jpg.webp 1x, /assets/w600-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-    <img alt="file.jpg" 
-        src="/assets/w300-q90/folder/file.jpg" 
-        srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x" 
+    <source type="image/webp"
+            srcset="/assets/w300-q90/folder/file.jpg.webp 1x, /assets/w600-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x">
+    <img alt="file.jpg"
+        src="/assets/w300-q90/folder/file.jpg"
+        srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x"
         width="300" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'width' => 300,
                 'srcset' => [[
                     'format' => [
@@ -361,23 +361,23 @@ EOT
                     '(min-width: 768px) 400px'
                 ],
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
-            srcset="/assets/w300-q90/folder/file.jpg.webp 1x, /assets/w600-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
-            srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-    <img alt="file.jpg" 
-        src="/assets/w300-q90/folder/file.jpg" 
-        srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x" 
+    <source type="image/webp"
+            sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+            srcset="/assets/w300-q90/folder/file.jpg.webp 1x, /assets/w600-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+            srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x">
+    <img alt="file.jpg"
+        src="/assets/w300-q90/folder/file.jpg"
+        srcset="/assets/w300-q90/folder/file.jpg 1x, /assets/w600-q90/folder/file.jpg 2x"
         sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'srcset' => [[
                     'format' => [
@@ -395,24 +395,24 @@ EOT
                     '(min-width: 768px) 400px'
                 ],
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
-            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
-            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-    <img alt="file.jpg" 
-        src="/assets/f600x400-q90/folder/file.jpg" 
-        srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
+    <source type="image/webp"
+            sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
+    <img alt="file.jpg"
+        src="/assets/f600x400-q90/folder/file.jpg"
+        srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
         sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" />
 </picture>
 EOT
             ))
 
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'loading' => 'lazy',
                 'srcset' => [[
@@ -431,24 +431,24 @@ EOT
                     '(min-width: 768px) 400px'
                 ],
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
-            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
-            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-    <img alt="file.jpg" 
-        src="/assets/f600x400-q90/folder/file.jpg" 
-        srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-        sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" 
+    <source type="image/webp"
+            sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
+    <img alt="file.jpg"
+        src="/assets/f600x400-q90/folder/file.jpg"
+        srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
+        sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
         loading="lazy" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'lazyload' => true,
                 'srcset' => [[
@@ -463,38 +463,38 @@ EOT
                     'rule' => '2x'
                 ]],
                 'picture' => true
-            ]))
+            ])))
             ->endWith('</noscript>')
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-            data-srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-            data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-    <img alt="file.jpg" 
-         data-src="/assets/f600x400-q90/folder/file.jpg" 
-         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg==" 
-         data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
+    <source type="image/webp"
+            srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+            data-srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+            data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
+    <img alt="file.jpg"
+         data-src="/assets/f600x400-q90/folder/file.jpg"
+         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
+         data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
          width="600" height="400"
          class="lazyload" />
 </picture>
 <noscript>
     <picture>
-        <source srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x" 
-                type="image/webp">
-        <source srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-                type="image/jpeg">
-        <img alt="file.jpg" 
-             src="/assets/f600x400-q90/folder/file.jpg" 
-             srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
+        <source type="image/webp"
+                srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x">
+        <source type="image/jpeg"
+                srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
+        <img alt="file.jpg"
+             src="/assets/f600x400-q90/folder/file.jpg"
+             srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
              width="600" height="400" />
     </picture>
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'lazyload' => true,
                 'fallback' => 'https://test.test/fallback.png',
@@ -510,39 +510,39 @@ EOT
                     'rule' => '2x'
                 ]],
                 'picture' => true
-            ]))
+            ])))
             ->endWith('</noscript>')
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source srcset="https://test.test/fallback.png" 
-            data-srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source srcset="https://test.test/fallback.png" 
-            data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-    <img alt="file.jpg" 
-         data-src="/assets/f600x400-q90/folder/file.jpg" 
-         src="https://test.test/fallback.png" 
-         data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
+    <source type="image/webp"
+            srcset="https://test.test/fallback.png"
+            data-srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            srcset="https://test.test/fallback.png"
+            data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
+    <img alt="file.jpg"
+         data-src="/assets/f600x400-q90/folder/file.jpg"
+         src="https://test.test/fallback.png"
+         data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
          width="600" height="400"
          class="lazyload" />
 </picture>
 <noscript>
     <picture>
-        <source srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x" 
-                type="image/webp">
-        <source srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-                type="image/jpeg">
-        <img alt="file.jpg" 
-            src="/assets/f600x400-q90/folder/file.jpg" 
-            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-            width="600" 
+        <source type="image/webp"
+                srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x">
+        <source type="image/jpeg"
+                srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
+        <img alt="file.jpg"
+            src="/assets/f600x400-q90/folder/file.jpg"
+            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
+            width="600"
             height="400" />
     </picture>
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'media' => [[
                     'srcset' => [[
@@ -559,22 +559,22 @@ EOT
                     'rule' => '(min-width: 600px)'
                 ]],
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source media="(min-width: 600px)" 
-            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source media="(min-width: 600px)"  
-            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-    <img alt="file.jpg" 
-         src="/assets/f600x400-q90/folder/file.jpg" 
+    <source type="image/webp"
+            media="(min-width: 600px)"
+            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            media="(min-width: 600px)"
+            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
+    <img alt="file.jpg"
+         src="/assets/f600x400-q90/folder/file.jpg"
          width="600" height="400" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'media' => [[
                     'srcset' => [[
@@ -604,30 +604,30 @@ EOT
                     'rule' => '(min-width: 1200px)'
                 ]],
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source media="(min-width: 600px)"
-            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source media="(min-width: 600px)" 
-            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-            
-    <source media="(min-width: 1200px)"
-            srcset="/assets/f1200x800-q90/folder/file.jpg.webp 1x, /assets/f2400x1600-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source media="(min-width: 1200px)" 
-            srcset="/assets/f1200x800-q90/folder/file.jpg 1x, /assets/f2400x1600-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-            
-    <img alt="file.jpg" 
-         src="/assets/f600x400-q90/folder/file.jpg" 
+    <source type="image/webp"
+            media="(min-width: 600px)"
+            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            media="(min-width: 600px)"
+            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
+
+    <source type="image/webp"
+            media="(min-width: 1200px)"
+            srcset="/assets/f1200x800-q90/folder/file.jpg.webp 1x, /assets/f2400x1600-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            media="(min-width: 1200px)"
+            srcset="/assets/f1200x800-q90/folder/file.jpg 1x, /assets/f2400x1600-q90/folder/file.jpg 2x">
+
+    <img alt="file.jpg"
+         src="/assets/f600x400-q90/folder/file.jpg"
          width="600" height="400" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'fit' => '600x400',
                 'loading' => 'lazy',
                 'media' => [[
@@ -658,31 +658,31 @@ EOT
                     'rule' => '(min-width: 1200px)'
                 ]],
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source media="(min-width: 600px)" 
-            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source media="(min-width: 600px)" 
-            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-            
-    <source media="(min-width: 1200px)" 
-            srcset="/assets/f1200x800-q90/folder/file.jpg.webp 1x, /assets/f2400x1600-q90/folder/file.jpg.webp 2x" 
-            type="image/webp">
-    <source media="(min-width: 1200px)" 
-            srcset="/assets/f1200x800-q90/folder/file.jpg 1x, /assets/f2400x1600-q90/folder/file.jpg 2x" 
-            type="image/jpeg">
-            
-    <img alt="file.jpg" 
-         src="/assets/f600x400-q90/folder/file.jpg" 
-         loading="lazy" 
+    <source type="image/webp"
+            media="(min-width: 600px)"
+            srcset="/assets/f600x400-q90/folder/file.jpg.webp 1x, /assets/f1200x800-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            media="(min-width: 600px)"
+            srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
+
+    <source type="image/webp"
+            media="(min-width: 1200px)"
+            srcset="/assets/f1200x800-q90/folder/file.jpg.webp 1x, /assets/f2400x1600-q90/folder/file.jpg.webp 2x">
+    <source type="image/jpeg"
+            media="(min-width: 1200px)"
+            srcset="/assets/f1200x800-q90/folder/file.jpg 1x, /assets/f2400x1600-q90/folder/file.jpg 2x">
+
+    <img alt="file.jpg"
+         src="/assets/f600x400-q90/folder/file.jpg"
+         loading="lazy"
          width="600" height="400" />
 </picture>
 EOT
             ))
-            ->string($renderer->render($mockWebpDocument, [
+            ->string($this->htmlTidy($renderer->render($mockWebpDocument, [
                 'fit' => '600x400',
                 'lazyload' => true,
                 'fallback' => 'FALLBACK',
@@ -714,43 +714,43 @@ EOT
                     'rule' => '(min-width: 1200px)'
                 ]],
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source media="(min-width: 600px)"
-            srcset="FALLBACK" 
-            data-srcset="/assets/f600x400-q90/folder/file.webp 1x, /assets/f1200x800-q90/folder/file.webp 2x" 
-            type="image/webp">
-            
-    <source media="(min-width: 1200px)"
-            srcset="FALLBACK" 
-            data-srcset="/assets/f1200x800-q90/folder/file.webp 1x, /assets/f2400x1600-q90/folder/file.webp 2x" 
-            type="image/webp">
-            
-    <img alt="file.webp" 
+    <source type="image/webp"
+            media="(min-width: 600px)"
+            srcset="FALLBACK"
+            data-srcset="/assets/f600x400-q90/folder/file.webp 1x, /assets/f1200x800-q90/folder/file.webp 2x">
+
+    <source type="image/webp"
+            media="(min-width: 1200px)"
+            srcset="FALLBACK"
+            data-srcset="/assets/f1200x800-q90/folder/file.webp 1x, /assets/f2400x1600-q90/folder/file.webp 2x">
+
+    <img alt="file.webp"
          data-src="/assets/f600x400-q90/folder/file.webp"
-         src="FALLBACK" 
+         src="FALLBACK"
          width="600" height="400"
          class="lazyload" />
 </picture>
 <noscript>
     <picture>
-        <source media="(min-width: 600px)"
-                srcset="/assets/f600x400-q90/folder/file.webp 1x, /assets/f1200x800-q90/folder/file.webp 2x" 
-                type="image/webp">
-                
-        <source media="(min-width: 1200px)"
-                srcset="/assets/f1200x800-q90/folder/file.webp 1x, /assets/f2400x1600-q90/folder/file.webp 2x" 
-                type="image/webp">
-                
-        <img alt="file.webp" 
-             src="/assets/f600x400-q90/folder/file.webp" 
+        <source type="image/webp"
+                media="(min-width: 600px)"
+                srcset="/assets/f600x400-q90/folder/file.webp 1x, /assets/f1200x800-q90/folder/file.webp 2x">
+
+        <source type="image/webp"
+                media="(min-width: 1200px)"
+                srcset="/assets/f1200x800-q90/folder/file.webp 1x, /assets/f2400x1600-q90/folder/file.webp 2x">
+
+        <img alt="file.webp"
+             src="/assets/f600x400-q90/folder/file.webp"
              width="600" height="400" />
     </picture>
 </noscript>
 EOT
             ))
-            ->string($renderer->render($mockWebpDocument, [
+            ->string($this->htmlTidy($renderer->render($mockWebpDocument, [
                 'fit' => '600x400',
                 'lazyload' => true,
                 'loading' => 'lazy',
@@ -783,39 +783,39 @@ EOT
                     'rule' => '(min-width: 1200px)'
                 ]],
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-    <source media="(min-width: 600px)" 
-            srcset="FALLBACK" 
-            data-srcset="/assets/f600x400-q90/folder/file.webp 1x, /assets/f1200x800-q90/folder/file.webp 2x" 
-            type="image/webp">
-            
-    <source media="(min-width: 1200px)" 
-            srcset="FALLBACK" 
-            data-srcset="/assets/f1200x800-q90/folder/file.webp 1x, /assets/f2400x1600-q90/folder/file.webp 2x" 
-            type="image/webp">
-            
-    <img alt="file.webp" 
-         data-src="/assets/f600x400-q90/folder/file.webp" 
-         src="FALLBACK" 
-         loading="lazy" 
-         width="600" height="400" 
+    <source type="image/webp"
+            media="(min-width: 600px)"
+            srcset="FALLBACK"
+            data-srcset="/assets/f600x400-q90/folder/file.webp 1x, /assets/f1200x800-q90/folder/file.webp 2x">
+
+    <source type="image/webp"
+            media="(min-width: 1200px)"
+            srcset="FALLBACK"
+            data-srcset="/assets/f1200x800-q90/folder/file.webp 1x, /assets/f2400x1600-q90/folder/file.webp 2x">
+
+    <img alt="file.webp"
+         data-src="/assets/f600x400-q90/folder/file.webp"
+         src="FALLBACK"
+         loading="lazy"
+         width="600" height="400"
          class="lazyload" />
 </picture>
 <noscript>
     <picture>
-        <source media="(min-width: 600px)"
-                srcset="/assets/f600x400-q90/folder/file.webp 1x, /assets/f1200x800-q90/folder/file.webp 2x" 
-                type="image/webp">
-                
-        <source media="(min-width: 1200px)"
-                srcset="/assets/f1200x800-q90/folder/file.webp 1x, /assets/f2400x1600-q90/folder/file.webp 2x" 
-                type="image/webp">
-                
-        <img alt="file.webp" 
-             src="/assets/f600x400-q90/folder/file.webp" 
-             loading="lazy" 
+        <source type="image/webp"
+                media="(min-width: 600px)"
+                srcset="/assets/f600x400-q90/folder/file.webp 1x, /assets/f1200x800-q90/folder/file.webp 2x">
+
+        <source type="image/webp"
+                media="(min-width: 1200px)"
+                srcset="/assets/f1200x800-q90/folder/file.webp 1x, /assets/f2400x1600-q90/folder/file.webp 2x">
+
+        <img alt="file.webp"
+             src="/assets/f600x400-q90/folder/file.webp"
+             loading="lazy"
              width="600" height="400" />
     </picture>
 </noscript>
@@ -850,8 +850,10 @@ EOT
 
     private function htmlTidy(string $body): string
     {
-        $body = preg_replace('#[\n\r\t\s]{2,}#', ' ', $body);
-        return preg_replace('#\>[\n\r\t\s]+\<#', '><', $body);
+        $body = preg_replace('#[\n\r\s]{2,}#', ' ', $body);
+        $body = str_replace("&#x2F;", '/', $body);
+        $body = html_entity_decode($body);
+        return preg_replace('#\>[\n\r\s]+\<#', '><', $body);
     }
 
     private function getEnvironment(): Environment

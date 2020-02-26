@@ -72,7 +72,7 @@ class VideoRenderer extends atoum
             ->then
             ->string($mockDocument->getMimeType())
             ->isEqualTo('video/mp4')
-            ->string($renderer->render($mockDocument, []))
+            ->string($this->htmlTidy($renderer->render($mockDocument, [])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <video controls>
     <source type="video/webm" src="/files/folder/file.webm">
@@ -81,7 +81,7 @@ class VideoRenderer extends atoum
 </video>
 EOT
             ))
-            ->string($renderer->render($mockDocument2, []))
+            ->string($this->htmlTidy($renderer->render($mockDocument2, [])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <video controls>
     <source type="video/ogg" src="/files/folder/file2.ogg">
@@ -89,11 +89,11 @@ EOT
 </video>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'controls' => true,
                 'loop' => true,
                 'autoplay' => true,
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <video controls autoplay playsinline loop>
     <source type="video/webm" src="/files/folder/file.webm">
@@ -102,12 +102,12 @@ EOT
 </video>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'controls' => true,
                 'loop' => true,
                 'autoplay' => true,
                 'muted' => true,
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <video controls autoplay playsinline muted loop>
     <source type="video/webm" src="/files/folder/file.webm">
@@ -116,9 +116,9 @@ EOT
 </video>
 EOT
             ))
-            ->string($renderer->render($mockDocument, [
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
                 'controls' => false
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <video>
     <source type="video/webm" src="/files/folder/file.webm">
@@ -195,7 +195,9 @@ EOT
 
     private function htmlTidy(string $body): string
     {
-        $body = preg_replace('#[\n\r\t\s]{2,}#', ' ', $body);
-        return preg_replace('#\>[\n\r\t\s]+\<#', '><', $body);
+        $body = preg_replace('#[\n\r\s]{2,}#', ' ', $body);
+        $body = str_replace("&#x2F;", '/', $body);
+        $body = html_entity_decode($body);
+        return preg_replace('#\>[\n\r\s]+\<#', '><', $body);
     }
 }

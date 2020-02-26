@@ -57,16 +57,16 @@ class ChainRenderer extends atoum
         $this
             ->given($renderer = $this->newTestedInstance($renderers))
             ->then
-            ->string($renderer->render($mockPdfDocument, []))
+            ->string($this->htmlTidy($renderer->render($mockPdfDocument, [])))
             ->isEqualTo('<object type="application/pdf" data="/files/folder/file.pdf"><p>Your browser does not support PDF native viewer.</p></object>')
-            ->string($renderer->render($mockPdfDocument, ['absolute' => true]))
+            ->string($this->htmlTidy($renderer->render($mockPdfDocument, ['absolute' => true])))
             ->isEqualTo('<object type="application/pdf" data="http://dummy.test/files/folder/file.pdf"><p>Your browser does not support PDF native viewer.</p></object>')
-            ->string($renderer->render($mockSvgDocument, []))
-            ->isEqualTo(<<<EOT
+            ->string($this->htmlTidy($renderer->render($mockSvgDocument, [])))
+            ->isEqualTo($this->htmlTidy(<<<EOT
 <object type="image/svg+xml" data="/files/folder/file.svg"></object>
 EOT
-            )
-            ->string($renderer->render($mockSvgDocument, ['inline' => true]))
+            ))
+            ->string($this->htmlTidy($renderer->render($mockSvgDocument, ['inline' => true])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
     <rect width="50" height="50" x="25" y="25" fill="green"></rect>
@@ -75,21 +75,21 @@ EOT
             ))
             ->boolean($mockDocumentYoutube->isEmbed())
             ->isEqualTo(true)
-            ->string($renderer->render($mockDocumentYoutube, ['embed' => true]))
+            ->string($this->htmlTidy($renderer->render($mockDocumentYoutube, ['embed' => true])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://www.youtube.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0" 
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+<iframe src="https://www.youtube.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen></iframe>
 EOT
             ))
-            ->string($renderer->render($mockPictureDocument, [
+            ->string($this->htmlTidy($renderer->render($mockPictureDocument, [
                 'width' => 300,
                 'picture' => true
-            ]))
+            ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
 <picture>
-<source srcset="/assets/w300-q90/folder/file.jpg.webp" type="image/webp">
-<source srcset="/assets/w300-q90/folder/file.jpg" type="image/jpeg">
+<source type="image/webp" srcset="/assets/w300-q90/folder/file.jpg.webp">
+<source type="image/jpeg" srcset="/assets/w300-q90/folder/file.jpg">
 <img alt="file.jpg" src="/assets/w300-q90/folder/file.jpg" width="300" />
 </picture>
 EOT
@@ -100,6 +100,8 @@ EOT
     private function htmlTidy(string $body): string
     {
         $body = preg_replace('#[\n\r\t\s]{2,}#', ' ', $body);
+        $body = str_replace("&#x2F;", '/', $body);
+        $body = html_entity_decode($body);
         return preg_replace('#\>[\n\r\t\s]+\<#', '><', $body);
     }
 

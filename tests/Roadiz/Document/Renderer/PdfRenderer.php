@@ -60,8 +60,10 @@ class PdfRenderer extends atoum
             ->then
             ->string($mockDocument->getMimeType())
             ->isEqualTo('application/pdf')
-            ->string($renderer->render($mockDocument, []))
-            ->isEqualTo('<object type="application/pdf" data="/files/folder/file.pdf"><p>Your browser does not support PDF native viewer.</p></object>');
+            ->string($this->htmlTidy($renderer->render($mockDocument, [])))
+            ->isEqualTo($this->htmlTidy(
+                '<object type="application/pdf" data="/files/folder/file.pdf"><p>Your browser does not support PDF native viewer.</p></object>'
+            ));
     }
 
     /**
@@ -96,5 +98,13 @@ class PdfRenderer extends atoum
         return new Environment($loader, [
             'autoescape' => false
         ]);
+    }
+
+    private function htmlTidy(string $body): string
+    {
+        $body = preg_replace('#[\n\r\s]{2,}#', ' ', $body);
+        $body = str_replace("&#x2F;", '/', $body);
+        $body = html_entity_decode($body);
+        return preg_replace('#\>[\n\r\s]+\<#', '><', $body);
     }
 }
