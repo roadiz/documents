@@ -36,7 +36,9 @@ class PdfRenderer extends atoum
             ->then
             ->string($mockValidDocument->getMimeType())
             ->isEqualTo('application/pdf')
-            ->boolean($renderer->supports($mockValidDocument, []))
+            ->boolean($renderer->supports($mockValidDocument, [
+                'embed' => true
+            ]))
             ->isEqualTo(true)
             ->string($mockInvalidDocument->getMimeType())
             ->isEqualTo('image/jpeg')
@@ -60,7 +62,9 @@ class PdfRenderer extends atoum
             ->then
             ->string($mockDocument->getMimeType())
             ->isEqualTo('application/pdf')
-            ->string($this->htmlTidy($renderer->render($mockDocument, [])))
+            ->string($this->htmlTidy($renderer->render($mockDocument, [
+                'embed' => true
+            ])))
             ->isEqualTo($this->htmlTidy(
                 '<object type="application/pdf" data="/files/folder/file.pdf"><p>Your browser does not support PDF native viewer.</p></object>'
             ));
