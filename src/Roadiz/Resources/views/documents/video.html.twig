@@ -53,12 +53,12 @@
         {% if value is same as(true)  %}
             {% set attributesCompiled = attributesCompiled|merge([key]) %}
         {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|replace({'"': '\\"'}) ~ '"']) %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
         {% endif %}
     {% endfor %}
 <video{% if attributesCompiled|length %} {{ attributesCompiled|join(' ')|raw }}{% endif %}>
     {% for source in sources %}
-    <source type="{{ source.mime }}" src="{{ source.url }}">
+    <source type="{{ source.mime|escape('html_attr') }}" src="{{ source.url|escape('html_attr') }}">
     {% endfor %}
     <p>Your browser does not support native video.</p>
 </video>
