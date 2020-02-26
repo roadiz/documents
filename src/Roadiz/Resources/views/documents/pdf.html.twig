@@ -32,6 +32,6 @@
         {% endif %}
     {% endfor %}
 <object {{ attributesCompiled|join(' ')|raw }}>
-    <p>Your browser does not support PDF native viewer.</p>
+    {%- block pdf_fallback -%}<p>Your browser does not support PDF native viewer.</p>{%- endblock -%}
 </object>
 {% endspaceless %}

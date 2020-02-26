@@ -72,12 +72,14 @@
 
     <img {{ attributesCompiled|join(' ')|raw }} />
     {% if lazyload and not avoidNoScript %}
-        <noscript>
-            {% include 'documents/image.html.twig' with {
-                'lazyload': false,
-                'class': originalClass,
-                'avoidNoScript': true
-            } %}
-        </noscript>
+        {% block noscript %}
+            <noscript{% block noscript_attributes %}{% endblock %}>
+                {% include 'documents/image.html.twig' with {
+                    'lazyload': false,
+                    'class': originalClass,
+                    'avoidNoScript': true
+                } %}
+            </noscript>
+        {% endblock %}
     {% endif %}
 {% endspaceless %}

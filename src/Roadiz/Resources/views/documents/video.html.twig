@@ -60,6 +60,8 @@
     {% for source in sources %}
     <source type="{{ source.mime|escape('html_attr') }}" src="{{ source.url|escape('html_attr') }}">
     {% endfor %}
-    <p>Your browser does not support native video.</p>
+    {% block video_fallback %}
+        <p>Your browser does not support native video.</p>
+    {% endblock %}
 </video>
 {% endspaceless %}
