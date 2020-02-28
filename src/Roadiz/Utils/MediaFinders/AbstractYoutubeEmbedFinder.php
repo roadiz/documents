@@ -39,7 +39,7 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'youtube';
-    protected static $idPattern = '#^https\:\/\/(www\.)?youtube\.com\/watch\?v\=(?<id>[a-zA-Z0-9\_\-]+)#';
+    protected static $idPattern = '#^https\:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v\=)?(?<id>[a-zA-Z0-9\_\-]+)#';
     protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
 
     /**
@@ -104,7 +104,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription()
     {
-        return $this->getFeed()['description'];
+        return isset($this->getFeed()['description']) ? $this->getFeed()['description'] : '';
     }
     /**
      * @inheritDoc
