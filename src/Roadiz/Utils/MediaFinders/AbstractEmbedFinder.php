@@ -81,6 +81,11 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         }
     }
 
+    public function isEmptyThumbnailAllowed(): bool
+    {
+        return false;
+    }
+
     /**
      * @return string
      */
@@ -278,12 +283,15 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
             /** @var File $file */
             $file = $this->downloadThumbnail();
 
-            if (!$this->exists() || null === $file) {
+            if (!$this->exists() || (null === $file && !$this->isEmptyThumbnailAllowed())) {
                 throw new \RuntimeException('no.embed.document.found');
             }
 
-            $documentFactory->setFile($file);
-            $document = $documentFactory->getDocument();
+            if (null !== $file) {
+                $documentFactory->setFile($file);
+            }
+
+            $document = $documentFactory->getDocument($this->isEmptyThumbnailAllowed());
             /*
              * Create document metas
              * for each translation
