@@ -28,7 +28,7 @@
  */
 namespace RZ\Roadiz\Utils\Document;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RZ\Roadiz\Core\Events\DocumentFileUploadedEvent;
@@ -69,7 +69,7 @@ abstract class AbstractDocumentFactory
      */
     private $logger;
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
     /**
@@ -82,15 +82,15 @@ abstract class AbstractDocumentFactory
     private $packages;
 
     /**
-     * DocumentFactory constructor.
+     * AbstractDocumentFactory constructor.
      *
-     * @param EntityManager $em
+     * @param EntityManagerInterface   $em
      * @param EventDispatcherInterface $dispatcher
-     * @param Packages $packages
-     * @param LoggerInterface $logger
+     * @param Packages                 $packages
+     * @param LoggerInterface|null     $logger
      */
     public function __construct(
-        EntityManager $em,
+        EntityManagerInterface $em,
         EventDispatcherInterface $dispatcher,
         Packages $packages,
         LoggerInterface $logger = null

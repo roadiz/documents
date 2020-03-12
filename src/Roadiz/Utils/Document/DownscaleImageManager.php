@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 namespace RZ\Roadiz\Utils\Document;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Intervention\Image\Constraint;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
@@ -52,7 +52,7 @@ class DownscaleImageManager
      */
     protected $logger;
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $em;
     /**
@@ -61,15 +61,17 @@ class DownscaleImageManager
     private $packages;
 
     /**
-     * @param EntityManager $em
-     * @param Packages $packages
-     * @param LoggerInterface $logger
-     * @param string $imageDriver
-     * @param integer $maxPixelSize
-     * @param string $rawImageSuffix
+     * DownscaleImageManager constructor.
+     *
+     * @param EntityManagerInterface $em
+     * @param Packages               $packages
+     * @param LoggerInterface|null   $logger
+     * @param string                 $imageDriver
+     * @param int                    $maxPixelSize
+     * @param string                 $rawImageSuffix
      */
     public function __construct(
-        EntityManager $em,
+        EntityManagerInterface $em,
         Packages $packages,
         LoggerInterface $logger = null,
         $imageDriver = 'gd',
