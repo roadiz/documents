@@ -237,7 +237,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     public function getRelativePath()
     {
         if (null !== $this->getFilename()) {
-            return $this->getFolder() . '/' . $this->getFilename();
+            return $this->getFolder() . DIRECTORY_SEPARATOR . $this->getFilename();
         } else {
             return null;
         }
