@@ -118,7 +118,7 @@ class DocumentUrlGenerator
         if ($this->options['noProcess'] === true || !$this->document->isProcessable()) {
             $documentPackageName = $absolute ? Packages::ABSOLUTE_DOCUMENTS : Packages::DOCUMENTS;
             return $this->packages->getUrl(
-                ltrim($this->document->getRelativePath(), '/'),
+                ltrim($this->document->getRelativePath(), DIRECTORY_SEPARATOR),
                 $documentPackageName
             );
         }
