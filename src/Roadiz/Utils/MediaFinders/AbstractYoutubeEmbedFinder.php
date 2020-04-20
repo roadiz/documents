@@ -38,6 +38,7 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
  */
 abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
+    protected const YOUTUBE_EMBED_DOMAIN = 'https://www.youtube-nocookie.com';
     protected static $platform = 'youtube';
     protected static $idPattern = '#^https\:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v\=)?(?<id>[a-zA-Z0-9\_\-]+)#';
     protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
@@ -211,6 +212,6 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         $queryString['enablejsapi'] = (int) $options['enablejsapi'];
         $queryString['mute'] = (int) $options['muted'];
 
-        return 'https://www.youtube.com/embed/'.$this->embedId.'?'.http_build_query($queryString);
+        return static::YOUTUBE_EMBED_DOMAIN . '/embed/'.$this->embedId.'?'.http_build_query($queryString);
     }
 }
