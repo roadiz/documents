@@ -1,16 +1,16 @@
 {% set attributes = {} %}
 {% if class %}
-    {% set attributes = attributes|merge({'class' : class}) %}
+    {% set attributes = attributes|merge({'class' : class|escape('html_attr')}) %}
 {% endif %}
 {% if identifier %}
-    {% set attributes = attributes|merge({'id' : identifier}) %}
+    {% set attributes = attributes|merge({'id' : identifier|escape('html_attr')}) %}
 {% endif %}
 {% set attributesCompiled = {} %}
 {% for key, value in attributes %}
     {% if value is same as(true)  %}
         {% set attributesCompiled = attributesCompiled|merge([key]) %}
     {% else %}
-        {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+        {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value ~ '"']) %}
     {% endif %}
 {% endfor %}
 
@@ -20,13 +20,12 @@
     {%- else -%}
         {%- for media in mediaList -%}
             {%- include 'documents/picture-source.html.twig' with {
-                srcset: media.srcset,
-                webp_srcset: media.webp_srcset,
-                media: media.rule
+                'srcset': media.srcset,
+                'webp_srcset': media.webp_srcset,
+                'media': media.rule
             } -%}
         {%- endfor -%}
     {%- endif -%}
-
     {%- include 'documents/image.html.twig' with {
         'avoidNoScript': true
     } -%}

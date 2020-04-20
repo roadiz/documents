@@ -1,26 +1,26 @@
 {% spaceless %}
     {% set attributes = {
-        'type': "application/pdf",
+        'type': "application/pdf"|escape('html_attr'),
         'data': url,
     } %}
     {% if width %}
         {% set attributes = attributes|merge({
-        'width': width,
+        'width': width|escape('html_attr'),
         }) %}
     {% endif %}
     {% if height %}
         {% set attributes = attributes|merge({
-        'height': height,
+        'height': height|escape('html_attr'),
         }) %}
     {% endif %}
     {% if class %}
         {% set attributes = attributes|merge({
-        'class': class,
+        'class': class|escape('html_attr'),
         }) %}
     {% endif %}
     {% if identifier %}
         {% set attributes = attributes|merge({
-        'id': identifier,
+        'id': identifier|escape('html_attr'),
         }) %}
     {% endif %}
     {% set attributesCompiled = {} %}
@@ -28,7 +28,7 @@
         {% if value is same as(true)  %}
             {% set attributesCompiled = attributesCompiled|merge([key]) %}
         {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value ~ '"']) %}
         {% endif %}
     {% endfor %}
 <object {{ attributesCompiled|join(' ')|raw }}>

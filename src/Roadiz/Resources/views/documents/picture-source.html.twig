@@ -1,8 +1,8 @@
 {% import _self as macro %}
 
-{%- macro source(sizes, media, srcset, datasrcset, type) -%}
+{%- macro source(sizes, media, srcset, datasrcset, type, noescape) -%}
     {% set attributes = {
-        'type': type
+        'type': type|escape('html_attr')
     } %}
     {% if sizes %}
         {% set attributes = attributes|merge({
@@ -11,7 +11,7 @@
     {% endif %}
     {% if media %}
         {% set attributes = attributes|merge({
-            'media': media
+            'media': media|escape('html_attr')
         }) %}
     {% endif %}
     {% if srcset %}
@@ -29,7 +29,7 @@
         {% if value is same as(true)  %}
             {% set attributesCompiled = attributesCompiled|merge([key]) %}
         {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value ~ '"']) %}
         {% endif %}
     {% endfor %}
     <source {% if attributesCompiled|length %}{{ attributesCompiled|join(' ')|raw }}{% endif %}>
@@ -38,25 +38,25 @@
 {% if lazyload %}
     {% if srcset %}
         {%- if webp_srcset -%}
-            {{ macro.source(sizes, media, fallback, webp_srcset, 'image/webp') }}
+            {{ macro.source(sizes, media, fallback, webp_srcset, 'image/webp', noescape) }}
         {%- endif -%}
-        {{ macro.source(sizes, media, fallback, srcset, mimetype) }}
+        {{ macro.source(sizes, media, fallback, srcset, mimetype, noescape) }}
     {% else %}
         {%- if not isWebp -%}
-            {{ macro.source(null, media, fallback, url ~ '.webp' , 'image/webp') }}
+            {{ macro.source(null, media, fallback, url ~ '.webp' , 'image/webp', noescape) }}
         {%- endif -%}
-        {{ macro.source(null, media, fallback, url, mimetype) }}
+        {{ macro.source(null, media, fallback, url, mimetype, noescape) }}
     {% endif %}
 {% else %}
     {% if srcset %}
         {%- if webp_srcset -%}
-            {{ macro.source(sizes, media, webp_srcset, null, 'image/webp') }}
+            {{ macro.source(sizes, media, webp_srcset, null, 'image/webp', noescape) }}
         {%- endif -%}
-        {{ macro.source(sizes, media, srcset, null, mimetype) }}
+        {{ macro.source(sizes, media, srcset, null, mimetype, noescape) }}
     {% else %}
         {%- if not isWebp -%}
-            {{ macro.source(null, media, url ~ '.webp', null, 'image/webp') }}
+            {{ macro.source(null, media, url ~ '.webp', null, 'image/webp', noescape) }}
         {%- endif -%}
-        {{ macro.source(null, media, url, null, mimetype) }}
+        {{ macro.source(null, media, url, null, mimetype, noescape) }}
     {% endif %}
 {% endif %}
