@@ -1,6 +1,6 @@
 {% spaceless %}
     {% set attributes = {
-        'alt' : alt,
+        'alt' : alt|escape('html_attr'),
     } %}
     {% if lazyload %}
         {% set attributes = attributes|merge({'data-src' : url}) %}
