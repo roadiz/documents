@@ -137,7 +137,10 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         } else {
             $pathinfo = '.jpg';
         }
-        if (preg_match(static::$idPattern, $embed, $matches)) {
+        if (preg_match(static::$realIdPattern, $embed, $matches) === 1) {
+            return 'youtube_' . $matches['id'] . $pathinfo;
+        }
+        if (preg_match(static::$idPattern, $embed, $matches) === 1) {
             return 'youtube_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($embed, static::$platform);
