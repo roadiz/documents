@@ -8,11 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 class InvalidEmbedId extends \InvalidArgumentException
 {
     /**
-     * @var string
+     * @var string|null
      */
     protected $embedId;
     /**
-     * @var string
+     * @var string|null
      */
     protected $platform;
 
@@ -24,7 +24,7 @@ class InvalidEmbedId extends \InvalidArgumentException
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getEmbedId(): ?string
     {
@@ -32,7 +32,7 @@ class InvalidEmbedId extends \InvalidArgumentException
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPlatform(): ?string
     {

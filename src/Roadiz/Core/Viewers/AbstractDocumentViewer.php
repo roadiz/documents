@@ -143,7 +143,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
      */
     protected function parseSrcSet(array &$options = [], $convertToWebP = false)
     {
-        if (count($options['srcset']) > 0) {
+        if (null !== $this->document && count($options['srcset']) > 0) {
             $srcset = [];
             foreach ($options['srcset'] as $set) {
                 if (isset($set['format']) && isset($set['rule'])) {
@@ -271,6 +271,10 @@ abstract class AbstractDocumentViewer implements RendererInterface
         $resolver = new ViewOptionsResolver();
         $options = $resolver->resolve($options);
 
+        if (null === $this->document) {
+            return false;
+        }
+
         $this->documentUrlGenerator->setOptions($options);
         $this->documentUrlGenerator->setDocument($this->document);
 
@@ -323,7 +327,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
                     $packages->getDocumentFilePath($this->document),
                     $assignation,
                     $asObject,
-                    $packages->getUrl($this->document->getRelativePath(), Packages::DOCUMENTS)
+                    $packages->getUrl($this->document->getRelativePath() ?? '', Packages::DOCUMENTS)
                 );
                 return $viewer->getContent();
             } catch (FileNotFoundException $e) {
@@ -368,7 +372,8 @@ abstract class AbstractDocumentViewer implements RendererInterface
      */
     public function isEmbedPlatformSupported()
     {
-        if ($this->document->isEmbed() &&
+        if (null !== $this->document &&
+            $this->document->isEmbed() &&
             in_array(
                 $this->document->getEmbedPlatform(),
                 array_keys($this->documentPlatforms)
@@ -381,12 +386,12 @@ abstract class AbstractDocumentViewer implements RendererInterface
     }
 
     /**
-     * @return bool|AbstractEmbedFinder
+     * @return AbstractEmbedFinder|false
      */
     public function getEmbedFinder()
     {
         if (null === $this->embedFinder) {
-            if ($this->isEmbedPlatformSupported()) {
+            if (null !== $this->document && $this->isEmbedPlatformSupported()) {
                 $class = $this->documentPlatforms[$this->document->getEmbedPlatform()];
                 $this->embedFinder = new $class($this->document->getEmbedId());
             } else {
@@ -402,14 +407,15 @@ abstract class AbstractDocumentViewer implements RendererInterface
      *
      * @param array $options
      *
-     * @return string|boolean
+     * @return string|false
      * @see \RZ\Roadiz\Utils\MediaFinders\AbstractEmbedFinder::getIFrame
      */
     protected function getEmbedByArray(array $options = [])
     {
         try {
-            if ($this->isEmbedPlatformSupported()) {
-                return $this->getEmbedFinder()->getIFrame($options);
+            if (null !== $this->document && $this->isEmbedPlatformSupported()) {
+                $finder = $this->getEmbedFinder();
+                return $finder ? $finder->getIFrame($options) : false;
             } else {
                 return false;
             }
@@ -424,10 +430,13 @@ abstract class AbstractDocumentViewer implements RendererInterface
      * This method will search for document which filename is the same
      * except the extension. If you choose an MP4 file, it will look for a OGV and WEBM file.
      *
-     * @return array|bool
+     * @return array|false
      */
     protected function getSourcesFiles()
     {
+        if (null === $this->document) {
+            return false;
+        }
         $basename = pathinfo($this->document->getFilename());
         $basename = $basename['filename'];
 
@@ -457,7 +466,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
         foreach ($sourcesDocs as $source) {
             $sources[$source->getMimeType()] = [
                 'mime' => $source->getMimeType(),
-                'url' => $this->getPackages()->getUrl($source->getRelativePath(), Packages::DOCUMENTS),
+                'url' => $this->getPackages()->getUrl($source->getRelativePath() ?? '', Packages::DOCUMENTS),
             ];
         }
 
@@ -469,11 +478,11 @@ abstract class AbstractDocumentViewer implements RendererInterface
     /**
      * @param array $options
      * @param bool $absolute
-     * @return array|bool
+     * @return array|false
      */
     protected function getPosterFile($options = [], $absolute = false)
     {
-        if ($this->document->isVideo()) {
+        if (null !== $this->document && $this->document->isVideo()) {
             $basename = pathinfo($this->document->getFilename());
             $basename = $basename['filename'];
 
@@ -519,11 +528,14 @@ abstract class AbstractDocumentViewer implements RendererInterface
      * @param array             $options
      *
      * @return string
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      * @deprecated
      */
     public function render(DocumentInterface $document, array $options): string
     {
         $this->setDocument($document);
-        return $this->getDocumentByArray($options);
+        return $this->getDocumentByArray($options) ?: '';
     }
 }

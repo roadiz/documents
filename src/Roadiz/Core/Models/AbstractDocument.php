@@ -213,7 +213,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function getRelativePath()
     {
-        if (null !== $this->getFilename()) {
+        if (!empty($this->getFilename())) {
             return $this->getFolder() . '/' . $this->getFilename();
         } else {
             return null;
@@ -221,13 +221,13 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     }
 
     /**
-     * Tells if current document has embed media informations.
+     * Tells if current document has embed media information.
      *
      * @return boolean
      */
     public function isEmbed()
     {
-        return (null !== $this->getEmbedId() && null !== $this->getEmbedPlatform());
+        return (!empty($this->getEmbedId()) && !empty($this->getEmbedPlatform()));
     }
 
     /**

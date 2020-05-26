@@ -17,7 +17,7 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      */
     private $requestStack;
     /**
-     * @var DocumentInterface
+     * @var DocumentInterface|null
      */
     private $document;
     /**
@@ -69,7 +69,7 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
     }
 
     /**
-     * @return DocumentInterface
+     * @return DocumentInterface|null
      */
     public function getDocument()
     {
@@ -93,10 +93,14 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      */
     public function getUrl(bool $absolute = false): string
     {
+        if (null === $this->document) {
+            throw new \InvalidArgumentException('Cannot get URL from a NULL document');
+        }
+
         if ($this->options['noProcess'] === true || !$this->document->isProcessable()) {
             $documentPackageName = $absolute ? Packages::ABSOLUTE_DOCUMENTS : Packages::DOCUMENTS;
             return $this->packages->getUrl(
-                ltrim($this->document->getRelativePath(), '/'),
+                ltrim($this->document->getRelativePath() ?? '', '/'),
                 $documentPackageName
             );
         }
@@ -120,6 +124,10 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      */
     protected function getProcessedDocumentUrlByArray($referenceType = SymfonyUrlGeneratorInterface::ABSOLUTE_PATH)
     {
+        if (null === $this->document) {
+            throw new \InvalidArgumentException('Cannot get URL from a NULL document');
+        }
+
         $compiler = new OptionsCompiler();
 
         $routeParams = [

@@ -130,7 +130,7 @@ class Packages extends BasePackages
             static::FONTS_PATH => $this->getFontsPathPackage(),
         ];
         foreach ($packages as $name => $package) {
-            $this->addPackage($name, $package);
+            $this->addPackage((string) $name, $package);
         }
         $this->ready = true;
     }
@@ -164,9 +164,11 @@ class Packages extends BasePackages
          * Add non-default port to static domain.
          */
         $staticDomainAndPort = $this->staticDomain;
-        if (($this->requestStackContext->isSecure() && $this->getRequest()->getPort() != 443) ||
-            (!$this->requestStackContext->isSecure() && $this->getRequest()->getPort() != 80)) {
-            $staticDomainAndPort .= ':' . $this->getRequest()->getPort();
+        $request = $this->getRequest();
+        if (null !== $request &&
+            (($this->requestStackContext->isSecure() && $request->getPort() != 443) ||
+            (!$this->requestStackContext->isSecure() && $request->getPort() != 80))) {
+            $staticDomainAndPort .= ':' . $request->getPort();
         }
 
         /*
@@ -207,9 +209,12 @@ class Packages extends BasePackages
         if ($this->useStaticDomain()) {
             return $this->getDefaultPackage();
         }
-
+        $scheme = '';
+        if (null !== $this->getRequest()) {
+            $scheme = $this->getRequest()->getSchemeAndHttpHost();
+        }
         return new UrlPackage(
-            $this->getRequest()->getSchemeAndHttpHost() . $this->requestStackContext->getBasePath(),
+            $scheme . $this->requestStackContext->getBasePath(),
             $this->versionStrategy
         );
     }
@@ -241,9 +246,12 @@ class Packages extends BasePackages
         if ($this->useStaticDomain()) {
             return $this->getDocumentPackage();
         }
-
+        $scheme = '';
+        if (null !== $this->getRequest()) {
+            $scheme = $this->getRequest()->getSchemeAndHttpHost();
+        }
         return new UrlPackage(
-            $this->getRequest()->getSchemeAndHttpHost() . $this->requestStackContext->getBasePath() . $this->fileAware->getPublicFilesBasePath(),
+            $scheme . $this->requestStackContext->getBasePath() . $this->fileAware->getPublicFilesBasePath(),
             $this->versionStrategy
         );
     }
@@ -321,9 +329,9 @@ class Packages extends BasePackages
     public function getDocumentFilePath(DocumentInterface $document)
     {
         if ($document->isPrivate()) {
-            return $this->getPrivateFilesPath($document->getRelativePath());
+            return $this->getPrivateFilesPath($document->getRelativePath() ?? '');
         }
-        return $this->getPublicFilesPath($document->getRelativePath());
+        return $this->getPublicFilesPath($document->getRelativePath() ?? '');
     }
 
     /**
