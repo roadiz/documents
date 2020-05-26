@@ -149,7 +149,7 @@ class VideoRenderer extends AbstractRenderer
         foreach ($sourcesDocs as $source) {
             $sources[$source->getMimeType()] = [
                 'mime' => $source->getMimeType(),
-                'url' => $this->packages->getUrl($source->getRelativePath(), Packages::DOCUMENTS),
+                'url' => $this->packages->getUrl($source->getRelativePath() ?? '', Packages::DOCUMENTS),
             ];
         }
 

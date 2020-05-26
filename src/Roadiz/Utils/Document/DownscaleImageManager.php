@@ -22,7 +22,7 @@ class DownscaleImageManager
      */
     protected $manager;
     /**
-     * @var LoggerInterface
+     * @var LoggerInterface|null
      */
     protected $logger;
     /**
@@ -169,6 +169,9 @@ class DownscaleImageManager
                     $this->rawImageSuffix . '.$1',
                     $originalDocument->getFilename()
                 );
+                if (null === $rawDocumentName) {
+                    throw new \InvalidArgumentException('Raw document filename cannot be null');
+                }
                 $rawDocument->setFilename($rawDocumentName);
 
                 $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);

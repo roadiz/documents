@@ -32,31 +32,30 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
      */
     public function exists()
     {
-        if ($this->getFeed() !== false && isset($this->getFeed()[0])) {
-            return true;
-        } else {
-            return false;
-        }
+        $feed = $this->getFeed();
+        return is_array($feed) && isset($feed[0]);
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getMediaTitle()
     {
-        if (isset($this->getFeed()[0])) {
-            return $this->getFeed()[0]['title'];
+        $feed = $this->getFeed();
+        if (is_array($feed) && isset($feed[0])) {
+            return $feed[0]['title'];
         }
 
-        return "";
+        return '';
     }
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getMediaDescription()
     {
-        if (isset($this->getFeed()[0])) {
-            return $this->getFeed()[0]['description'];
+        $feed = $this->getFeed();
+        if (is_array($feed) && isset($feed[0])) {
+            return $feed[0]['description'];
         }
 
         return "";
@@ -73,8 +72,9 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
      */
     public function getThumbnailURL()
     {
-        if (isset($this->getFeed()[0])) {
-            return $this->getFeed()[0]['thumbnail_large'];
+        $feed = $this->getFeed();
+        if (is_array($feed) && isset($feed[0])) {
+            return $feed[0]['thumbnail_large'];
         }
 
         return "";

@@ -48,6 +48,9 @@ class DownloadedFile extends File
             }
             $original = \GuzzleHttp\Psr7\stream_for($distantHandle);
             $tmpFile = tempnam(sys_get_temp_dir(), StringHandler::cleanForFilename($baseName));
+            if (false === $tmpFile) {
+                return null;
+            }
             $handle = fopen($tmpFile, 'w');
             $local = \GuzzleHttp\Psr7\stream_for($handle);
             $local->write($original->getContents());
