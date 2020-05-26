@@ -19,7 +19,7 @@ interface DocumentInterface
     public function setFilename($filename);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getMimeType();
 

@@ -120,7 +120,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function getShortType()
     {
-        if (isset(static::$mimeToIcon[$this->getMimeType()])) {
+        if (null !== $this->getMimeType() && isset(static::$mimeToIcon[$this->getMimeType()])) {
             return static::$mimeToIcon[$this->getMimeType()];
         } else {
             return 'unknown';
@@ -134,8 +134,11 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function getShortMimeType()
     {
-        $mime = explode('/', $this->getMimeType());
-        return $mime[count($mime) - 1];
+        if (null !== $this->getMimeType()) {
+            $mime = explode('/', $this->getMimeType() ?? '');
+            return $mime[count($mime) - 1];
+        }
+        return 'unknown';
     }
 
     /**
@@ -145,7 +148,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isImage()
     {
-        return isset(static::$mimeToIcon[$this->getMimeType()]) && static::$mimeToIcon[$this->getMimeType()] == 'image';
+        return static::getShortType() === 'image';
     }
 
     /**
@@ -155,7 +158,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isSvg()
     {
-        return $this->getMimeType() == 'image/svg+xml' || $this->getMimeType() == 'image/svg';
+        return $this->getMimeType() === 'image/svg+xml' || $this->getMimeType() === 'image/svg';
     }
 
     /**
@@ -165,7 +168,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isVideo()
     {
-        return isset(static::$mimeToIcon[$this->getMimeType()]) && static::$mimeToIcon[$this->getMimeType()] == 'video';
+        return static::getShortType() === 'video';
     }
 
     /**
@@ -175,7 +178,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isAudio()
     {
-        return isset(static::$mimeToIcon[$this->getMimeType()]) && static::$mimeToIcon[$this->getMimeType()] == 'audio';
+        return static::getShortType() === 'audio';
     }
 
     /**
@@ -185,7 +188,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isPdf()
     {
-        return isset(static::$mimeToIcon[$this->getMimeType()]) && static::$mimeToIcon[$this->getMimeType()] == 'pdf';
+        return static::getShortType() === 'pdf';
     }
 
     /**
