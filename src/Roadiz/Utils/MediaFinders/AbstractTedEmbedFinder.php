@@ -1,10 +1,4 @@
 <?php
-/**
- * roadiz - AbstractMixcloudEmbedFinder.php
- *
- * Initial version by: ambroisemaupate
- * Initial version created on: 2019-04-10
- */
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
