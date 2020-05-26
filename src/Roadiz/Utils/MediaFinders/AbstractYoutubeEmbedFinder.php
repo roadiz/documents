@@ -1,31 +1,6 @@
 <?php
-/**
- * Copyright (c) 2017. Ambroise Maupate and Julien Blanchet
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Except as contained in this notice, the name of the ROADIZ shall not
- * be used in advertising or otherwise to promote the sale, use or other dealings
- * in this Software without prior written authorization from Ambroise Maupate and Julien Blanchet.
- *
- * @file YoutubeEmbedFinder.php
- * @author Ambroise Maupate <ambroise@rezo-zero.com>
- */
+declare(strict_types=1);
+
 namespace RZ\Roadiz\Utils\MediaFinders;
 
 use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
@@ -38,8 +13,9 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
  */
 abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
+    protected const YOUTUBE_EMBED_DOMAIN = 'https://www.youtube-nocookie.com';
     protected static $platform = 'youtube';
-    protected static $idPattern = '#^https\:\/\/(www\.)?youtube\.com\/watch\?v\=(?<id>[a-zA-Z0-9\_\-]+)#';
+    protected static $idPattern = '#^https\:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v\=)?(?<id>[a-zA-Z0-9\_\-]+)#';
     protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
 
     /**
@@ -104,7 +80,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription()
     {
-        return $this->getFeed()['description'];
+        return isset($this->getFeed()['description']) ? $this->getFeed()['description'] : '';
     }
     /**
      * @inheritDoc
@@ -136,7 +112,10 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         } else {
             $pathinfo = '.jpg';
         }
-        if (preg_match(static::$idPattern, $embed, $matches)) {
+        if (preg_match(static::$realIdPattern, $embed, $matches) === 1) {
+            return 'youtube_' . $matches['id'] . $pathinfo;
+        }
+        if (preg_match(static::$idPattern, $embed, $matches) === 1) {
             return 'youtube_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($embed, static::$platform);
@@ -211,6 +190,6 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         $queryString['enablejsapi'] = (int) $options['enablejsapi'];
         $queryString['mute'] = (int) $options['muted'];
 
-        return 'https://www.youtube.com/embed/'.$this->embedId.'?'.http_build_query($queryString);
+        return static::YOUTUBE_EMBED_DOMAIN . '/embed/'.$this->embedId.'?'.http_build_query($queryString);
     }
 }

@@ -1,31 +1,5 @@
 <?php
-/**
- * Copyright (c) 2017. Ambroise Maupate and Julien Blanchet
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Except as contained in this notice, the name of the ROADIZ shall not
- * be used in advertising or otherwise to promote the sale, use or other dealings
- * in this Software without prior written authorization from Ambroise Maupate and Julien Blanchet.
- *
- * @file AbstractDocument.php
- * @author Ambroise Maupate <ambroise@rezo-zero.com>
- */
+declare(strict_types=1);
 
 namespace RZ\Roadiz\Core\Models;
 
@@ -79,6 +53,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'audio/ogg' => 'audio',
         'audio/vorbis' => 'audio',
         'audio/ac3' => 'audio',
+        'audio/x-matroska' => 'audio',
         // Video types
         'application/ogg' => 'video',
         'video/ogg' => 'video',
@@ -92,6 +67,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'video/3gpp2' => 'video',
         'video/3gpp-tt' => 'video',
         'video/VP8' => 'video',
+        'video/x-matroska' => 'video',
         // Epub type
         'application/epub+zip' => 'epub',
         // Archives types
@@ -144,7 +120,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function getShortType()
     {
-        if (isset(static::$mimeToIcon[$this->getMimeType()])) {
+        if (null !== $this->getMimeType() && isset(static::$mimeToIcon[$this->getMimeType()])) {
             return static::$mimeToIcon[$this->getMimeType()];
         } else {
             return 'unknown';
@@ -158,8 +134,11 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function getShortMimeType()
     {
-        $mime = explode('/', $this->getMimeType());
-        return $mime[count($mime) - 1];
+        if (null !== $this->getMimeType()) {
+            $mime = explode('/', $this->getMimeType() ?? '');
+            return $mime[count($mime) - 1];
+        }
+        return 'unknown';
     }
 
     /**
@@ -169,7 +148,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isImage()
     {
-        return isset(static::$mimeToIcon[$this->getMimeType()]) && static::$mimeToIcon[$this->getMimeType()] == 'image';
+        return static::getShortType() === 'image';
     }
 
     /**
@@ -179,7 +158,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isSvg()
     {
-        return $this->getMimeType() == 'image/svg+xml' || $this->getMimeType() == 'image/svg';
+        return $this->getMimeType() === 'image/svg+xml' || $this->getMimeType() === 'image/svg';
     }
 
     /**
@@ -189,7 +168,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isVideo()
     {
-        return isset(static::$mimeToIcon[$this->getMimeType()]) && static::$mimeToIcon[$this->getMimeType()] == 'video';
+        return static::getShortType() === 'video';
     }
 
     /**
@@ -199,7 +178,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isAudio()
     {
-        return isset(static::$mimeToIcon[$this->getMimeType()]) && static::$mimeToIcon[$this->getMimeType()] == 'audio';
+        return static::getShortType() === 'audio';
     }
 
     /**
@@ -209,7 +188,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function isPdf()
     {
-        return isset(static::$mimeToIcon[$this->getMimeType()]) && static::$mimeToIcon[$this->getMimeType()] == 'pdf';
+        return static::getShortType() === 'pdf';
     }
 
     /**

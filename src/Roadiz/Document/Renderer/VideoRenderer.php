@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Document\Renderer;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Core\Models\HasThumbnailInterface;
 use RZ\Roadiz\Document\DocumentFinderInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -81,6 +82,20 @@ class VideoRenderer extends AbstractRenderer
         array $options = [],
         bool $absolute = false
     ): ?string {
+        /*
+         * Use document thumbnail first
+         */
+        if ($document instanceof HasThumbnailInterface && $document->hasThumbnails()) {
+            $thumbnail = $document->getThumbnails()->first();
+            if (false !== $thumbnail) {
+                $this->documentUrlGenerator->setOptions($options);
+                $this->documentUrlGenerator->setDocument($thumbnail);
+                return $this->documentUrlGenerator->getUrl($absolute);
+            }
+        }
+        /*
+         * Then look for document with same filename
+         */
         $basename = pathinfo($document->getFilename());
         $basename = $basename['filename'];
 
@@ -125,6 +140,7 @@ class VideoRenderer extends AbstractRenderer
             $basename . '.mp4',
             $basename . '.mov',
             $basename . '.webm',
+            $basename . '.mkv',
         ];
 
         $sourcesDocs = $this->documentFinder->findAllByFilenames($sourcesDocsName);

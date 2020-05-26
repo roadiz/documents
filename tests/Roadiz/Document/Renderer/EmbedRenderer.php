@@ -77,8 +77,8 @@ class EmbedRenderer extends atoum
             ->isEqualTo(true)
             ->string($renderer->render($mockDocumentYoutube, ['embed' => true]))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://www.youtube.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0" 
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+<iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen></iframe>
 EOT
             ))
@@ -87,8 +87,8 @@ EOT
                 'loading' => 'lazy'
             ]))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://www.youtube.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0" 
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+<iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen
         loading="lazy"></iframe>
 EOT
@@ -99,8 +99,8 @@ EOT
                 // height is auto calculated based on 16/10 ratio
             ]))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://www.youtube.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0" 
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+<iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         width="500" height="312" allowFullScreen></iframe>
 EOT
             ))
@@ -110,8 +110,8 @@ EOT
                 'height' => 500
             ]))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://www.youtube.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0" 
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+<iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         width="500" height="500" allowFullScreen></iframe>
 EOT
             ))
@@ -120,8 +120,8 @@ EOT
                 'autoplay' => true,
             ]))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://www.youtube.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&autoplay=1&playsinline=1&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0" 
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; autoplay; fullscreen" 
+<iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&autoplay=1&playsinline=1&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; autoplay; fullscreen"
         allowFullScreen></iframe>
 EOT
             ))
@@ -129,8 +129,8 @@ EOT
             ->isEqualTo(true)
             ->string($renderer->render($mockDocumentVimeo, ['embed' => true]))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://player.vimeo.com/video/0000000?title=0&byline=0&portrait=0&api=1&loop=0&fullscreen=1&controls=1&autopause=0&automute=0" 
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+<iframe src="https://player.vimeo.com/video/0000000?title=0&byline=0&portrait=0&api=1&loop=0&fullscreen=1&controls=1&autopause=0&automute=0"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen></iframe>
 EOT
             ))
@@ -140,8 +140,8 @@ EOT
                 'automute' => true,
             ]))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://player.vimeo.com/video/0000000?title=0&byline=0&portrait=0&api=1&loop=0&fullscreen=1&controls=1&autopause=0&automute=1&autoplay=1&playsinline=1" 
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; autoplay; fullscreen" 
+<iframe src="https://player.vimeo.com/video/0000000?title=0&byline=0&portrait=0&api=1&loop=0&fullscreen=1&controls=1&autopause=0&automute=1&autoplay=1&playsinline=1"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; autoplay; fullscreen"
         allowFullScreen></iframe>
 EOT
             ))
@@ -151,8 +151,8 @@ EOT
                 'background' => "1", // Hack background conflict option with background color
             ]))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://player.vimeo.com/video/0000000?title=0&byline=0&portrait=0&api=1&loop=0&fullscreen=1&controls=1&autopause=0&automute=0&autoplay=1&playsinline=1&background=1" 
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; autoplay; fullscreen" 
+<iframe src="https://player.vimeo.com/video/0000000?title=0&byline=0&portrait=0&api=1&loop=0&fullscreen=1&controls=1&autopause=0&automute=0&autoplay=1&playsinline=1&background=1"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; autoplay; fullscreen"
         allowFullScreen></iframe>
 EOT
             ))

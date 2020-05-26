@@ -3,22 +3,22 @@
 
     {% if width %}
         {% set attributes = attributes|merge({
-            'width': width,
+            'width': width|escape('html_attr'),
         }) %}
     {% endif %}
     {% if height %}
         {% set attributes = attributes|merge({
-        'height': height,
+            'height': height|escape('html_attr'),
         }) %}
     {% endif %}
     {% if class %}
         {% set attributes = attributes|merge({
-        'class': class,
+            'class': class|escape('html_attr'),
         }) %}
     {% endif %}
     {% if identifier %}
         {% set attributes = attributes|merge({
-        'id': identifier,
+            'id': identifier|escape('html_attr'),
         }) %}
     {% endif %}
     {# Add controls by default #}
@@ -42,12 +42,12 @@
         {% if value is same as(true)  %}
             {% set attributesCompiled = attributesCompiled|merge([key]) %}
         {% else %}
-            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value|escape('html_attr') ~ '"']) %}
+            {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value ~ '"']) %}
         {% endif %}
     {% endfor %}
 <audio{% if attributesCompiled|length %} {{ attributesCompiled|join(' ')|raw }}{% endif %}>
     {% for source in sources %}
-    <source type="{{ source.mime|escape('html_attr') }}" src="{{ source.url|escape('html_attr') }}">
+    <source type="{{ source.mime|escape('html_attr') }}" src="{{ source.url }}">
     {% endfor %}
     {% block audio_fallback %}<p>Your browser does not support native audio.</p>{% endblock %}
 </audio>

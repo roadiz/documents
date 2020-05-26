@@ -1,32 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
- * Copyright (c) 2017. Ambroise Maupate and Julien Blanchet
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Except as contained in this notice, the name of the ROADIZ shall not
- * be used in advertising or otherwise to promote the sale, use or other dealings
- * in this Software without prior written authorization from Ambroise Maupate and Julien Blanchet.
- *
- * @file AbstractEmbedFinder.php
- * @author Ambroise Maupate <ambroise@rezo-zero.com>
- */
+
 namespace RZ\Roadiz\Utils\MediaFinders;
 
 use Doctrine\Persistence\ObjectManager;
@@ -79,6 +53,11 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         } else {
             $this->embedId = $embedId;
         }
+    }
+
+    public function isEmptyThumbnailAllowed(): bool
+    {
+        return false;
     }
 
     /**
@@ -165,7 +144,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @param string|bool $search
      *
-     * @return string|\Psr\Http\Message\StreamInterface
+     * @return string|StreamInterface
      */
     abstract public function getMediaFeed($search = null);
 
@@ -176,7 +155,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @param string  $author
      * @param integer $maxResults
      *
-     * @return string|null
+     * @return string|StreamInterface|null
      */
     abstract public function getSearchFeed($searchTerm, $author, $maxResults = 15);
 
@@ -278,12 +257,15 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
             /** @var File $file */
             $file = $this->downloadThumbnail();
 
-            if (!$this->exists() || null === $file) {
+            if (!$this->exists() || (null === $file && !$this->isEmptyThumbnailAllowed())) {
                 throw new \RuntimeException('no.embed.document.found');
             }
 
-            $documentFactory->setFile($file);
-            $document = $documentFactory->getDocument();
+            if (null !== $file) {
+                $documentFactory->setFile($file);
+            }
+
+            $document = $documentFactory->getDocument($this->isEmptyThumbnailAllowed());
             /*
              * Create document metas
              * for each translation
@@ -356,7 +338,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * Send a CURL request and get its string output.
      *
      * @param string $url
-     * @return \Psr\Http\Message\StreamInterface
+     *
+     * @return StreamInterface
      * @throws \RuntimeException
      */
     public function downloadFeedFromAPI($url)

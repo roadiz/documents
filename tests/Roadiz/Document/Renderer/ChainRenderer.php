@@ -57,9 +57,11 @@ class ChainRenderer extends atoum
         $this
             ->given($renderer = $this->newTestedInstance($renderers))
             ->then
-            ->string($this->htmlTidy($renderer->render($mockPdfDocument, [])))
+            ->string($this->htmlTidy($renderer->render($mockPdfDocument, [
+                'embed' => true
+            ])))
             ->isEqualTo('<object type="application/pdf" data="/files/folder/file.pdf"><p>Your browser does not support PDF native viewer.</p></object>')
-            ->string($this->htmlTidy($renderer->render($mockPdfDocument, ['absolute' => true])))
+            ->string($this->htmlTidy($renderer->render($mockPdfDocument, ['absolute' => true, 'embed' => true])))
             ->isEqualTo('<object type="application/pdf" data="http://dummy.test/files/folder/file.pdf"><p>Your browser does not support PDF native viewer.</p></object>')
             ->string($this->htmlTidy($renderer->render($mockSvgDocument, [])))
             ->isEqualTo($this->htmlTidy(<<<EOT
@@ -77,7 +79,7 @@ EOT
             ->isEqualTo(true)
             ->string($this->htmlTidy($renderer->render($mockDocumentYoutube, ['embed' => true])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<iframe src="https://www.youtube.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
+<iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen></iframe>
 EOT
