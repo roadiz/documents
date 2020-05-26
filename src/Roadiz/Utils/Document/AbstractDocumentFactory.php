@@ -34,11 +34,11 @@ abstract class AbstractDocumentFactory
      */
     private $file;
     /**
-     * @var FolderInterface
+     * @var FolderInterface|null
      */
     private $folder;
     /**
-     * @var LoggerInterface
+     * @var LoggerInterface|null
      */
     private $logger;
     /**
@@ -97,7 +97,7 @@ abstract class AbstractDocumentFactory
     }
 
     /**
-     * @return FolderInterface
+     * @return FolderInterface|null
      */
     public function getFolder()
     {
@@ -105,7 +105,7 @@ abstract class AbstractDocumentFactory
     }
 
     /**
-     * @param FolderInterface $folder
+     * @param FolderInterface|null $folder
      * @return AbstractDocumentFactory
      */
     public function setFolder(FolderInterface $folder = null)
@@ -124,7 +124,9 @@ abstract class AbstractDocumentFactory
         if (($document->getMimeType() == "text/plain" ||
                 $document->getMimeType() == 'text/html') &&
                 preg_match('#\.svg$#', $document->getFilename())) {
-            $this->logger->debug('Uploaded a SVG without xml declaration. Presuming it’s a valid SVG file.');
+            if (null !== $this->logger) {
+                $this->logger->debug('Uploaded a SVG without xml declaration. Presuming it’s a valid SVG file.');
+            }
             $document->setMimeType('image/svg+xml');
         }
     }
@@ -155,7 +157,7 @@ abstract class AbstractDocumentFactory
                 return null;
             }
             $document->setFilename($this->getFileName());
-            $document->setMimeType($this->file->getMimeType());
+            $document->setMimeType($this->file->getMimeType() ?? '');
             $this->parseSvgMimeType($document);
             $this->file->move(
                 $this->packages->getDocumentFolderPath($document),
@@ -241,7 +243,7 @@ abstract class AbstractDocumentFactory
         }
 
         $document->setFilename($this->getFileName());
-        $document->setMimeType($this->file->getMimeType());
+        $document->setMimeType($this->file->getMimeType() ?? '');
         $this->parseSvgMimeType($document);
 
         $this->file->move(

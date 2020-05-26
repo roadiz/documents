@@ -50,6 +50,6 @@ class InlineSvgRenderer implements RendererInterface
 
     protected function htmlTidy(string $body): string
     {
-        return preg_replace('#\>[\n\r\s]+\<#', '><', $body);
+        return preg_replace('#\>[\n\r\s]+\<#', '><', $body) ?? '';
     }
 }

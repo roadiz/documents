@@ -31,8 +31,8 @@ class SimpleDocument extends AbstractDocument
     private $raw = false;
     /** @var DocumentInterface|null  */
     private $downscaledDocument = null;
-    /** @var Collection|null */
-    private $folders = null;
+    /** @var Collection */
+    private $folders;
 
     /**
      * SimpleDocument constructor.
@@ -223,19 +223,19 @@ class SimpleDocument extends AbstractDocument
     }
 
     /**
-     * @return Collection|null
+     * @return Collection
      */
-    public function getFolders(): ?Collection
+    public function getFolders(): Collection
     {
         return $this->folders;
     }
 
     /**
-     * @param Collection|null $folders
+     * @param Collection $folders
      *
      * @return SimpleDocument
      */
-    public function setFolders(?Collection $folders): SimpleDocument
+    public function setFolders(Collection $folders): SimpleDocument
     {
         $this->folders = $folders;
 

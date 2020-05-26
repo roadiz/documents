@@ -98,17 +98,13 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      */
     public function exists()
     {
-        if ($this->getFeed() !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return null !== $this->getFeed();
     }
 
     /**
      * Crawl and parse an API json feed for current embedID.
      *
-     * @return array|bool
+     * @return array|null
      */
     public function getFeed()
     {
@@ -117,8 +113,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
             if ($rawFeed instanceof StreamInterface) {
                 $rawFeed = $rawFeed->getContents();
             }
-            if (null !== $rawFeed && false !== $rawFeed) {
-                $this->feed = json_decode($rawFeed, true);
+            if (null !== $rawFeed) {
+                $this->feed = json_decode($rawFeed, true) ?? null;
             }
         }
         return $this->feed;
@@ -254,7 +250,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         }
 
         try {
-            /** @var File $file */
             $file = $this->downloadThumbnail();
 
             if (!$this->exists() || (null === $file && !$this->isEmptyThumbnailAllowed())) {
@@ -266,17 +261,23 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
             }
 
             $document = $documentFactory->getDocument($this->isEmptyThumbnailAllowed());
-            /*
-             * Create document metas
-             * for each translation
-             */
-            $this->injectMetaInDocument($objectManager, $document);
+            if (null !== $document) {
+                /*
+                 * Create document metas
+                 * for each translation
+                 */
+                $this->injectMetaInDocument($objectManager, $document);
+            }
         } catch (APINeedsAuthentificationException $exception) {
             $document = $documentFactory->getDocument(true);
-            $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
+            if (null !== $document) {
+                $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
+            }
         } catch (RequestException $exception) {
             $document = $documentFactory->getDocument(true);
-            $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
+            if (null !== $document) {
+                $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
+            }
         }
 
         if (null === $document) {
@@ -309,28 +310,28 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Get media title from feed.
      *
-     * @return string
+     * @return string|null
      */
     abstract public function getMediaTitle();
 
     /**
      * Get media description from feed.
      *
-     * @return string
+     * @return string|null
      */
     abstract public function getMediaDescription();
 
     /**
      * Get media copyright from feed.
      *
-     * @return string
+     * @return string|null
      */
     abstract public function getMediaCopyright();
 
     /**
      * Get media thumbnail external URL from its feed.
      *
-     * @return string|bool
+     * @return string|null
      */
     abstract public function getThumbnailURL();
 
@@ -374,7 +375,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     {
         $url = $this->getThumbnailURL();
 
-        if (false !== $url && '' !== $url) {
+        if (null !== $url && '' !== $url) {
             $thumbnailName = $this->getThumbnailName(basename($url));
             return DownloadedFile::fromUrl($url, $thumbnailName);
         }

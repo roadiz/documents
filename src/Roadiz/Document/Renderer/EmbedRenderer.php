@@ -40,8 +40,14 @@ class EmbedRenderer implements RendererInterface
     public function render(DocumentInterface $document, array $options): string
     {
         try {
-            $finder = $this->embedFinderFactory->createForPlatform($document->getEmbedPlatform(), $document->getEmbedId());
-            return $finder->getIFrame($options);
+            $finder = $this->embedFinderFactory->createForPlatform(
+                $document->getEmbedPlatform(),
+                $document->getEmbedId()
+            );
+            if (null !== $finder) {
+                return $finder->getIFrame($options);
+            }
+            return '';
         } catch (InvalidEmbedId $exception) {
             return '<p>'.$exception->getMessage().'</p>';
         }

@@ -48,7 +48,8 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return isset($this->getFeed()['title']) ? $this->getFeed()['title'] : '';
+        $feed = $this->getFeed();
+        return is_array($feed) && isset($feed['title']) ? $feed['title'] : '';
     }
 
     /**
@@ -56,7 +57,8 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription()
     {
-        return isset($this->getFeed()['description']) ? $this->getFeed()['description'] : '';
+        $feed = $this->getFeed();
+        return is_array($feed) && isset($feed['description']) ? $feed['description'] : '';
     }
 
     /**
@@ -64,7 +66,8 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaCopyright()
     {
-        return $this->getFeed()['provider_name'] . ' (' . $this->getFeed()['provider_url']. ')';
+        $feed = $this->getFeed();
+        return is_array($feed) ? $feed['provider_name'] . ' (' . $feed['provider_url']. ')' : '';
     }
 
     /**

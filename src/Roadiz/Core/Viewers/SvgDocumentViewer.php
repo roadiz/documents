@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Core\Viewers;
 
 use enshrined\svgSanitize\Sanitizer;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class SvgDocumentViewer
@@ -84,6 +85,9 @@ class SvgDocumentViewer
 
         // Load the dirty svg
         $dirtySVG = file_get_contents($this->imagePath);
+        if (false === $dirtySVG) {
+            throw new \RuntimeException($this->imagePath . ' file is not readable.');
+        }
         $cleanSVG = $sanitizer->sanitize($dirtySVG);
         if (false !== $cleanSVG) {
             // Pass it to the sanitizer and get it back clean
@@ -124,7 +128,10 @@ class SvgDocumentViewer
             }
             $svg = $xml->asXML();
         }
-        $svg = preg_replace('#^\<\?xml[^\?]+\?\>#', '', $svg);
+        if (false === $svg) {
+            throw new \RuntimeException('Cannot inject attributes into SVG');
+        }
+        $svg = preg_replace('#^\<\?xml[^\?]+\?\>#', '', (string) $svg) ?? '';
 
         return $svg;
     }

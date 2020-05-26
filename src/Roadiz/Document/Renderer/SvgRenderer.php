@@ -37,7 +37,7 @@ class SvgRenderer implements RendererInterface
         $assignation = array_filter($options);
 
         $attributes = $this->getAttributes($assignation);
-        $attributes['data'] = $this->packages->getUrl($document->getRelativePath(), Packages::DOCUMENTS);
+        $attributes['data'] = $this->packages->getUrl($document->getRelativePath() ?? '', Packages::DOCUMENTS);
 
         $attrs = [];
         foreach ($attributes as $key => $value) {

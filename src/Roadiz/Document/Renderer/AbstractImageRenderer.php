@@ -109,13 +109,17 @@ abstract class AbstractImageRenderer extends AbstractRenderer
     {
         [$r, $g, $b] = \sscanf($hexColor, "#%02x%02x%02x");
         $im = \imageCreateTrueColor($width, $height);
-        \imageFill($im, 0, 0, \imageColorAllocate($im, $r, $g, $b));
-        \ob_start();
-        \imagejpeg($im, null, 30);
-        $img = \ob_get_contents();
-        \ob_end_clean();
-
-        return 'data:image/jpeg;base64,' . \base64_encode($img);
+        if ($im) {
+            \imageFill($im, 0, 0, \imageColorAllocate($im, $r, $g, $b));
+            \ob_start();
+            \imagejpeg($im, null, 30);
+            $img = \ob_get_contents();
+            \ob_end_clean();
+            if ($img) {
+                return 'data:image/jpeg;base64,' . \base64_encode($img);
+            }
+        }
+        throw new \RuntimeException('Cannot generate imageCreateTrueColor');
     }
 
     /**

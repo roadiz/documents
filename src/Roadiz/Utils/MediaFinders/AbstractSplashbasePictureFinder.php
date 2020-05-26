@@ -41,6 +41,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
 
     /**
      * @see http://www.splashbase.co/api#images_random
+     * @return array|null
      */
     public function getRandom()
     {
@@ -50,9 +51,9 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
                     'images_only' => 'true'
                 ]
             ]);
-            $feed = json_decode($response->getBody()->getContents(), true);
+            $feed = json_decode($response->getBody()->getContents(), true) ?? null;
             if (!is_array($feed)) {
-                return false;
+                return null;
             }
             $url = $this->getBestUrl($feed);
 
@@ -63,9 +64,9 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
                     return $this->feed;
                 }
             }
-            return false;
+            return null;
         } catch (ClientException $e) {
-            return false;
+            return null;
         }
     }
 
@@ -123,7 +124,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return "";
+        return '';
     }
 
     /**
@@ -131,7 +132,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription()
     {
-        return "";
+        return '';
     }
 
     /**
@@ -143,15 +144,15 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getThumbnailURL()
     {
         if (null === $this->feed) {
-            $this->getRandom();
+            $feed = $this->getRandom();
 
-            if (false === $this->feed) {
-                return false;
+            if (null === $feed) {
+                return null;
             }
         }
         /*
@@ -163,17 +164,17 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     /**
      * @param array|null $feed
      *
-     * @return string|bool
+     * @return string|null
      */
     protected function getBestUrl(?array $feed)
     {
-        if (!is_array($feed)) {
-            return false;
+        if (null === $feed) {
+            return null;
         }
         if (!empty($feed['large_url']) &&
             (false !== strpos($feed['large_url'], '.jpg') || false !== strpos($feed['large_url'], '.png'))) {
             return $feed['large_url'];
         }
-        return isset($feed['url']) ? $feed['url'] : false;
+        return isset($feed['url']) ? $feed['url'] : null;
     }
 }
