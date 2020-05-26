@@ -144,7 +144,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @param string|bool $search
      *
-     * @return string|\Psr\Http\Message\StreamInterface
+     * @return string|StreamInterface
      */
     abstract public function getMediaFeed($search = null);
 
@@ -155,7 +155,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @param string  $author
      * @param integer $maxResults
      *
-     * @return string|null
+     * @return string|StreamInterface|null
      */
     abstract public function getSearchFeed($searchTerm, $author, $maxResults = 15);
 
@@ -338,7 +338,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * Send a CURL request and get its string output.
      *
      * @param string $url
-     * @return \Psr\Http\Message\StreamInterface
+     *
+     * @return StreamInterface
      * @throws \RuntimeException
      */
     public function downloadFeedFromAPI($url)
