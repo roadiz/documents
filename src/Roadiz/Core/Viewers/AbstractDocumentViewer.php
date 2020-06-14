@@ -268,6 +268,10 @@ abstract class AbstractDocumentViewer implements RendererInterface
      */
     public function getDocumentByArray(array $options = [])
     {
+        @trigger_error(
+            'AbstractDocumentViewer::getDocumentByArray method is deprecated.',
+            E_USER_DEPRECATED
+        );
         $resolver = new ViewOptionsResolver();
         $options = $resolver->resolve($options);
 
@@ -390,6 +394,10 @@ abstract class AbstractDocumentViewer implements RendererInterface
      */
     public function getEmbedFinder()
     {
+        @trigger_error(
+            'AbstractDocumentViewer::getEmbedFinder method is deprecated.',
+            E_USER_DEPRECATED
+        );
         if (null === $this->embedFinder) {
             if (null !== $this->document && $this->isEmbedPlatformSupported()) {
                 $class = $this->documentPlatforms[$this->document->getEmbedPlatform()];

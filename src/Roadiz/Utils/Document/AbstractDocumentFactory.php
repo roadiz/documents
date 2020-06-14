@@ -285,6 +285,11 @@ abstract class AbstractDocumentFactory
      */
     public function downloadFileFromUrl(string $url, string $thumbnailName): ?DownloadedFile
     {
+        @trigger_error(
+            'AbstractDocumentFactory::downloadFileFromUrl method is deprecated.' .
+                ' Use '.DownloadedFile::class.'::fromUrl($url)',
+            E_USER_DEPRECATED
+        );
         return DownloadedFile::fromUrl($url, $thumbnailName);
     }
 
