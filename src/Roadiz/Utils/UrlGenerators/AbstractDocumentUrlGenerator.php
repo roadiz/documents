@@ -6,16 +6,14 @@ namespace RZ\Roadiz\Utils\UrlGenerators;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface as SymfonyUrlGeneratorInterface;
 
-class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
+/**
+ * Class AbstractDocumentUrlGenerator
+ *
+ * @package RZ\Roadiz\Utils\UrlGenerators
+ */
+abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInterface
 {
-    /**
-     * @var RequestStack
-     * @deprecated Useless and creates dependency
-     */
-    private $requestStack;
     /**
      * @var DocumentInterface|null
      */
@@ -28,30 +26,21 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      * @var Packages
      */
     private $packages;
-    /**
-     * @var SymfonyUrlGeneratorInterface
-     */
-    private $urlGenerator;
 
     /**
-     * DocumentUrlGenerator constructor.
-     * @param RequestStack $requestStack
-     * @param Packages $packages
-     * @param SymfonyUrlGeneratorInterface $urlGenerator
+     * AbstractDocumentUrlGenerator constructor.
+     *
+     * @param Packages               $packages
      * @param DocumentInterface|null $document
-     * @param array $options
+     * @param array                  $options
      */
     public function __construct(
-        RequestStack $requestStack,
         Packages $packages,
-        SymfonyUrlGeneratorInterface $urlGenerator,
         DocumentInterface $document = null,
         array $options = []
     ) {
-        $this->requestStack = $requestStack;
         $this->document = $document;
         $this->packages = $packages;
-        $this->urlGenerator = $urlGenerator;
 
         $this->setOptions($options);
     }
@@ -59,7 +48,7 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
     /**
      * @param array $options
      *
-     * @return DocumentUrlGenerator
+     * @return AbstractDocumentUrlGenerator
      */
     public function setOptions(array $options = [])
     {
@@ -78,7 +67,8 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
 
     /**
      * @param DocumentInterface $document
-     * @return DocumentUrlGenerator
+     *
+     * @return AbstractDocumentUrlGenerator
      */
     public function setDocument(DocumentInterface $document)
     {
@@ -105,40 +95,12 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
             );
         }
 
-        $referenceType = $absolute ? SymfonyUrlGeneratorInterface::ABSOLUTE_URL : SymfonyUrlGeneratorInterface::ABSOLUTE_PATH;
-
-        return $this->getProcessedDocumentUrlByArray($referenceType);
+        return $this->getProcessedDocumentUrlByArray($absolute);
     }
 
     /**
+     * @param bool $absolute
      * @return string
      */
-    protected function getRouteName()
-    {
-        return 'interventionRequestProcess';
-    }
-
-    /**
-     * @param int $referenceType The type of reference to be generated (one of the UrlGeneratorInterface constants)
-     * @return string
-     */
-    protected function getProcessedDocumentUrlByArray($referenceType = SymfonyUrlGeneratorInterface::ABSOLUTE_PATH)
-    {
-        if (null === $this->document) {
-            throw new \InvalidArgumentException('Cannot get URL from a NULL document');
-        }
-
-        $compiler = new OptionsCompiler();
-
-        $routeParams = [
-            'queryString' => $compiler->compile($this->options),
-            'filename' => $this->document->getRelativePath(),
-        ];
-
-        return $this->urlGenerator->generate(
-            $this->getRouteName(),
-            $routeParams,
-            $referenceType
-        );
-    }
+    abstract protected function getProcessedDocumentUrlByArray(bool $absolute = false): string;
 }
