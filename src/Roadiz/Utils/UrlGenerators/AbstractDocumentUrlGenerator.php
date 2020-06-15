@@ -17,15 +17,15 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
     /**
      * @var DocumentInterface|null
      */
-    private $document;
+    protected $document;
     /**
      * @var array
      */
-    private $options;
+    protected $options;
     /**
      * @var Packages
      */
-    private $packages;
+    protected $packages;
 
     /**
      * AbstractDocumentUrlGenerator constructor.
