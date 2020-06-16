@@ -41,8 +41,7 @@ class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
 
         $compiler = new OptionsCompiler();
         $compiledOptions = $compiler->compile($this->options);
-
-
+        
         if ($absolute) {
             return 'http://dummy.test/assets/' . $compiledOptions . '/' . $this->document->getRelativePath();
         }

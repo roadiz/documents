@@ -50,8 +50,7 @@ class VideoRenderer extends AbstractRenderer
 
     public function render(DocumentInterface $document, array $options): string
     {
-        $resolver = new ViewOptionsResolver();
-        $options = $resolver->resolve($options);
+        $options = $this->viewOptionsResolver->resolve($options);
 
         $assignation = array_filter($options);
         $assignation['sources'] = $this->getSourcesFiles($document);

@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Document\Renderer;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Utils\Document\UrlOptionsResolver;
+use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
 
@@ -21,6 +23,14 @@ abstract class AbstractRenderer implements RendererInterface
      * @var DocumentUrlGeneratorInterface
      */
     protected $documentUrlGenerator;
+    /**
+     * @var UrlOptionsResolver
+     */
+    protected $urlOptionsResolver;
+    /**
+     * @var ViewOptionsResolver
+     */
+    protected $viewOptionsResolver;
 
     /**
      * AbstractRenderer constructor.
@@ -37,6 +47,8 @@ abstract class AbstractRenderer implements RendererInterface
         $this->templating = $templating;
         $this->templateBasePath = $templateBasePath;
         $this->documentUrlGenerator = $documentUrlGenerator;
+        $this->urlOptionsResolver = new UrlOptionsResolver();
+        $this->viewOptionsResolver = new ViewOptionsResolver();
     }
 
     /**

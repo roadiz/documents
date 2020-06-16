@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\UrlGenerators;
 
+use Doctrine\Common\Cache\CacheProvider;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -32,26 +33,44 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      * @var SymfonyUrlGeneratorInterface
      */
     private $urlGenerator;
+    /**
+     * @var ViewOptionsResolver
+     */
+    private $viewOptionsResolver;
+    /**
+     * @var OptionsCompiler
+     */
+    private $optionCompiler;
+    /**
+     * @var CacheProvider|null
+     */
+    private $cache;
 
     /**
      * DocumentUrlGenerator constructor.
-     * @param RequestStack $requestStack
-     * @param Packages $packages
+     *
+     * @param RequestStack                 $requestStack
+     * @param Packages                     $packages
      * @param SymfonyUrlGeneratorInterface $urlGenerator
-     * @param DocumentInterface|null $document
-     * @param array $options
+     * @param DocumentInterface|null       $document
+     * @param array                        $options
+     * @param CacheProvider|null           $optionCacheProvider
      */
     public function __construct(
         RequestStack $requestStack,
         Packages $packages,
         SymfonyUrlGeneratorInterface $urlGenerator,
         DocumentInterface $document = null,
-        array $options = []
+        array $options = [],
+        ?CacheProvider $optionCacheProvider = null
     ) {
         $this->requestStack = $requestStack;
         $this->document = $document;
         $this->packages = $packages;
         $this->urlGenerator = $urlGenerator;
+        $this->viewOptionsResolver = new ViewOptionsResolver();
+        $this->optionCompiler = new OptionsCompiler();
+        $this->cache = $optionCacheProvider;
 
         $this->setOptions($options);
     }
@@ -63,8 +82,20 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      */
     public function setOptions(array $options = [])
     {
-        $resolver = new ViewOptionsResolver();
-        $this->options = $resolver->resolve($options);
+        if (null !== $this->cache) {
+            /*
+             * Use cache to resolve valid options once, especially if
+             * you are rendering a lot of documents with the same options.
+             */
+            $optionsHash = md5(json_encode($options) ?: '');
+            if (!$this->cache->contains($optionsHash)) {
+                $resolvedOptions = $this->viewOptionsResolver->resolve($options);
+                $this->cache->save($optionsHash, $resolvedOptions);
+            }
+            $this->options = $this->cache->fetch($optionsHash);
+        } else {
+            $this->options = $this->viewOptionsResolver->resolve($options);
+        }
         return $this;
     }
 
@@ -128,10 +159,8 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
             throw new \InvalidArgumentException('Cannot get URL from a NULL document');
         }
 
-        $compiler = new OptionsCompiler();
-
         $routeParams = [
-            'queryString' => $compiler->compile($this->options),
+            'queryString' => $this->optionCompiler->compile($this->options),
             'filename' => $this->document->getRelativePath(),
         ];
 

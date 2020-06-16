@@ -85,8 +85,7 @@ abstract class AbstractImageRenderer extends AbstractRenderer
         $output = [];
         foreach ($srcSetArray as $set) {
             if (isset($set['format']) && isset($set['rule'])) {
-                $resolver = new UrlOptionsResolver();
-                $this->documentUrlGenerator->setOptions($resolver->resolve($set['format']));
+                $this->documentUrlGenerator->setOptions($this->urlOptionsResolver->resolve($set['format']));
                 $this->documentUrlGenerator->setDocument($document);
                 $path = $this->documentUrlGenerator->getUrl($absolute);
                 if ($convertToWebP) {

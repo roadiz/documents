@@ -17,8 +17,7 @@ class PictureRenderer extends AbstractImageRenderer
 
     public function render(DocumentInterface $document, array $options): string
     {
-        $resolver = new ViewOptionsResolver();
-        $options = $resolver->resolve($options);
+        $options = $this->viewOptionsResolver->resolve($options);
 
         $assignation = array_merge(array_filter($options), [
             'mimetype' => $document->getMimeType(),
