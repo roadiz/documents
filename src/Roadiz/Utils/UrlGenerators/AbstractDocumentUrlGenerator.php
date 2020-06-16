@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\UrlGenerators;
 
+use Doctrine\Common\Cache\CacheProvider;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -26,6 +27,18 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
      * @var Packages
      */
     protected $packages;
+    /**
+     * @var CacheProvider|null
+     */
+    protected $optionsCacheProvider;
+    /**
+     * @var ViewOptionsResolver
+     */
+    protected $viewOptionsResolver;
+    /**
+     * @var OptionsCompiler
+     */
+    protected $optionCompiler;
 
     /**
      * AbstractDocumentUrlGenerator constructor.
@@ -33,14 +46,19 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
      * @param Packages               $packages
      * @param DocumentInterface|null $document
      * @param array                  $options
+     * @param CacheProvider|null     $optionsCacheProvider
      */
     public function __construct(
         Packages $packages,
         DocumentInterface $document = null,
-        array $options = []
+        array $options = [],
+        ?CacheProvider $optionsCacheProvider = null
     ) {
         $this->document = $document;
         $this->packages = $packages;
+        $this->optionsCacheProvider = $optionsCacheProvider;
+        $this->viewOptionsResolver = new ViewOptionsResolver();
+        $this->optionCompiler = new OptionsCompiler();
 
         $this->setOptions($options);
     }
@@ -52,8 +70,20 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
      */
     public function setOptions(array $options = [])
     {
-        $resolver = new ViewOptionsResolver();
-        $this->options = $resolver->resolve($options);
+        if (null !== $this->optionsCacheProvider) {
+            /*
+             * Use optionsCacheProvider to resolve valid options once, especially if
+             * you are rendering a lot of documents with the same options.
+             */
+            $optionsHash = md5(json_encode($options) ?: '');
+            if (!$this->optionsCacheProvider->contains($optionsHash)) {
+                $resolvedOptions = $this->viewOptionsResolver->resolve($options);
+                $this->optionsCacheProvider->save($optionsHash, $resolvedOptions);
+            }
+            $this->options = $this->optionsCacheProvider->fetch($optionsHash);
+        } else {
+            $this->options = $this->viewOptionsResolver->resolve($options);
+        }
         return $this;
     }
 

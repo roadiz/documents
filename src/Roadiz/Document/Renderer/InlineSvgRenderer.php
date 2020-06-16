@@ -17,6 +17,11 @@ class InlineSvgRenderer implements RendererInterface
     private $packages;
 
     /**
+     * @var ViewOptionsResolver
+     */
+    protected $viewOptionsResolver;
+
+    /**
      * SvgRenderer constructor.
      *
      * @param Packages $packages
@@ -24,6 +29,7 @@ class InlineSvgRenderer implements RendererInterface
     public function __construct(Packages $packages)
     {
         $this->packages = $packages;
+        $this->viewOptionsResolver = new ViewOptionsResolver();
     }
 
     public function supports(DocumentInterface $document, array $options): bool
@@ -33,8 +39,7 @@ class InlineSvgRenderer implements RendererInterface
 
     public function render(DocumentInterface $document, array $options): string
     {
-        $resolver = new ViewOptionsResolver();
-        $options = $resolver->resolve($options);
+        $options = $this->viewOptionsResolver->resolve($options);
         $assignation = array_filter($options);
 
         try {
