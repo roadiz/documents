@@ -20,14 +20,16 @@ class OptionsCompiler
     /**
      * Compile Intervention Request options into a single query string.
      *
-     * @param array $options
+     * @param array $options Resolved options
      * @return string
      */
     public function compile($options)
     {
-        $resolver = new ViewOptionsResolver();
-        $this->options = $resolver->resolve($options);
-
+        /*
+         * Options passed to compiler should already be resolved not to
+         * trigger resolving twice.
+         */
+        $this->options = $options;
         $shortOptions = [];
 
         if (null === $this->options['fit'] && $this->options['width'] > 0) {

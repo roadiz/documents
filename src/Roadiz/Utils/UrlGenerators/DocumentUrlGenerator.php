@@ -32,6 +32,14 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      * @var SymfonyUrlGeneratorInterface
      */
     private $urlGenerator;
+    /**
+     * @var ViewOptionsResolver
+     */
+    private $viewOptionsResolver;
+    /**
+     * @var OptionsCompiler
+     */
+    private $optionCompiler;
 
     /**
      * DocumentUrlGenerator constructor.
@@ -52,6 +60,8 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
         $this->document = $document;
         $this->packages = $packages;
         $this->urlGenerator = $urlGenerator;
+        $this->viewOptionsResolver = new ViewOptionsResolver();
+        $this->optionCompiler = new OptionsCompiler();
 
         $this->setOptions($options);
     }
@@ -63,8 +73,7 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      */
     public function setOptions(array $options = [])
     {
-        $resolver = new ViewOptionsResolver();
-        $this->options = $resolver->resolve($options);
+        $this->options = $this->viewOptionsResolver->resolve($options);
         return $this;
     }
 
@@ -128,10 +137,8 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
             throw new \InvalidArgumentException('Cannot get URL from a NULL document');
         }
 
-        $compiler = new OptionsCompiler();
-
         $routeParams = [
-            'queryString' => $compiler->compile($this->options),
+            'queryString' => $this->optionCompiler->compile($this->options),
             'filename' => $this->document->getRelativePath(),
         ];
 
