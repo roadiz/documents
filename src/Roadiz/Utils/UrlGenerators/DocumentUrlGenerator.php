@@ -41,6 +41,10 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      * @var OptionsCompiler
      */
     private $optionCompiler;
+    /**
+     * @var CacheProvider
+     */
+    private $cache;
 
     /**
      * DocumentUrlGenerator constructor.
@@ -81,7 +85,7 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
              * Use cache to resolve valid options once, especially if
              * you are rendering a lot of documents with the same options.
              */
-            $optionsHash = md5(json_encode($options));
+            $optionsHash = md5(json_encode($options) ?: '');
             if (!$this->cache->contains($optionsHash)) {
                 $resolvedOptions = $this->viewOptionsResolver->resolve($options);
                 $this->cache->save($optionsHash, $resolvedOptions);
