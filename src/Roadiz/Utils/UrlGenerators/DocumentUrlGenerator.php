@@ -42,17 +42,19 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      */
     private $optionCompiler;
     /**
-     * @var CacheProvider
+     * @var CacheProvider|null
      */
     private $cache;
 
     /**
      * DocumentUrlGenerator constructor.
-     * @param RequestStack $requestStack
-     * @param Packages $packages
+     *
+     * @param RequestStack                 $requestStack
+     * @param Packages                     $packages
      * @param SymfonyUrlGeneratorInterface $urlGenerator
-     * @param DocumentInterface|null $document
-     * @param array $options
+     * @param DocumentInterface|null       $document
+     * @param array                        $options
+     * @param CacheProvider|null           $optionCacheProvider
      */
     public function __construct(
         RequestStack $requestStack,
