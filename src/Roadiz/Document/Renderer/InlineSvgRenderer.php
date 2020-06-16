@@ -17,7 +17,7 @@ class InlineSvgRenderer implements RendererInterface
     private $packages;
 
     /**
-     * @var ViewOptionsResolver 
+     * @var ViewOptionsResolver
      */
     protected $viewOptionsResolver;
 
