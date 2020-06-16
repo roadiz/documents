@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\UrlGenerators;
 
+use Doctrine\Common\Cache\CacheProvider;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -54,7 +55,8 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
         Packages $packages,
         SymfonyUrlGeneratorInterface $urlGenerator,
         DocumentInterface $document = null,
-        array $options = []
+        array $options = [],
+        ?CacheProvider $optionCacheProvider = null
     ) {
         $this->requestStack = $requestStack;
         $this->document = $document;
@@ -62,6 +64,7 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
         $this->urlGenerator = $urlGenerator;
         $this->viewOptionsResolver = new ViewOptionsResolver();
         $this->optionCompiler = new OptionsCompiler();
+        $this->cache = $optionCacheProvider;
 
         $this->setOptions($options);
     }
@@ -73,7 +76,20 @@ class DocumentUrlGenerator implements DocumentUrlGeneratorInterface
      */
     public function setOptions(array $options = [])
     {
-        $this->options = $this->viewOptionsResolver->resolve($options);
+        if (null !== $this->cache) {
+            /*
+             * Use cache to resolve valid options once, especially if
+             * you are rendering a lot of documents with the same options.
+             */
+            $optionsHash = md5(json_encode($options));
+            if (!$this->cache->contains($optionsHash)) {
+                $resolvedOptions = $this->viewOptionsResolver->resolve($options);
+                $this->cache->save($optionsHash, $resolvedOptions);
+            }
+            $this->options = $this->cache->fetch($optionsHash);
+        } else {
+            $this->options = $this->viewOptionsResolver->resolve($options);
+        }
         return $this;
     }
 
