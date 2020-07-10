@@ -65,6 +65,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'end' => false,
             'enablejsapi' => true,
             'playlist' => false,
+            'playsinline' => false, // Allow iframe to play inline on iOS
             /*
              * Mixcloud
              */
@@ -126,6 +127,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('start', ['boolean', 'integer']);
         $this->setAllowedTypes('end', ['boolean', 'integer']);
         $this->setAllowedTypes('enablejsapi', ['boolean']);
+        $this->setAllowedTypes('playsinline', ['boolean']);
 
         /*
          * Mixcloud
