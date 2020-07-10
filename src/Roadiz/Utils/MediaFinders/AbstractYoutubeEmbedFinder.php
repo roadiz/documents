@@ -171,6 +171,9 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
             $queryString['autoplay'] = (int) $options['autoplay'];
             $queryString['playsinline'] = (int) $options['autoplay'];
         }
+        if ($options['playsinline']) {
+            $queryString['playsinline'] = (int) $options['playsinline'];
+        }
         if ($options['playlist']) {
             $queryString['playlist'] = (int) $options['playlist'];
         }
