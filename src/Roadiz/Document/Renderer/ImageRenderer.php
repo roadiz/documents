@@ -21,7 +21,7 @@ class ImageRenderer extends AbstractImageRenderer
         /*
          * Override image by its first thumbnail if existing
          */
-        if ($document instanceof HasThumbnailInterface && $document->hasThumbnails()) {
+        if (!$options['no_thumbnail'] && $document instanceof HasThumbnailInterface && $document->hasThumbnails()) {
             $document = $document->getThumbnails()->first();
         }
 
