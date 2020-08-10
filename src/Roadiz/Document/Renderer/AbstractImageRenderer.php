@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Document\Renderer;
 
-use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\AdvancedDocumentInterface;
-use RZ\Roadiz\Utils\Document\UrlOptionsResolver;
+use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\MediaFinders\EmbedFinderFactory;
 use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
