@@ -36,6 +36,8 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'srcset' => [],
             'sizes' => [],
             'picture' => false,
+            // prevent thumbnail usage when available
+            'no_thumbnail' => false,
             /*
              * Soundcloud
              */
@@ -95,6 +97,7 @@ class ViewOptionsResolver extends UrlOptionsResolver
         $this->setAllowedTypes('media', ['array']);
         $this->setAllowedTypes('sizes', ['array']);
         $this->setAllowedTypes('picture', ['boolean']);
+        $this->setAllowedTypes('no_thumbnail', ['boolean']);
 
         // Fallback src content when using lazyload with data-src
         $this->setAllowedTypes('fallback', ['string']);

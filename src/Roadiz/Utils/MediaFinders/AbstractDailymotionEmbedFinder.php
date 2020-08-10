@@ -3,14 +3,37 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
 
+use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
+
 /**
  * Dailymotion tools class.
  *
- * Manage a youtube video feed
+ * Manage a dailymotion video feed
  */
 abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
 {
     protected static $platform = 'dailymotion';
+    protected static $idPattern = '#^https\:\/\/(?:www\.)?(?:dailymotion\.com|dai\.ly)\/video\/(?<id>[a-zA-Z0-9\_\-]+)#';
+    protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
+
+    /**
+     * @var string|null
+     */
+    protected $embedUrl;
+
+    /**
+     * @inheritDoc
+     */
+    protected function validateEmbedId($embedId = "")
+    {
+        if (preg_match(static::$idPattern, $embedId, $matches)) {
+            return $embedId;
+        }
+        if (preg_match(static::$realIdPattern, $embedId, $matches)) {
+            return $embedId;
+        }
+        throw new InvalidEmbedId($embedId, static::$platform);
+    }
 
     /**
      * {@inheritdoc}
@@ -51,17 +74,66 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getFeed()
+    {
+        $feed = parent::getFeed();
+        /*
+         * We need to extract REAL embedId from oEmbed response, from the HTML field.
+         */
+        $this->embedUrl = $this->embedId;
+        if (is_array($feed) &&
+            !empty($feed['html']) &&
+            preg_match('#src\=\"https\:\/\/www\.dailymotion\.com\/embed\/video\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)) {
+            $this->embedId = urldecode($matches['realId']);
+        }
+
+        return $feed;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getMediaFeed($search = null)
     {
-        // http://gdata.youtube.com/feeds/api/videos/<Code de la vidéo>?v=2&alt=json ---> JSON
-        //
-        $url = "http://www.dailymotion.com/services/oembed?format=json&url=".
-                "http://www.dailymotion.com/video/".
-                $this->embedId;
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
+            $url = 'https://www.dailymotion.com/video/' . $this->embedId;
+        } else {
+            $url = $this->embedId;
+        }
 
-        return $this->downloadFeedFromAPI($url);
+        $endpoint = "https://www.dailymotion.com/services/oembed";
+        $query = [
+            'url' => $url,
+            'format' => 'json',
+        ];
+
+        return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getThumbnailName($pathinfo)
+    {
+        if (null === $this->embedUrl) {
+            $embed = $this->embedId;
+        } else {
+            $embed = $this->embedUrl;
+        }
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $matches)) {
+            $pathinfo = '.' . $matches['extension'];
+        } else {
+            $pathinfo = '.jpg';
+        }
+        if (preg_match(static::$realIdPattern, $embed, $matches) === 1) {
+            return 'dailymotion_' . $matches['id'] . $pathinfo;
+        }
+        if (preg_match(static::$idPattern, $embed, $matches) === 1) {
+            return 'dailymotion_' . $matches['id'] . $pathinfo;
+        }
+        throw new InvalidEmbedId($embed, static::$platform);
     }
 
     /**
