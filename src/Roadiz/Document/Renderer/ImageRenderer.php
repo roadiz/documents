@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Document\Renderer;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
-use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
+use RZ\Roadiz\Core\Models\HasThumbnailInterface;
 
 class ImageRenderer extends AbstractImageRenderer
 {
@@ -17,6 +17,13 @@ class ImageRenderer extends AbstractImageRenderer
     public function render(DocumentInterface $document, array $options): string
     {
         $options = $this->viewOptionsResolver->resolve($options);
+
+        /*
+         * Override image by its first thumbnail if existing
+         */
+        if ($document instanceof HasThumbnailInterface && $document->hasThumbnails()) {
+            $document = $document->getThumbnails()->first();
+        }
 
         $assignation = array_merge(array_filter($options), [
             'mimetype' => $document->getMimeType(),

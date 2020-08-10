@@ -42,9 +42,14 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaFeed($search = null)
     {
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
+            $url = 'https://www.youtube.com/watch?v=' . $this->embedId;
+        } else {
+            $url = $this->embedId;
+        }
         $endpoint = "https://www.youtube.com/oembed";
         $query = [
-            'url' => $this->embedId,
+            'url' => $url,
             'format' => 'json',
         ];
 
