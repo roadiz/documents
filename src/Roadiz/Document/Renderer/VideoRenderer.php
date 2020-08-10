@@ -7,7 +7,6 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\HasThumbnailInterface;
 use RZ\Roadiz\Document\DocumentFinderInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
-use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
 
@@ -84,7 +83,7 @@ class VideoRenderer extends AbstractRenderer
         /*
          * Use document thumbnail first
          */
-        if ($document instanceof HasThumbnailInterface && $document->hasThumbnails()) {
+        if (!$options['no_thumbnail'] && $document instanceof HasThumbnailInterface && $document->hasThumbnails()) {
             $thumbnail = $document->getThumbnails()->first();
             if (false !== $thumbnail) {
                 $this->documentUrlGenerator->setOptions($options);

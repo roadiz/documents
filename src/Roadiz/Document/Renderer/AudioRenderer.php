@@ -6,7 +6,6 @@ namespace RZ\Roadiz\Document\Renderer;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Document\DocumentFinderInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
-use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
 

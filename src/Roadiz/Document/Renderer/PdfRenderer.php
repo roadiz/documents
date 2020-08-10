@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Document\Renderer;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
-use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 
 class PdfRenderer extends AbstractRenderer
 {
