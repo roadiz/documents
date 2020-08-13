@@ -45,6 +45,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'application/pdf' => 'pdf',
         // Audio types
         'audio/mpeg' => 'audio',
+        'audio/x-m4a' => 'audio',
         'audio/x-wav' => 'audio',
         'audio/wav' => 'audio',
         'audio/aac' => 'audio',

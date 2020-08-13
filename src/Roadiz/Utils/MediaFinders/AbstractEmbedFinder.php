@@ -239,7 +239,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @param ObjectManager $objectManager
      * @param AbstractDocumentFactory $documentFactory
-     * @return DocumentInterface
+     * @return DocumentInterface|array<DocumentInterface>
      */
     public function createDocumentFromFeed(
         ObjectManager $objectManager,

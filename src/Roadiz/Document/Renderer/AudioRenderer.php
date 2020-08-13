@@ -81,19 +81,27 @@ class AudioRenderer extends AbstractRenderer
             $basename . '.mp3',
             $basename . '.ogg',
             $basename . '.wav',
+            $basename . '.m4a',
+            $basename . '.aac',
         ];
 
         $sourcesDocs = $this->documentFinder->findAllByFilenames($sourcesDocsName);
-
-        /** @var DocumentInterface $source */
-        foreach ($sourcesDocs as $source) {
-            $sources[$source->getMimeType()] = [
-                'mime' => $source->getMimeType(),
-                'url' => $this->packages->getUrl($source->getRelativePath() ?? '', Packages::DOCUMENTS),
+        if (count($sourcesDocs) > 0) {
+            /** @var DocumentInterface $source */
+            foreach ($sourcesDocs as $source) {
+                $sources[$source->getMimeType()] = [
+                    'mime' => $source->getMimeType(),
+                    'url' => $this->packages->getUrl($source->getRelativePath() ?? '', Packages::DOCUMENTS),
+                ];
+            }
+            krsort($sources);
+        } else {
+            // If exotic extension, fallbacks using original file
+            $sources[$document->getMimeType()] = [
+                'mime' => $document->getMimeType(),
+                'url' => $this->packages->getUrl($document->getRelativePath() ?? '', Packages::DOCUMENTS),
             ];
         }
-
-        krsort($sources);
 
         return $sources;
     }
