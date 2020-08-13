@@ -115,7 +115,7 @@ interface DocumentInterface
     public function getEmbedId();
 
     /**
-     * @param string $embedId
+     * @param string|null $embedId
      * @return DocumentInterface
      */
     public function setEmbedId($embedId);
@@ -126,7 +126,7 @@ interface DocumentInterface
     public function getEmbedPlatform();
 
     /**
-     * @param string $embedPlatform
+     * @param string|null $embedPlatform
      * @return DocumentInterface
      */
     public function setEmbedPlatform($embedPlatform);

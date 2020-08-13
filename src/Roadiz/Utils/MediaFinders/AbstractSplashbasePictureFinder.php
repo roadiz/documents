@@ -158,7 +158,10 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
         /*
          * http://www.splashbase.co/api#images_random
          */
-        return $this->getBestUrl($this->feed);
+        if (is_array($this->feed)) {
+            return $this->getBestUrl($this->feed);
+        }
+        return null;
     }
 
     /**

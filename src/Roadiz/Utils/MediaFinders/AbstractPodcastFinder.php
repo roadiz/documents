@@ -3,17 +3,13 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
 
-use SimpleXMLElement;
 use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\StreamInterface;
-use RZ\Roadiz\Core\Entities\Document;
-use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
-use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
+use SimpleXMLElement;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractPodcastFinder extends AbstractEmbedFinder
@@ -39,11 +35,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
             if (null !== $rawFeed) {
                 try {
                     $this->feed = new SimpleXMLElement($rawFeed);
-                    if ($this->feed->channel->item) {
-                        return $this->feed;
-                    } else {
-                        throw new \RuntimeException('Feed content is not a valid Podcast XML');
-                    }
+                    return $this->feed;
                 } catch (\Exception $errorException) {
                     throw new \RuntimeException('Feed content is not a valid Podcast XML');
                 }
@@ -53,13 +45,17 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     }
 
     /**
-     * @param string $pathinfo
+     * @param SimpleXMLElement $item
      *
      * @return string
      */
     protected function getAudioName(SimpleXMLElement $item)
     {
-        $url = (string) $item->enclosure->attributes()->url;
+        if (null !== $item->enclosure->attributes()) {
+            $url = (string) $item->enclosure->attributes()->url;
+        } else {
+            throw new \RuntimeException('Podcast element does not have any enclosure URL.');
+        }
 
         if (!empty((string) $item->title)) {
             $extension = pathinfo($url, PATHINFO_EXTENSION);
@@ -82,25 +78,28 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
         AbstractDocumentFactory $documentFactory
     ) {
         $documents = [];
-        foreach ($this->getFeed()->channel->item as $item) {
-            if (!empty($item->enclosure->attributes()->url) &&
-                !$this->documentExists($objectManager, $item->guid, null)) {
-                $podcastUrl = (string) $item->enclosure->attributes()->url;
-                $thumbnailName = $this->getAudioName($item);
-                $file = DownloadedFile::fromUrl($podcastUrl, $thumbnailName);
+        $feed = $this->getFeed();
+        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+            foreach ($feed->channel->item as $item) {
+                if (!empty($item->enclosure->attributes()->url) &&
+                    !$this->documentExists($objectManager, $item->guid, null)) {
+                    $podcastUrl = (string) $item->enclosure->attributes()->url;
+                    $thumbnailName = $this->getAudioName($item);
+                    $file = DownloadedFile::fromUrl($podcastUrl, $thumbnailName);
 
-                if (null !== $file) {
-                    $documentFactory->setFile($file);
-                    $document = $documentFactory->getDocument();
-                    if (null !== $document) {
-                        /*
-                         * Create document metas
-                         * for each translation
-                         */
-                        $this->injectMetaFromPodcastItem($objectManager, $document, $item);
-                        $document->setEmbedId((string) $item->guid);
-                        $document->setEmbedPlatform(null);
-                        $documents[] = $document;
+                    if (null !== $file) {
+                        $documentFactory->setFile($file);
+                        $document = $documentFactory->getDocument();
+                        if (null !== $document) {
+                            /*
+                             * Create document metas
+                             * for each translation
+                             */
+                            $this->injectMetaFromPodcastItem($objectManager, $document, $item);
+                            $document->setEmbedId((string) $item->guid);
+                            $document->setEmbedPlatform(null);
+                            $documents[] = $document;
+                        }
                     }
                 }
             }
@@ -115,17 +114,17 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
         \SimpleXMLElement $item
     ): void;
 
-    protected function getPodcastItemTitle(\SimpleXMLElement $item): string
+    protected function getPodcastItemTitle(\SimpleXMLElement $item): ?string
     {
         return (string) $item->title . ' – ' . $this->getMediaTitle();
     }
 
-    protected function getPodcastItemDescription(\SimpleXMLElement $item): string
+    protected function getPodcastItemDescription(\SimpleXMLElement $item): ?string
     {
         return (string) $item->description;
     }
 
-    protected function getPodcastItemCopyright(\SimpleXMLElement $item): string
+    protected function getPodcastItemCopyright(\SimpleXMLElement $item): ?string
     {
         $ituneNode = $item->children('itunes', true);
         $copyright = (string) $ituneNode->author;
@@ -168,7 +167,11 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return (string) ($this->getFeed()->channel->title ?? null);
+        $feed = $this->getFeed();
+        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+            return (string) ($feed->channel->title ?? null);
+        }
+        return null;
     }
 
     /**
@@ -176,7 +179,11 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription()
     {
-        return (string) ($this->getFeed()->channel->description ?? null);
+        $feed = $this->getFeed();
+        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+            return (string) ($feed->channel->description ?? null);
+        }
+        return null;
     }
 
     /**
@@ -184,7 +191,10 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
      */
     public function getMediaCopyright()
     {
-        return (string) ($this->getFeed()->channel->copyright ?? null);
+        $feed = $this->getFeed();
+        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+            return (string) ($feed->channel->copyright ?? null);
+        }
     }
 
     /**
@@ -192,6 +202,9 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
      */
     public function getThumbnailURL()
     {
-        return (string) ($this->getFeed()->channel->image->url ?? null);
+        $feed = $this->getFeed();
+        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+            return (string) ($feed->channel->image->url ?? null);
+        }
     }
 }
