@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Core\Viewers;
 
 use enshrined\svgSanitize\Sanitizer;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class SvgDocumentViewer
