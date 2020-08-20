@@ -63,7 +63,7 @@ class DownscaleImageManager
     /**
      * Downscale document if needed, overriding raw document.
      *
-     * @param  DocumentInterface|null $document
+     * @param DocumentInterface|null $document
      */
     public function processAndOverrideDocument(DocumentInterface $document = null)
     {
@@ -84,7 +84,7 @@ class DownscaleImageManager
     /**
      * Downscale document if needed, keeping existing raw document.
      *
-     * @param  DocumentInterface|null $document
+     * @param DocumentInterface|null $document
      */
     public function processDocumentFromExistingRaw(DocumentInterface $document = null)
     {
@@ -165,7 +165,7 @@ class DownscaleImageManager
             if (null !== $processImage) {
                 $rawDocument = clone $originalDocument;
                 $rawDocumentName = preg_replace(
-                    '#\.(jpe?g|gif|tiff?|png|psd)$#',
+                    '#\.(jpe?g|gif|tiff?|png|psd|webp)$#',
                     $this->rawImageSuffix . '.$1',
                     $originalDocument->getFilename()
                 );
@@ -203,7 +203,6 @@ class DownscaleImageManager
             }
         } elseif (null !== $processImage) {
             $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
-
             /*
              * Remove existing downscaled document.
              */
@@ -212,7 +211,6 @@ class DownscaleImageManager
              * Then save downscaled image as original document path.
              */
             $processImage->save($originalDocumentPath, 100);
-
             $this->em->flush();
 
             return $originalDocument;
@@ -222,27 +220,28 @@ class DownscaleImageManager
              * we delete it and use it as new active document file.
              */
             $rawDocument = $originalDocument->getRawDocument();
+            if (null !== $rawDocument) {
+                $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
+                $rawDocumentPath = $this->packages->getDocumentFilePath($rawDocument);
 
-            $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
-            $rawDocumentPath = $this->packages->getDocumentFilePath($rawDocument);
+                /*
+                 * Remove existing downscaled document.
+                 */
+                $fs->remove($originalDocumentPath);
+                $fs->copy($rawDocumentPath, $originalDocumentPath, true);
 
-            /*
-             * Remove existing downscaled document.
-             */
-            $fs->remove($originalDocumentPath);
-            $fs->copy($rawDocumentPath, $originalDocumentPath, true);
-
-            /*
-             * Remove Raw document
-             */
-            $originalDocument->setRawDocument(null);
-            /*
-             * Make sure to disconnect raw document before removing it
-             * not to trigger Cascade deleting.
-             */
-            $this->em->flush();
-            $this->em->remove($rawDocument);
-            $this->em->flush();
+                /*
+                 * Remove Raw document
+                 */
+                $originalDocument->setRawDocument(null);
+                /*
+                 * Make sure to disconnect raw document before removing it
+                 * not to trigger Cascade deleting.
+                 */
+                $this->em->flush();
+                $this->em->remove($rawDocument);
+                $this->em->flush();
+            }
 
             return $originalDocument;
         }
