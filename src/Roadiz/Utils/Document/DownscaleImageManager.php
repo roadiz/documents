@@ -202,6 +202,10 @@ class DownscaleImageManager
                 return $originalDocument;
             }
         } elseif (null !== $processImage) {
+            /*
+             * New downscale document has been generated, we keep existing RAW document
+             * but we override downscaled file we the new one.
+             */
             $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
             /*
              * Remove existing downscaled document.
