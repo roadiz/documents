@@ -70,7 +70,7 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     public function getMediaTitle()
     {
         if (isset($this->getFeed()[0])) {
-            return $this->getFeed()[0]['title'];
+            return $this->getFeed()[0]['title'] ?? '';
         }
 
         return "";
@@ -81,7 +81,7 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     public function getMediaDescription()
     {
         if (isset($this->getFeed()[0])) {
-            return $this->getFeed()[0]['description'];
+            return $this->getFeed()[0]['description'] ?? '';
         }
 
         return "";

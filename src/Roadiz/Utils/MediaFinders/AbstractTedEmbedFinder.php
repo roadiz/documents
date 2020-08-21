@@ -53,7 +53,7 @@ abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return $this->getFeed()['title'];
+        return $this->getFeed()['title'] ?? '';
     }
 
     /**
@@ -61,7 +61,7 @@ abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription()
     {
-        return $this->getFeed()['description'];
+        return $this->getFeed()['description'] ?? '';
     }
 
     /**
