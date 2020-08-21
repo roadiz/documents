@@ -43,7 +43,7 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return $this->getFeed()['title'];
+        return $this->getFeed()['title'] ?? '';
     }
     /**
      * {@inheritdoc}
