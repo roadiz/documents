@@ -195,6 +195,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
         if (null !== $feed && $feed instanceof SimpleXMLElement) {
             return (string) ($feed->channel->copyright ?? null);
         }
+        return null;
     }
 
     /**
@@ -206,5 +207,6 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
         if (null !== $feed && $feed instanceof SimpleXMLElement) {
             return (string) ($feed->channel->image->url ?? null);
         }
+        return null;
     }
 }
