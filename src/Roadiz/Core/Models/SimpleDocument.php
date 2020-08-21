@@ -238,17 +238,28 @@ class SimpleDocument extends AbstractDocument
     public function setFolders(Collection $folders): SimpleDocument
     {
         $this->folders = $folders;
-
         return $this;
     }
 
+    /**
+     * @param FolderInterface $folder
+     *
+     * @return $this|DocumentInterface
+     */
     public function addFolder(FolderInterface $folder)
     {
         $this->folders->add($folder);
+        return $this;
     }
 
+    /**
+     * @param FolderInterface $folder
+     *
+     * @return $this|DocumentInterface
+     */
     public function removeFolder(FolderInterface $folder)
     {
         $this->folders->removeElement($folder);
+        return $this;
     }
 }

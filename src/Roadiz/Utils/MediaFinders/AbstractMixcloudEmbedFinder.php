@@ -7,7 +7,13 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     */
     protected static $platform = 'mixcloud';
+    /**
+     * @var string
+     */
     protected static $idPattern = '#^https\:\/\/www\.mixcloud\.com\/(?<author>[a-zA-Z0-9\-]+)\/(?<id>[a-zA-Z0-9\-]+)\/?$#';
 
     /**
@@ -48,7 +54,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return $this->getFeed()['title'];
+        return $this->getFeed()['title'] ?? '';
     }
 
     /**
@@ -56,7 +62,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription()
     {
-        return $this->getFeed()['description'];
+        return $this->getFeed()['description'] ?? '';
     }
 
     /**
@@ -64,7 +70,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaCopyright()
     {
-        return $this->getFeed()['author_name'] . ' (' . $this->getFeed()['author_url']. ')';
+        return ($this->getFeed()['author_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? '') . ')';
     }
 
     /**
@@ -72,7 +78,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
      */
     public function getThumbnailURL()
     {
-        return $this->getFeed()['image'];
+        return $this->getFeed()['image'] ?? '';
     }
 
     /**

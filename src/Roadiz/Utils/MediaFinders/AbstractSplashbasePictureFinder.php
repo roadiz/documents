@@ -15,7 +15,9 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
      * @var Client
      */
     private $client;
-
+    /**
+     * @var string
+     */
     protected static $platform = 'splashbase';
 
     /**
@@ -110,6 +112,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
      */
     public function getMediaFeed($search = null)
     {
+        return '';
     }
 
     /**
@@ -117,6 +120,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
      */
     public function getSearchFeed($searchTerm, $author, $maxResults = 15)
     {
+        return null;
     }
 
     /**
@@ -140,7 +144,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
      */
     public function getMediaCopyright()
     {
-        return $this->feed['copyright'].' — '.$this->feed['site'];
+        return ($this->feed['copyright'] ?? '').' — '.($this->feed['site'] ?? '');
     }
 
     /**

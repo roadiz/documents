@@ -7,7 +7,13 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     */
     protected static $platform = 'twitch';
+    /**
+     * @var string
+     */
     protected static $idPattern = '#^https\:\/\/(www\.)?twitch\.tv\/videos\/(?<id>[0-9]+)#';
 
     /**
@@ -47,7 +53,7 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return $this->getFeed()['title'];
+        return $this->getFeed()['title'] ?? '';
     }
 
     /**
@@ -55,7 +61,7 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription()
     {
-        return $this->getFeed()['description'];
+        return $this->getFeed()['description'] ?? '';
     }
 
     /**
@@ -63,7 +69,7 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaCopyright()
     {
-        return $this->getFeed()['author_name'] . ' - ' . $this->getFeed()['provider_name'] . ' (' . $this->getFeed()['author_url']. ')';
+        return ($this->getFeed()['author_name'] ?? '') . ' - ' . ($this->getFeed()['provider_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? ''). ')';
     }
 
     /**
@@ -71,7 +77,7 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
      */
     public function getThumbnailURL()
     {
-        return $this->getFeed()['thumbnail_url'];
+        return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
     /**

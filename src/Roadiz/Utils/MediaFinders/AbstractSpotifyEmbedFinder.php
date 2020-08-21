@@ -7,7 +7,13 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     */
     protected static $platform = 'spotify';
+    /**
+     * @var string
+     */
     protected static $idPattern = '#^https\:\/\/open\.spotify\.com\/(?<type>track|playlist|artist|album|show|episode)\/(?<id>[a-zA-Z0-9]+)#';
 
     /**
@@ -75,7 +81,7 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
      */
     public function getThumbnailURL()
     {
-        return $this->getFeed()['thumbnail_url'];
+        return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
     /**

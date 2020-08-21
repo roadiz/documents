@@ -119,7 +119,7 @@ abstract class AbstractDocumentFactory
      *
      * @param DocumentInterface $document
      */
-    protected function parseSvgMimeType(DocumentInterface $document)
+    protected function parseSvgMimeType(DocumentInterface $document): void
     {
         if (($document->getMimeType() == "text/plain" ||
                 $document->getMimeType() == 'text/html') &&
@@ -180,7 +180,7 @@ abstract class AbstractDocumentFactory
     /**
      * @param DocumentInterface $document
      */
-    protected function dispatchEvents(DocumentInterface $document)
+    protected function dispatchEvents(DocumentInterface $document): void
     {
         if ($document->isImage()) {
             $this->dispatcher->dispatch(

@@ -14,8 +14,17 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
     protected const YOUTUBE_EMBED_DOMAIN = 'https://www.youtube-nocookie.com';
+    /**
+     * @var string
+     */
     protected static $platform = 'youtube';
+    /**
+     * @var string
+     */
     protected static $idPattern = '#^https\:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v\=)?(?<id>[a-zA-Z0-9\_\-]+)#';
+    /**
+     * @var string
+     */
     protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
 
     /**
@@ -80,7 +89,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return $this->getFeed()['title'];
+        return $this->getFeed()['title'] ?? '';
     }
     /**
      * {@inheritdoc}
@@ -95,14 +104,14 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaCopyright()
     {
-        return $this->getFeed()['author_name'] . ' (' . $this->getFeed()['author_url']. ')';
+        return ($this->getFeed()['author_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? ''). ')';
     }
     /**
      * {@inheritdoc}
      */
     public function getThumbnailURL()
     {
-        return $this->getFeed()['thumbnail_url'];
+        return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
     /**

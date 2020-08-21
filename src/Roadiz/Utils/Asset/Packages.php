@@ -118,7 +118,7 @@ class Packages extends BasePackages
      * when warming up cache on dependency injection.
      * These packages need a valid Request object.
      */
-    protected function initializePackages()
+    protected function initializePackages(): void
     {
         $this->setDefaultPackage($this->getDefaultPackage());
         $packages = [

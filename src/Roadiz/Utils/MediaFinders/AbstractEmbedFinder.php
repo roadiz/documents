@@ -35,7 +35,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @var string
      */
     protected $key;
-
     /**
      * @var string
      */
@@ -70,10 +69,13 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
 
     /**
      * @param string $embedId
+     *
+     * @return AbstractEmbedFinder
      */
-    public function setEmbedId($embedId)
+    public function setEmbedId($embedId): AbstractEmbedFinder
     {
         $this->embedId = $this->validateEmbedId($embedId);
+        return $this;
     }
 
     /**
@@ -210,9 +212,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
             $attributes['allow'][] = 'fullscreen';
         }
 
-        if (count($attributes['allow']) > 0) {
-            $attributes['allow'] = implode('; ', $attributes['allow']);
-        }
+        $attributes['allow'] = implode('; ', $attributes['allow']);
 
         if ($options['loading']) {
             $attributes['loading'] = $options['loading'];
