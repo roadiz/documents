@@ -12,10 +12,18 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
  */
 abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     */
     protected static $platform = 'soundcloud';
+    /**
+     * @var string
+     */
     protected static $idPattern = '#^https\:\/\/soundcloud\.com\/(?<user>[a-z0-9\-]+)\/?#';
+    /**
+     * @var string
+     */
     protected static $realIdPattern = '#^https\:\/\/api\.soundcloud\.com\/(?<type>tracks|playlists|users)\/(?<id>[0-9]+)\/?#';
-
     /**
      * @var string|null
      */
@@ -71,28 +79,28 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return $this->getFeed()['title'];
+        return $this->getFeed()['title'] ?? '';
     }
     /**
      * {@inheritdoc}
      */
     public function getMediaDescription()
     {
-        return $this->getFeed()['description'];
+        return $this->getFeed()['description'] ?? '';
     }
     /**
      * @inheritDoc
      */
     public function getMediaCopyright()
     {
-        return $this->getFeed()['author_name'] . ' (' . $this->getFeed()['author_url']. ')';
+        return ($this->getFeed()['author_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? '') . ')';
     }
     /**
      * {@inheritdoc}
      */
     public function getThumbnailURL()
     {
-        return $this->getFeed()['thumbnail_url'];
+        return $this->getFeed()['thumbnail_url'] ?? '';
     }
     /**
      * {@inheritdoc}

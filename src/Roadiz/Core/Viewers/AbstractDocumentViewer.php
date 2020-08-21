@@ -29,7 +29,7 @@ abstract class AbstractDocumentViewer implements RendererInterface
     protected $document;
 
     /**
-     * @var AbstractEmbedFinder|bool
+     * @var AbstractEmbedFinder|false
      */
     protected $embedFinder;
 

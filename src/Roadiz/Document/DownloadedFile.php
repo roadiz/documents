@@ -33,6 +33,18 @@ class DownloadedFile extends File
     }
 
     /**
+     * Final constructor for safe usage in DownloadedFile::fromUrl
+     *
+     * @param string $path
+     * @param bool   $checkPath
+     */
+    final public function __construct(string $path, bool $checkPath = true)
+    {
+        parent::__construct($path, $checkPath);
+    }
+
+
+    /**
      * @param string      $url
      * @param string|null $originalName
      *

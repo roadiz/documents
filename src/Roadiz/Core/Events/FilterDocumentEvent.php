@@ -13,6 +13,9 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class FilterDocumentEvent extends Event
 {
+    /**
+     * @var DocumentInterface
+     */
     protected $document;
 
     public function __construct(DocumentInterface $document)
@@ -20,6 +23,9 @@ class FilterDocumentEvent extends Event
         $this->document = $document;
     }
 
+    /**
+     * @return DocumentInterface
+     */
     public function getDocument()
     {
         return $this->document;
