@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 abstract class AbstractEmbedFinder implements EmbedFinderInterface
 {
     /**
-     * @var array|null
+     * @var array|\SimpleXMLElement|null
      */
     protected $feed = null;
     /**
@@ -239,7 +239,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @param ObjectManager $objectManager
      * @param AbstractDocumentFactory $documentFactory
-     * @return DocumentInterface
+     * @return DocumentInterface|array<DocumentInterface>
      */
     public function createDocumentFromFeed(
         ObjectManager $objectManager,
@@ -293,7 +293,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * @param ObjectManager $objectManager
      * @param string $embedId
-     * @param string $embedPlatform
+     * @param string|null $embedPlatform
      * @return bool
      */
     abstract protected function documentExists(ObjectManager $objectManager, $embedId, $embedPlatform);
