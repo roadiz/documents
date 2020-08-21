@@ -14,9 +14,14 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class DownscaleImageManager
 {
+    /**
+     * @var int
+     */
     protected $maxPixelSize = 0;
+    /**
+     * @var string
+     */
     protected $rawImageSuffix = ".raw";
-
     /**
      * @var ImageManager
      */
@@ -65,7 +70,7 @@ class DownscaleImageManager
      *
      * @param DocumentInterface|null $document
      */
-    public function processAndOverrideDocument(DocumentInterface $document = null)
+    public function processAndOverrideDocument(DocumentInterface $document = null): void
     {
         if (null !== $document && $this->maxPixelSize > 0) {
             $rawDocumentFilePath = $this->packages->getDocumentFilePath($document);
@@ -86,7 +91,7 @@ class DownscaleImageManager
      *
      * @param DocumentInterface|null $document
      */
-    public function processDocumentFromExistingRaw(DocumentInterface $document = null)
+    public function processDocumentFromExistingRaw(DocumentInterface $document = null): void
     {
         if (null !== $document && $this->maxPixelSize > 0) {
             if (null !== $document->getRawDocument()) {

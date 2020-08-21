@@ -43,7 +43,7 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     {
         $feed = $this->getFeed();
         if (is_array($feed) && isset($feed[0])) {
-            return $feed[0]['title'];
+            return $feed[0]['title'] ?? '';
         }
 
         return '';
@@ -55,7 +55,7 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     {
         $feed = $this->getFeed();
         if (is_array($feed) && isset($feed[0])) {
-            return $feed[0]['description'];
+            return $feed[0]['description'] ?? '';
         }
 
         return "";

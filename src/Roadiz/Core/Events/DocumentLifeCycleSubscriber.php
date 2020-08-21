@@ -44,7 +44,10 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
         );
     }
 
-    public function preUpdate(PreUpdateEventArgs $args)
+    /**
+     * @param PreUpdateEventArgs $args
+     */
+    public function preUpdate(PreUpdateEventArgs $args): void
     {
         $document = $args->getObject();
         if ($document instanceof DocumentInterface && $args->hasChangedField('filename')) {
@@ -74,7 +77,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * @param DocumentInterface  $document
      * @param PreUpdateEventArgs $args
      */
-    protected function makePublic(DocumentInterface $document, PreUpdateEventArgs $args)
+    protected function makePublic(DocumentInterface $document, PreUpdateEventArgs $args): void
     {
         $documentPublicPath = $this->getDocumentPublicPath($document);
         $documentPrivatePath = $this->getDocumentPrivatePath($document);
@@ -101,7 +104,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * @param DocumentInterface  $document
      * @param PreUpdateEventArgs $args
      */
-    protected function makePrivate(DocumentInterface $document, PreUpdateEventArgs $args)
+    protected function makePrivate(DocumentInterface $document, PreUpdateEventArgs $args): void
     {
         $documentPublicPath = $this->getDocumentPublicPath($document);
         $documentPrivatePath = $this->getDocumentPrivatePath($document);
@@ -127,7 +130,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      *
      * @param LifecycleEventArgs $args
      */
-    public function postRemove(LifecycleEventArgs $args)
+    public function postRemove(LifecycleEventArgs $args): void
     {
         $document = $args->getObject();
         if ($document instanceof DocumentInterface) {

@@ -12,10 +12,18 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
  */
 abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     */
     protected static $platform = 'dailymotion';
+    /**
+     * @var string
+     */
     protected static $idPattern = '#^https\:\/\/(?:www\.)?(?:dailymotion\.com|dai\.ly)\/video\/(?<id>[a-zA-Z0-9\_\-]+)#';
+    /**
+     * @var string
+     */
     protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
-
     /**
      * @var string|null
      */
@@ -40,7 +48,7 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaTitle()
     {
-        return $this->getFeed()['title'];
+        return $this->getFeed()['title'] ?? '';
     }
     /**
      * {@inheritdoc}
@@ -61,7 +69,7 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
      */
     public function getThumbnailURL()
     {
-        return $this->getFeed()['thumbnail_url'];
+        return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
 

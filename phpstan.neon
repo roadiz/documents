@@ -13,3 +13,5 @@ parameters:
         - '#Instantiated class Memcached not found#'
         - '#Instantiated class Redis not found#'
     reportUnmatchedIgnoredErrors: false
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false

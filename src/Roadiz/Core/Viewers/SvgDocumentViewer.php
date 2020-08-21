@@ -8,11 +8,26 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class SvgDocumentViewer
 {
+    /**
+     * @var string
+     */
     protected $imagePath;
+    /**
+     * @var array
+     */
     protected $attributes;
+    /**
+     * @var bool
+     */
     protected $asObject = false;
+    /**
+     * @var string
+     */
     protected $imageUrl;
 
+    /**
+     * @var string[]
+     */
     public static $allowedAttributes = [
         'width',
         'height',
@@ -87,6 +102,7 @@ class SvgDocumentViewer
         if (false === $dirtySVG) {
             throw new \RuntimeException($this->imagePath . ' file is not readable.');
         }
+        /** @var string|false $cleanSVG */
         $cleanSVG = $sanitizer->sanitize($dirtySVG);
         if (false !== $cleanSVG) {
             // Pass it to the sanitizer and get it back clean

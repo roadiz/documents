@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Utils\MediaFinders;
 
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Util to grab a facebook profile picture from userAlias.
@@ -14,6 +15,9 @@ class FacebookPictureFinder
      * @var string
      */
     protected $facebookUserAlias;
+    /**
+     * @var ResponseInterface
+     */
     protected $response;
 
     /**

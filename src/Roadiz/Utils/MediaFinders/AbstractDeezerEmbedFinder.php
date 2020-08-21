@@ -7,10 +7,22 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     */
     protected static $platform = 'deezer';
+    /**
+     * @var string
+     */
     protected static $idPattern = '#^https?:\/\/(www.)?deezer\.com\/(?:\\w+/)?(?<type>track|playlist|album)\/(?<id>[a-zA-Z0-9]+)#';
+    /**
+     * @var string
+     */
     protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9]+)$#';
 
+    /**
+     * @return bool
+     */
     public function isEmptyThumbnailAllowed(): bool
     {
         return true;
@@ -94,7 +106,7 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaCopyright()
     {
-        return $this->getFeed()['provider_name'] . ' (' . $this->getFeed()['provider_url']. ')';
+        return ($this->getFeed()['provider_name'] ?? '') . ' (' . ($this->getFeed()['provider_url'] ?? '') . ')';
     }
 
     /**
