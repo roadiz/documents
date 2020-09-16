@@ -143,9 +143,9 @@ class SvgDocumentViewer
 
             foreach ($attributes as $key => $value) {
                 if (isset($xml->attributes()->$key)) {
-                    $xml->attributes()->$key = $value;
+                    $xml->attributes()->$key = (string) $value;
                 } else {
-                    $xml->addAttribute($key, $value);
+                    $xml->addAttribute($key, (string) $value);
                 }
             }
             $svg = $xml->asXML();
