@@ -1,4 +1,4 @@
-{% spaceless %}
+{% apply spaceless %}
     {% set attributes = {} %}
 
     {% if width %}
@@ -51,4 +51,4 @@
     {% endfor %}
     {% block audio_fallback %}<p>Your browser does not support native audio.</p>{% endblock %}
 </audio>
-{% endspaceless %}
+{% endapply %}
