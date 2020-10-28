@@ -197,7 +197,7 @@ EOT
                 'picture' => true
             ])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<picture class="awesome-image responsive">
+<picture>
 <source type="image/webp" srcset="http://dummy.test/assets/w300-q90/folder/file.jpg.webp">
 <source type="image/jpeg" srcset="http://dummy.test/assets/w300-q90/folder/file.jpg">
 <img alt="file.jpg" src="http://dummy.test/assets/w300-q90/folder/file.jpg" width="300" class="awesome-image responsive" />
@@ -288,7 +288,7 @@ EOT
             ])))
             ->endWith('</noscript>')
             ->isEqualTo($this->htmlTidy(<<<EOT
-<picture class="awesome-image responsive">
+<picture>
     <source type="image/webp"
             srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
             data-srcset="/assets/w300-q90/folder/file.jpg.webp">
@@ -302,7 +302,7 @@ EOT
          class="awesome-image responsive lazyload" />
 </picture>
 <noscript>
-    <picture class="awesome-image responsive">
+    <picture>
         <source type="image/webp"
                 srcset="/assets/w300-q90/folder/file.jpg.webp">
         <source type="image/jpeg"
