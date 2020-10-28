@@ -67,13 +67,15 @@ class UrlOptionsResolver extends OptionsResolver
          * Guess width and height options from fit
          */
         $this->setDefault('width', function (Options $options) {
-            if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $options['fit'] ?? '', $matches)) {
+            $compositing = $options['crop'] ?? $options['fit'] ?? '';
+            if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $compositing, $matches)) {
                 return (int) $matches['width'];
             }
             return 0;
         });
         $this->setDefault('height', function (Options $options) {
-            if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $options['fit'] ?? '', $matches)) {
+            $compositing = $options['crop'] ?? $options['fit'] ?? '';
+            if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $compositing, $matches)) {
                 return (int) $matches['height'];
             }
             return 0;

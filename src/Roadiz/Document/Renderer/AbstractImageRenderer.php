@@ -52,6 +52,15 @@ abstract class AbstractImageRenderer extends AbstractRenderer
         return null;
     }
 
+    protected function willResample(array &$assignation): bool
+    {
+        return !empty($assignation['fit']) ||
+            !empty($assignation['crop']) ||
+            !empty($assignation['rotate']) ||
+            !empty($assignation['width']) ||
+            !empty($assignation['height']);
+    }
+
     /**
      * @param DocumentInterface $document
      * @param array             $options
