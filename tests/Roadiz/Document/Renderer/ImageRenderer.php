@@ -159,6 +159,7 @@ EOT
             ->isEqualTo($this->htmlTidy(<<<EOT
 <img alt="file.jpg"
      src="/assets/f600x400-q70/folder/file.jpg"
+     data-ratio="1.5"
      width="600"
      height="400" />
 EOT
@@ -251,7 +252,8 @@ EOT
 <img alt="file.jpg"
      src="/assets/f600x400-q90/folder/file.jpg"
      srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
-     sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" />
+     sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+     data-ratio="1.5" />
 EOT
             ))
 
@@ -279,7 +281,8 @@ EOT
      src="/assets/f600x400-q90/folder/file.jpg"
      srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
      sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
-     loading="lazy" />
+     loading="lazy"
+     data-ratio="1.5" />
 EOT
             ))
             ->string($this->htmlTidy($renderer->render($mockDocument, [
@@ -308,12 +311,14 @@ EOT
      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
      data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
      sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+     data-ratio="1.5"
      class="lazyload" />
 <noscript>
     <img alt="file.jpg"
          src="/assets/f600x400-q90/folder/file.jpg"
          srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
-         sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" />
+         sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+         data-ratio="1.5" />
 </noscript>
 EOT
             ))
@@ -345,13 +350,15 @@ EOT
      data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
      sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
      loading="lazy"
+     data-ratio="1.5"
      class="lazyload" />
 <noscript>
     <img alt="file.jpg"
          src="/assets/f600x400-q90/folder/file.jpg"
          srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
          sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
-         loading="lazy" />
+         loading="lazy"
+         data-ratio="1.5" />
 </noscript>
 EOT
             ))
