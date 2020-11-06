@@ -1,4 +1,4 @@
-{% spaceless %}
+{% apply spaceless %}
     {% set attributes = {
         'alt' : alt|escape('html_attr'),
     } %}
@@ -82,4 +82,4 @@
             </noscript>
         {% endblock %}
     {% endif %}
-{% endspaceless %}
+{% endapply %}
