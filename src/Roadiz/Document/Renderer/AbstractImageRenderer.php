@@ -137,7 +137,9 @@ abstract class AbstractImageRenderer extends AbstractRenderer
     protected function additionalAssignation(DocumentInterface $document, array $options, array &$assignation): void
     {
         if ($document instanceof AdvancedDocumentInterface) {
-            if (null !== $document->getImageRatio()) {
+            if (null !== $options['ratio'] && $options['ratio'] !== 0) {
+                $assignation['ratio'] = $options['ratio'];
+            } elseif (null !== $document->getImageRatio()) {
                 $assignation['ratio'] = $document->getImageRatio();
             }
             if (null !== $document->getImageAverageColor() &&

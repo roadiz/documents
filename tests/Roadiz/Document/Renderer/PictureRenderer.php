@@ -407,7 +407,8 @@ EOT
     <img alt="file.jpg"
         src="/assets/f600x400-q90/folder/file.jpg"
         srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
-        sizes="(max-width: 767px) 300px, (min-width: 768px) 400px" />
+        sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
+        data-ratio="1.5" />
 </picture>
 EOT
             ))
@@ -444,7 +445,8 @@ EOT
         src="/assets/f600x400-q90/folder/file.jpg"
         srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
         sizes="(max-width: 767px) 300px, (min-width: 768px) 400px"
-        loading="lazy" />
+        loading="lazy"
+        data-ratio="1.5" />
 </picture>
 EOT
             ))
@@ -477,7 +479,9 @@ EOT
          data-src="/assets/f600x400-q90/folder/file.jpg"
          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvGDBfwAGtQLk4581vAAAAABJRU5ErkJggg=="
          data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
-         width="600" height="400"
+         data-ratio="1.5"
+         width="600"
+         height="400"
          class="lazyload" />
 </picture>
 <noscript>
@@ -489,7 +493,9 @@ EOT
         <img alt="file.jpg"
              src="/assets/f600x400-q90/folder/file.jpg"
              srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
-             width="600" height="400" />
+             data-ratio="1.5"
+             width="600"
+             height="400" />
     </picture>
 </noscript>
 EOT
@@ -524,7 +530,9 @@ EOT
          data-src="/assets/f600x400-q90/folder/file.jpg"
          src="https://test.test/fallback.png"
          data-srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
-         width="600" height="400"
+         data-ratio="1.5"
+         width="600"
+         height="400"
          class="lazyload" />
 </picture>
 <noscript>
@@ -536,6 +544,7 @@ EOT
         <img alt="file.jpg"
             src="/assets/f600x400-q90/folder/file.jpg"
             srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x"
+            data-ratio="1.5"
             width="600"
             height="400" />
     </picture>
@@ -570,7 +579,9 @@ EOT
             srcset="/assets/f600x400-q90/folder/file.jpg 1x, /assets/f1200x800-q90/folder/file.jpg 2x">
     <img alt="file.jpg"
          src="/assets/f600x400-q90/folder/file.jpg"
-         width="600" height="400" />
+         data-ratio="1.5"
+         width="600"
+         height="400" />
 </picture>
 EOT
             ))
@@ -623,7 +634,9 @@ EOT
 
     <img alt="file.jpg"
          src="/assets/f600x400-q90/folder/file.jpg"
-         width="600" height="400" />
+         data-ratio="1.5"
+         width="600"
+         height="400" />
 </picture>
 EOT
             ))
@@ -678,7 +691,9 @@ EOT
     <img alt="file.jpg"
          src="/assets/f600x400-q90/folder/file.jpg"
          loading="lazy"
-         width="600" height="400" />
+         data-ratio="1.5"
+         width="600"
+         height="400" />
 </picture>
 EOT
             ))
@@ -730,7 +745,9 @@ EOT
     <img alt="file.webp"
          data-src="/assets/f600x400-q90/folder/file.webp"
          src="FALLBACK"
-         width="600" height="400"
+         data-ratio="1.5"
+         width="600"
+         height="400"
          class="lazyload" />
 </picture>
 <noscript>
@@ -745,7 +762,9 @@ EOT
 
         <img alt="file.webp"
              src="/assets/f600x400-q90/folder/file.webp"
-             width="600" height="400" />
+             data-ratio="1.5"
+             width="600"
+             height="400" />
     </picture>
 </noscript>
 EOT
@@ -800,7 +819,9 @@ EOT
          data-src="/assets/f600x400-q90/folder/file.webp"
          src="FALLBACK"
          loading="lazy"
-         width="600" height="400"
+         data-ratio="1.5"
+         width="600"
+         height="400"
          class="lazyload" />
 </picture>
 <noscript>
@@ -816,7 +837,9 @@ EOT
         <img alt="file.webp"
              src="/assets/f600x400-q90/folder/file.webp"
              loading="lazy"
-             width="600" height="400" />
+             data-ratio="1.5"
+             width="600"
+             height="400" />
     </picture>
 </noscript>
 EOT
