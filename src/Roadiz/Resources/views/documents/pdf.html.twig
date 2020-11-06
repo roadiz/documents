@@ -1,4 +1,4 @@
-{% spaceless %}
+{% apply spaceless %}
     {% set attributes = {
         'type': "application/pdf"|escape('html_attr'),
         'data': url,
@@ -34,4 +34,4 @@
 <object {{ attributesCompiled|join(' ')|raw }}>
     {%- block pdf_fallback -%}<p>Your browser does not support PDF native viewer.</p>{%- endblock -%}
 </object>
-{% endspaceless %}
+{% endapply %}

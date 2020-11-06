@@ -1,4 +1,4 @@
-{% spaceless %}
+{% apply spaceless %}
     {% set attributes = {} %}
     {% if width %}
         {% set attributes = attributes|merge({
@@ -64,4 +64,4 @@
         <p>Your browser does not support native video.</p>
     {% endblock %}
 </video>
-{% endspaceless %}
+{% endapply %}

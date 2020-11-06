@@ -150,10 +150,10 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
             'id' => $this->embedId
         ];
 
-        if ($options['autoplay']) {
+        if (key_exists('autoplay', $queryString)) {
             $queryString['autoplay'] = ((bool) $options['autoplay']) ? ('true') : ('false');
         }
-        if ($options['playlist']) {
+        if (key_exists('playlist', $queryString)) {
             $queryString['playlist'] = ((bool) $options['playlist']) ? ('true') : ('false');
         }
         if (null !== $options['color']) {
