@@ -211,6 +211,10 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @return null|string
+     * @Serializer\Groups({"document", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("string")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("relativePath")
      */
     public function getRelativePath()
     {
@@ -251,6 +255,12 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         return false;
     }
 
+    /**
+     * @Serializer\Groups({"document", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("string")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("alt")
+     */
     public function getAlternativeText(): string
     {
         return $this->getFilename();
