@@ -245,6 +245,10 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @inheritDoc
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("bool")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("processable")
      */
     public function isProcessable()
     {
