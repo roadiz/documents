@@ -211,7 +211,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @return null|string
-     * @Serializer\Groups({"document", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
      * @Serializer\Type("string")
      * @Serializer\VirtualProperty
      * @Serializer\SerializedName("relativePath")
@@ -245,6 +245,10 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @inheritDoc
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("bool")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("processable")
      */
     public function isProcessable()
     {
@@ -256,7 +260,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     }
 
     /**
-     * @Serializer\Groups({"document", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
      * @Serializer\Type("string")
      * @Serializer\VirtualProperty
      * @Serializer\SerializedName("alt")
