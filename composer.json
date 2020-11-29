@@ -31,7 +31,7 @@
         "symfony/options-resolver": "~4.4.1",
         "symfony/event-dispatcher": "~4.4.1",
         "roadiz/models": "~1.6.0 || dev-develop",
-        "monolog/monolog":"^1.24.0",
+        "monolog/monolog":"^1.24.0 || ^2.1.1",
         "guzzlehttp/guzzle": "^6.3 || ^7.2.0",
         "enshrined/svg-sanitize": "^0.13.0",
         "twig/twig": "^2.9 || ^3.1",
