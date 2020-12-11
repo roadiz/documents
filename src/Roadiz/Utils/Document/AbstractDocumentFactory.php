@@ -157,7 +157,11 @@ abstract class AbstractDocumentFactory
                 return null;
             }
             $document->setFilename($this->getFileName());
-            $document->setMimeType($this->file->getMimeType() ?? '');
+            if ($this->file instanceof UploadedFile) {
+                $document->setMimeType($this->file->getClientMimeType() ?? '');
+            } else {
+                $document->setMimeType($this->file->getMimeType() ?? '');
+            }
             $this->parseSvgMimeType($document);
             $this->file->move(
                 $this->packages->getDocumentFolderPath($document),
@@ -243,7 +247,11 @@ abstract class AbstractDocumentFactory
         }
 
         $document->setFilename($this->getFileName());
-        $document->setMimeType($this->file->getMimeType() ?? '');
+        if ($this->file instanceof UploadedFile) {
+            $document->setMimeType($this->file->getClientMimeType() ?? '');
+        } else {
+            $document->setMimeType($this->file->getMimeType() ?? '');
+        }
         $this->parseSvgMimeType($document);
 
         $this->file->move(
