@@ -61,7 +61,7 @@ class SvgRenderer extends atoum
             ->isEqualTo('image/svg+xml')
             ->string($renderer->render($mockDocument, []))
             ->isEqualTo(<<<EOT
-<object type="image/svg+xml" data="/files/folder/file2.svg"></object>
+<img src="/files/folder/file2.svg" />
 EOT
 );
     }
