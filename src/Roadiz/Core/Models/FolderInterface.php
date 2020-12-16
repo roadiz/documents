@@ -42,23 +42,15 @@ interface FolderInterface extends LeafInterface
     public function getFolderName();
 
     /**
-     * @return string
-     * @deprecated Use getFolderName() method instead to differentiate from FolderTranslation’ name.
+     * @return string|null
      */
-    public function getName();
+    public function getName(): ?string;
 
     /**
      * @param string $folderName
      * @return FolderInterface
      */
     public function setFolderName($folderName);
-
-    /**
-     * @param string $folderName
-     * @return FolderInterface
-     * @deprecated Use setFolderName() method instead to differentiate from FolderTranslation’ name.
-     */
-    public function setName($folderName);
 
     /**
      * @return string
