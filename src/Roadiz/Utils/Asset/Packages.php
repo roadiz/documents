@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class Packages
  * @package RZ\Roadiz\Utils\Asset
  */
 class Packages extends BasePackages
@@ -67,10 +66,6 @@ class Packages extends BasePackages
      */
     private $staticDomain;
     /**
-     * @var bool
-     */
-    private $isPreview;
-    /**
      * @var VersionStrategyInterface
      */
     private $versionStrategy;
@@ -94,21 +89,18 @@ class Packages extends BasePackages
      * @param RequestStack $requestStack
      * @param FileAwareInterface $fileAware
      * @param string $staticDomain
-     * @param bool $isPreview
      */
     public function __construct(
         VersionStrategyInterface $versionStrategy,
         RequestStack $requestStack,
         FileAwareInterface $fileAware,
-        $staticDomain = "",
-        $isPreview = false
+        $staticDomain = ""
     ) {
         parent::__construct();
         $this->requestStackContext = new RequestStackContext($requestStack);
         $this->requestStack = $requestStack;
         $this->fileAware = $fileAware;
         $this->staticDomain = $staticDomain;
-        $this->isPreview = $isPreview;
         $this->versionStrategy = $versionStrategy;
         $this->ready = false;
     }
@@ -152,7 +144,7 @@ class Packages extends BasePackages
      */
     public function useStaticDomain()
     {
-        return (false === $this->isPreview && $this->staticDomain != "");
+        return $this->staticDomain != "";
     }
 
     /**
