@@ -6,6 +6,9 @@ php:
     - 7.4
     - 8.0
 
+env:
+    - XDEBUG_MODE=coverage
+
 install:
     - curl -s http://getcomposer.org/installer | php
     - php composer.phar install --dev --no-interaction
