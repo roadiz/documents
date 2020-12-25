@@ -4,9 +4,6 @@ php:
     - 7.4
     - 8.0
     - nightly
-allow_failures:
-    -   php: 8.0
-    -   php: nightly
 env:
     - XDEBUG_MODE=coverage
 install:
@@ -16,3 +13,7 @@ script:
     - vendor/bin/phpcs --report=full --report-file=./report.txt --extensions=php --warning-severity=0 --standard=PSR2 -p ./src
     - vendor/bin/atoum -d tests
     - vendor/bin/phpstan analyse -c phpstan.neon -l max src
+jobs:
+    allow_failures:
+        -   php: 8.0
+        -   php: nightly
