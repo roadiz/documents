@@ -7,44 +7,26 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
 {
-    /**
-     * @var string
-     */
-    protected static $platform = 'deezer';
-    /**
-     * @var string
-     */
-    protected static $idPattern = '#^https?:\/\/(www.)?deezer\.com\/(?:\\w+/)?(?<type>track|playlist|album)\/(?<id>[a-zA-Z0-9]+)#';
-    /**
-     * @var string
-     */
-    protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9]+)$#';
+    protected static string $platform = 'deezer';
+    protected static string $idPattern = '#^https?:\/\/(www.)?deezer\.com\/(?:\\w+/)?(?<type>track|playlist|album)\/(?<id>[a-zA-Z0-9]+)#';
+    protected static string $realIdPattern = '#^(?<id>[a-zA-Z0-9]+)$#';
 
-    /**
-     * @return bool
-     */
     public function isEmptyThumbnailAllowed(): bool
     {
         return true;
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function validateEmbedId($embedId = "")
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (preg_match(static::$idPattern, $embedId, $matches)) {
+        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
-        if (preg_match(static::$realIdPattern, $embedId, $matches)) {
+        if (preg_match(static::$realIdPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getMediaFeed($search = null)
     {
         $endpoint = "https://api.deezer.com/oembed";
@@ -56,9 +38,6 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getFeed()
     {
         $feed = parent::getFeed();
@@ -77,42 +56,22 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         return $feed;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getSearchFeed($searchTerm, $author, $maxResults = 15)
-    {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMediaTitle()
+    public function getMediaTitle(): string
     {
         return isset($this->getFeed()['title']) ? $this->getFeed()['title'] : '';
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getMediaDescription()
+    public function getMediaDescription(): string
     {
         return isset($this->getFeed()['description']) ? $this->getFeed()['description'] : '';
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getMediaCopyright()
+    public function getMediaCopyright(): string
     {
         return ($this->getFeed()['provider_name'] ?? '') . ' (' . ($this->getFeed()['provider_url'] ?? '') . ')';
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getThumbnailURL()
+    public function getThumbnailURL(): string
     {
         return isset($this->getFeed()['thumbnail_url']) ? $this->getFeed()['thumbnail_url'] : '';
     }
@@ -120,14 +79,14 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getThumbnailName($pathinfo)
+    public function getThumbnailName(string $pathinfo): string
     {
-        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext) === 1) {
             $pathinfo = '.' . $ext['extension'];
         } else {
             $pathinfo = '.jpg';
         }
-        if (preg_match(static::$idPattern, $this->embedId, $matches)) {
+        if (preg_match(static::$idPattern, $this->embedId, $matches) === 1) {
             return $matches['type'] . '_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($this->embedId, static::$platform);

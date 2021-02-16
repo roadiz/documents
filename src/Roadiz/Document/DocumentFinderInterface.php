@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Document;
 
+use Doctrine\Common\Collections\Collection;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 
 interface DocumentFinderInterface
@@ -10,7 +11,7 @@ interface DocumentFinderInterface
     /**
      * @param array<string> $fileNames
      *
-     * @return array<DocumentInterface>|\Doctrine\Common\Collections\Collection<DocumentInterface>
+     * @return array<DocumentInterface>|Collection<DocumentInterface>
      */
     public function findAllByFilenames(array $fileNames);
 

@@ -12,14 +12,11 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
  */
 abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
 {
-    protected static $platform = 'vimeo';
+    protected static string $platform = 'vimeo';
 
-    /**
-     * @inheritDoc
-     */
-    protected function validateEmbedId($embedId = "")
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (preg_match('#(?<id>[0-9]+)$#', $embedId, $matches)) {
+        if (preg_match('#(?<id>[0-9]+)$#', $embedId, $matches) === 1) {
             return $matches['id'];
         }
         throw new InvalidEmbedId($embedId, static::$platform);
@@ -28,18 +25,15 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     /**
      * Tell if embed media exists after its API feed.
      *
-     * @return boolean
+     * @return bool
      */
-    public function exists()
+    public function exists(): bool
     {
         $feed = $this->getFeed();
         return is_array($feed) && isset($feed[0]);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getMediaTitle()
+    public function getMediaTitle(): string
     {
         $feed = $this->getFeed();
         if (is_array($feed) && isset($feed[0])) {
@@ -48,10 +42,8 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
 
         return '';
     }
-    /**
-     * @inheritdoc
-     */
-    public function getMediaDescription()
+
+    public function getMediaDescription(): string
     {
         $feed = $this->getFeed();
         if (is_array($feed) && isset($feed[0])) {
@@ -60,17 +52,13 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
 
         return "";
     }
-    /**
-     * {@inheritdoc}
-     */
-    public function getMediaCopyright()
+
+    public function getMediaCopyright(): string
     {
         return "";
     }
-    /**
-     * {@inheritdoc}
-     */
-    public function getThumbnailURL()
+
+    public function getThumbnailURL(): string
     {
         $feed = $this->getFeed();
         if (is_array($feed) && isset($feed[0])) {
@@ -83,10 +71,10 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     /**
      * {@inheritdoc}
      */
-    public function getSearchFeed($searchTerm, $author, $maxResults = 15)
+    public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15)
     {
         $url = "http://gdata.youtube.com/feeds/api/videos/?q=" . $searchTerm . "&v=2&alt=json&max-results=" . $maxResults;
-        if (!empty($author)) {
+        if (null !== $author && !empty($author)) {
             $url .= '&author=' . $author;
         }
 

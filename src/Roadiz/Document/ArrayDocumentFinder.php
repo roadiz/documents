@@ -14,12 +14,8 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
  */
 final class ArrayDocumentFinder implements DocumentFinderInterface
 {
-    /** @var Collection */
-    private $documents;
+    private Collection $documents;
 
-    /**
-     * ArrayDocumentFinder constructor.
-     */
     public function __construct()
     {
         $this->documents = new ArrayCollection();

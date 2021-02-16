@@ -10,14 +10,9 @@ namespace RZ\Roadiz\Core\Models;
  */
 class SimpleFileAware implements FileAwareInterface
 {
-    /**
-     * @var string
-     */
-    private $basePath;
+    private string $basePath;
 
     /**
-     * SimpleFileAware constructor.
-     *
      * @param string $basePath
      */
     public function __construct(string $basePath)
@@ -25,32 +20,32 @@ class SimpleFileAware implements FileAwareInterface
         $this->basePath = $basePath;
     }
 
-    public function getPublicFilesPath()
+    public function getPublicFilesPath(): string
     {
         return $this->basePath . $this->getPublicFilesBasePath();
     }
 
-    public function getPublicFilesBasePath()
+    public function getPublicFilesBasePath(): string
     {
         return '/files';
     }
 
-    public function getPrivateFilesPath()
+    public function getPrivateFilesPath(): string
     {
         return $this->basePath . $this->getPrivateFilesBasePath();
     }
 
-    public function getPrivateFilesBasePath()
+    public function getPrivateFilesBasePath(): string
     {
         return '/private';
     }
 
-    public function getFontsFilesPath()
+    public function getFontsFilesPath(): string
     {
         return $this->basePath . $this->getPrivateFilesBasePath();
     }
 
-    public function getFontsFilesBasePath()
+    public function getFontsFilesBasePath(): string
     {
         return '/fonts';
     }

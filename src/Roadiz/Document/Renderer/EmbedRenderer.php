@@ -9,14 +9,9 @@ use RZ\Roadiz\Utils\MediaFinders\EmbedFinderFactory;
 
 class EmbedRenderer implements RendererInterface
 {
-    /**
-     * @var EmbedFinderFactory
-     */
-    protected $embedFinderFactory;
+    protected EmbedFinderFactory $embedFinderFactory;
 
     /**
-     * EmbedRenderer constructor.
-     *
      * @param EmbedFinderFactory $embedFinderFactory
      */
     public function __construct(EmbedFinderFactory $embedFinderFactory)

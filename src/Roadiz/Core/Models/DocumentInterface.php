@@ -7,189 +7,163 @@ use Doctrine\Common\Collections\Collection;
 
 interface DocumentInterface
 {
-    /**
-     * @return string
-     */
-    public function getFilename();
+    public function getFilename(): string;
 
     /**
      * @param string $filename
      * @return DocumentInterface
      */
-    public function setFilename($filename);
+    public function setFilename(string $filename);
 
     /**
      * @return string|null
      */
-    public function getMimeType();
+    public function getMimeType(): ?string;
 
     /**
-     * @param string $mimeType
+     * @param string|null $mimeType
      * @return DocumentInterface
      */
-    public function setMimeType($mimeType);
+    public function setMimeType(?string $mimeType);
 
     /**
      * Get short type name for current document Mime type.
      *
      * @return string
      */
-    public function getShortType();
+    public function getShortType(): string;
 
     /**
      * Get short Mime type.
      *
      * @return string
      */
-    public function getShortMimeType();
+    public function getShortMimeType(): string;
 
     /**
      * Is current document an image.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isImage();
+    public function isImage(): bool;
 
     /**
      * Is current document a vector SVG file.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isSvg();
+    public function isSvg(): bool;
 
     /**
      * Is current document a Webp image.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isWebp();
+    public function isWebp(): bool;
 
     /**
      * Is current document a video.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isVideo();
+    public function isVideo(): bool;
 
     /**
      * Is current document an audio file.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isAudio();
+    public function isAudio(): bool;
 
     /**
      * Is current document a PDF file.
      *
      * @return bool
      */
-    public function isPdf();
+    public function isPdf(): bool;
+
+    public function getFolder(): string;
 
     /**
-     * @return string
-     */
-    public function getFolder();
-
-    /**
-     * Set folder name.
-     *
      * @param string $folder
      * @return DocumentInterface
      */
-    public function setFolder($folder);
+    public function setFolder(string $folder);
 
     /**
      * @deprecated Use getRelativePath instead, naming is better.
      * @return string|null
      */
-    public function getRelativeUrl();
+    public function getRelativeUrl(): ?string;
 
-    /**
-     * @return string|null
-     */
-    public function getRelativePath();
+    public function getRelativePath(): ?string;
 
-    /**
-     * @return string
-     */
-    public function getEmbedId();
+    public function getEmbedId(): ?string;
 
     /**
      * @param string|null $embedId
      * @return DocumentInterface
      */
-    public function setEmbedId($embedId);
+    public function setEmbedId(?string $embedId);
 
-    /**
-     * @return string
-     */
-    public function getEmbedPlatform();
+    public function getEmbedPlatform(): ?string;
 
     /**
      * @param string|null $embedPlatform
      * @return DocumentInterface
      */
-    public function setEmbedPlatform($embedPlatform);
+    public function setEmbedPlatform(?string $embedPlatform);
 
     /**
      * Tells if current document has embed media information.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isEmbed();
+    public function isEmbed(): bool;
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function isPrivate();
+    public function isPrivate(): bool;
 
     /**
-     * @param boolean $private
+     * @param bool $private
      * @return DocumentInterface
      */
-    public function setPrivate($private);
+    public function setPrivate(bool $private);
+
+    public function getRawDocument(): ?DocumentInterface;
 
     /**
-     * Gets the value of rawDocument.
-     *
-     * @return DocumentInterface|null
-     */
-    public function getRawDocument();
-
-    /**
-     * Sets the value of rawDocument.
-     *
      * @param DocumentInterface|null $rawDocument the raw document
      * @return DocumentInterface
      */
-    public function setRawDocument(DocumentInterface $rawDocument = null);
+    public function setRawDocument(?DocumentInterface $rawDocument = null);
 
     /**
      * Is document a raw one.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isRaw();
+    public function isRaw(): bool;
 
     /**
-     * Sets the value of raw.
-     *
      * @param boolean $raw the raw
      * @return DocumentInterface
      */
-    public function setRaw($raw);
+    public function setRaw(bool $raw);
 
     /**
      * Gets the downscaledDocument.
      *
      * @return DocumentInterface|null
      */
-    public function getDownscaledDocument();
+    public function getDownscaledDocument(): ?DocumentInterface;
 
     /**
      * @return Collection<FolderInterface>
      */
-    public function getFolders();
+    public function getFolders(): Collection;
 
     /**
      * @param FolderInterface $folder
@@ -206,12 +180,9 @@ interface DocumentInterface
     /**
      * Return true if current document can be processed by intervention-image (GD, Imagick…).
      *
-     * @return boolean
+     * @return bool
      */
-    public function isProcessable();
+    public function isProcessable(): bool;
 
-    /**
-     * @return string
-     */
     public function getAlternativeText(): string;
 }

@@ -10,11 +10,9 @@ class ChainRenderer implements RendererInterface
     /**
      * @var array<RendererInterface>
      */
-    private $renderers;
+    private array $renderers;
 
     /**
-     * ChainRenderer constructor.
-     *
      * @param array $renderers
      */
     public function __construct(array $renderers)

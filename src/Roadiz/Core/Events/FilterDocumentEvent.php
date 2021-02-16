@@ -4,19 +4,14 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Core\Events;
 
 use RZ\Roadiz\Core\Models\DocumentInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class FilterDocumentEvent.
- *
  * @package RZ\Roadiz\Core\Events
  */
 class FilterDocumentEvent extends Event
 {
-    /**
-     * @var DocumentInterface
-     */
-    protected $document;
+    protected DocumentInterface $document;
 
     public function __construct(DocumentInterface $document)
     {
@@ -26,7 +21,7 @@ class FilterDocumentEvent extends Event
     /**
      * @return DocumentInterface
      */
-    public function getDocument()
+    public function getDocument(): DocumentInterface
     {
         return $this->document;
     }

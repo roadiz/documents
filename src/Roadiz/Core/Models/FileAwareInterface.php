@@ -13,30 +13,30 @@ interface FileAwareInterface
     /**
      * @return string Return absolute path to public files folder.
      */
-    public function getPublicFilesPath();
+    public function getPublicFilesPath(): string;
 
     /**
      * @return string Return relative path to public files folder.
      */
-    public function getPublicFilesBasePath();
+    public function getPublicFilesBasePath(): string;
 
     /**
      * @return string Return absolute path to private files folder. Path must be protected.
      */
-    public function getPrivateFilesPath();
+    public function getPrivateFilesPath(): string;
 
     /**
      * @return string Return relative path to private files folder.
      */
-    public function getPrivateFilesBasePath();
+    public function getPrivateFilesBasePath(): string;
 
     /**
      * @return string Return absolute path to private font files folder. Path must be protected.
      */
-    public function getFontsFilesPath();
+    public function getFontsFilesPath(): string;
 
     /**
      * @return string Return relative path to private font files folder.
      */
-    public function getFontsFilesBasePath();
+    public function getFontsFilesBasePath(): string;
 }

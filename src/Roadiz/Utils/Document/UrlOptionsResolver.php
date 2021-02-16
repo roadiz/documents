@@ -7,7 +7,6 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class UrlOptionsResolver
  * @package RZ\Roadiz\Utils\Document
  */
 class UrlOptionsResolver extends OptionsResolver

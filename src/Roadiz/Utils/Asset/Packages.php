@@ -57,30 +57,12 @@ class Packages extends BasePackages
      */
     const FONTS_PATH = 'fonts_path';
 
-    /**
-     * @var FileAwareInterface
-     */
-    private $fileAware;
-    /**
-     * @var string
-     */
-    private $staticDomain;
-    /**
-     * @var VersionStrategyInterface
-     */
-    private $versionStrategy;
-    /**
-     * @var RequestStackContext
-     */
-    private $requestStackContext;
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-    /**
-     * @var bool
-     */
-    private $ready;
+    private VersionStrategyInterface $versionStrategy;
+    private RequestStack $requestStack;
+    private FileAwareInterface $fileAware;
+    private string $staticDomain;
+    private RequestStackContext $requestStackContext;
+    private bool $ready;
 
     /**
      * Build a new asset packages for Roadiz root and documents.
@@ -94,7 +76,7 @@ class Packages extends BasePackages
         VersionStrategyInterface $versionStrategy,
         RequestStack $requestStack,
         FileAwareInterface $fileAware,
-        $staticDomain = ""
+        string $staticDomain = ""
     ) {
         parent::__construct();
         $this->requestStackContext = new RequestStackContext($requestStack);

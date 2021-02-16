@@ -5,26 +5,20 @@ namespace RZ\Roadiz\Utils\MediaFinders;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Util to grab a facebook profile picture from userAlias.
  */
 abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
 {
-    /**
-     * @var Client
-     */
-    private $client;
-    /**
-     * @var string
-     */
-    protected static $platform = 'splashbase';
+    protected Client $client;
+    protected static string $platform = 'splashbase';
 
     /**
-     * SplashbasePictureFinder constructor.
      * @param string $embedId
      */
-    public function __construct($embedId = '')
+    public function __construct(string $embedId = '')
     {
         parent::__construct($embedId);
 
@@ -36,7 +30,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
         ]);
     }
 
-    protected function validateEmbedId($embedId = "")
+    protected function validateEmbedId(string $embedId = ""): string
     {
         return $embedId;
     }
@@ -44,8 +38,9 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     /**
      * @see http://www.splashbase.co/api#images_random
      * @return array|null
+     * @throws GuzzleException
      */
-    public function getRandom()
+    public function getRandom(): ?array
     {
         try {
             $response = $this->client->get('/api/v1/images/random', [
@@ -77,7 +72,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
      *
      * @return array|bool|mixed
      */
-    public function getRandomBySearch($keyword)
+    public function getRandomBySearch(string $keyword)
     {
         try {
             $query = [
@@ -118,15 +113,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     /**
      * {@inheritdoc}
      */
-    public function getSearchFeed($searchTerm, $author, $maxResults = 15)
-    {
-        return null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMediaTitle()
+    public function getMediaTitle(): string
     {
         return '';
     }
@@ -134,7 +121,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     /**
      * {@inheritdoc}
      */
-    public function getMediaDescription()
+    public function getMediaDescription(): string
     {
         return '';
     }
@@ -142,7 +129,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     /**
      * {@inheritdoc}
      */
-    public function getMediaCopyright()
+    public function getMediaCopyright(): string
     {
         return ($this->feed['copyright'] ?? '').' — '.($this->feed['site'] ?? '');
     }
@@ -150,7 +137,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
     /**
      * @inheritdoc
      */
-    public function getThumbnailURL()
+    public function getThumbnailURL(): ?string
     {
         if (null === $this->feed) {
             $feed = $this->getRandom();
@@ -173,7 +160,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
      *
      * @return string|null
      */
-    protected function getBestUrl(?array $feed)
+    protected function getBestUrl(?array $feed): ?string
     {
         if (null === $feed) {
             return null;

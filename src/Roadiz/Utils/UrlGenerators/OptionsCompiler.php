@@ -12,10 +12,7 @@ use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
  */
 class OptionsCompiler
 {
-    /**
-     * @var array
-     */
-    private $options;
+    private array $options = [];
 
     /**
      * Compile Intervention Request options into a single query string.
@@ -23,7 +20,7 @@ class OptionsCompiler
      * @param array $options Resolved options
      * @return string
      */
-    public function compile($options)
+    public function compile(array $options): string
     {
         /*
          * Options passed to compiler should already be resolved not to

@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Utils\MediaFinders;
 
 /**
- * Class EmbedFinderFactory
- *
  * @package RZ\Roadiz\Utils\MediaFinders
  */
 class EmbedFinderFactory
@@ -21,27 +19,25 @@ class EmbedFinderFactory
      * @var array
      *
      */
-    private $embedPlatforms = [];
+    private array $embedPlatforms;
 
     /**
-     * EmbedFinderFactory constructor.
-     *
      * @param array $embedPlatforms
      */
-    public function __construct(array $embedPlatforms)
+    public function __construct(array $embedPlatforms = [])
     {
         $this->embedPlatforms = $embedPlatforms;
     }
 
     /**
-     * @param string $mediaPlatform
-     * @param string $embedId
+     * @param string|null $mediaPlatform
+     * @param string|null $embedId
      *
      * @return EmbedFinderInterface|null
      */
-    public function createForPlatform(string $mediaPlatform, string $embedId): ?EmbedFinderInterface
+    public function createForPlatform(?string $mediaPlatform, ?string $embedId): ?EmbedFinderInterface
     {
-        if ($this->supports($mediaPlatform)) {
+        if (null !== $embedId && $this->supports($mediaPlatform)) {
             $class = $this->embedPlatforms[$mediaPlatform];
             return new $class($embedId);
         }
@@ -49,15 +45,18 @@ class EmbedFinderFactory
     }
 
     /**
-     * @param string $mediaPlatform
+     * @param string|null $mediaPlatform
      *
      * @return bool
      */
-    public function supports(string $mediaPlatform): bool
+    public function supports(?string $mediaPlatform): bool
     {
-        return in_array(
-            $mediaPlatform,
-            array_keys($this->embedPlatforms)
-        );
+        return
+            null !== $mediaPlatform &&
+            in_array(
+                $mediaPlatform,
+                array_keys($this->embedPlatforms)
+            )
+        ;
     }
 }

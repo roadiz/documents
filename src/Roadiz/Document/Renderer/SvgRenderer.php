@@ -10,19 +10,10 @@ use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 
 class SvgRenderer implements RendererInterface
 {
-    /**
-     * @var Packages
-     */
-    private $packages;
+    protected Packages $packages;
+    protected ViewOptionsResolver $viewOptionsResolver;
 
     /**
-     * @var ViewOptionsResolver
-     */
-    protected $viewOptionsResolver;
-
-    /**
-     * SvgRenderer constructor.
-     *
      * @param Packages $packages
      */
     public function __construct(Packages $packages)
