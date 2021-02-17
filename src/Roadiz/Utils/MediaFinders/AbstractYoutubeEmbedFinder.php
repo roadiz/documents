@@ -119,7 +119,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      */
     public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15)
     {
-        if ($this->getKey() != "") {
+        if (null !== $this->getKey() && $this->getKey() != "") {
             $url = "https://www.googleapis.com/youtube/v3/search?q=".$searchTerm."&part=snippet&key=".$this->getKey()."&maxResults=".$maxResults;
             if (null !== $author && !empty($author)) {
                 $url .= '&author='.$author;
