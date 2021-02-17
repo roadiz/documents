@@ -58,7 +58,7 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
                 $resolvedOptions = $this->viewOptionsResolver->resolve($options);
                 $this->optionsCacheProvider->save($optionsHash, $resolvedOptions);
             }
-            $this->options = $this->optionsCacheProvider->fetch($optionsHash);
+            $this->options = $this->optionsCacheProvider->fetch($optionsHash) ?: [];
         } else {
             $this->options = $this->viewOptionsResolver->resolve($options);
         }
