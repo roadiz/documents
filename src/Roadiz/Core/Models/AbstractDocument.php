@@ -239,6 +239,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     public function __construct()
     {
         $this->setFolder(substr(hash("crc32b", date('YmdHi')), 0, 12));
+        $this->initAbstractDateTimed();
     }
 
     /**
