@@ -29,7 +29,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      */
     protected $feed = null;
     protected string $embedId;
-    protected string $key;
+    protected ?string $key = null;
     protected static string $platform = 'abstract';
 
     /**
@@ -389,9 +389,9 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * For example, for Youtube it must be your API server key. For SoundCloud
      * it should be you app client Id.
      *
-     * @return string
+     * @return string|null
      */
-    public function getKey(): string
+    public function getKey(): ?string
     {
         return $this->key;
     }
@@ -403,11 +403,11 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * For example, for Youtube it must be your API server key. For Soundcloud
      * it should be you app client Id.
      *
-     * @param string $key the key
+     * @param string|null $key the key
      *
      * @return self
      */
-    public function setKey(string $key)
+    public function setKey(?string $key)
     {
         $this->key = $key;
         return $this;
