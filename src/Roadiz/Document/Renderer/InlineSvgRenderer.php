@@ -11,19 +11,10 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class InlineSvgRenderer implements RendererInterface
 {
-    /**
-     * @var Packages
-     */
-    private $packages;
+    protected Packages $packages;
+    protected ViewOptionsResolver $viewOptionsResolver;
 
     /**
-     * @var ViewOptionsResolver
-     */
-    protected $viewOptionsResolver;
-
-    /**
-     * SvgRenderer constructor.
-     *
      * @param Packages $packages
      */
     public function __construct(Packages $packages)

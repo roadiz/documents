@@ -13,30 +13,17 @@ use Doctrine\Common\Collections\Collection;
  */
 class SimpleDocument extends AbstractDocument
 {
-    /** @var string */
-    private $filename;
-    /** @var string */
-    private $mimeType;
-    /** @var string */
-    private $folder = '';
-    /** @var string|null */
-    private $embedId;
-    /** @var string|null */
-    private $embedPlatform;
-    /** @var bool  */
-    private $private = false;
-    /** @var DocumentInterface|null  */
-    private $rawDocument = null;
-    /** @var bool  */
-    private $raw = false;
-    /** @var DocumentInterface|null  */
-    private $downscaledDocument = null;
-    /** @var Collection */
-    private $folders;
+    private string $filename = '';
+    private string $folder = '';
+    private ?string $embedId = null;
+    private ?string $embedPlatform = null;
+    private ?string $mimeType = null;
+    private bool $private = false;
+    private bool $raw = false;
+    private Collection $folders;
+    private ?DocumentInterface $rawDocument = null;
+    private ?DocumentInterface $downscaledDocument = null;
 
-    /**
-     * SimpleDocument constructor.
-     */
     public function __construct()
     {
         parent::__construct();
@@ -46,7 +33,7 @@ class SimpleDocument extends AbstractDocument
     /**
      * @return string
      */
-    public function getFilename()
+    public function getFilename(): string
     {
         return $this->filename;
     }
@@ -56,7 +43,7 @@ class SimpleDocument extends AbstractDocument
      *
      * @return DocumentInterface
      */
-    public function setFilename($filename)
+    public function setFilename(string $filename)
     {
         $this->filename = $filename;
         return $this;
@@ -65,20 +52,19 @@ class SimpleDocument extends AbstractDocument
     /**
      * @return string
      */
-    public function getMimeType(): string
+    public function getMimeType(): ?string
     {
         return $this->mimeType;
     }
 
     /**
-     * @param string $mimeType
+     * @param string|null $mimeType
      *
      * @return SimpleDocument
      */
-    public function setMimeType($mimeType): SimpleDocument
+    public function setMimeType(?string $mimeType): SimpleDocument
     {
         $this->mimeType = $mimeType;
-
         return $this;
     }
 
@@ -95,7 +81,7 @@ class SimpleDocument extends AbstractDocument
      *
      * @return SimpleDocument
      */
-    public function setFolder($folder): SimpleDocument
+    public function setFolder(string $folder): SimpleDocument
     {
         $this->folder = $folder;
 
@@ -115,7 +101,7 @@ class SimpleDocument extends AbstractDocument
      *
      * @return SimpleDocument
      */
-    public function setEmbedId($embedId): SimpleDocument
+    public function setEmbedId(?string $embedId): SimpleDocument
     {
         $this->embedId = $embedId;
 
@@ -135,7 +121,7 @@ class SimpleDocument extends AbstractDocument
      *
      * @return SimpleDocument
      */
-    public function setEmbedPlatform($embedPlatform): SimpleDocument
+    public function setEmbedPlatform(?string $embedPlatform): SimpleDocument
     {
         $this->embedPlatform = $embedPlatform;
 
@@ -155,7 +141,7 @@ class SimpleDocument extends AbstractDocument
      *
      * @return SimpleDocument
      */
-    public function setPrivate($private): SimpleDocument
+    public function setPrivate(bool $private): SimpleDocument
     {
         $this->private = $private;
 
@@ -175,7 +161,7 @@ class SimpleDocument extends AbstractDocument
      *
      * @return SimpleDocument
      */
-    public function setRawDocument(DocumentInterface $rawDocument = null): SimpleDocument
+    public function setRawDocument(?DocumentInterface $rawDocument = null): SimpleDocument
     {
         $this->rawDocument = $rawDocument;
 
@@ -195,7 +181,7 @@ class SimpleDocument extends AbstractDocument
      *
      * @return SimpleDocument
      */
-    public function setRaw($raw): SimpleDocument
+    public function setRaw(bool $raw): SimpleDocument
     {
         $this->raw = $raw;
 

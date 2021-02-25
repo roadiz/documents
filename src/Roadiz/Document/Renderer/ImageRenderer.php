@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Document\Renderer;
 
+use RZ\Roadiz\Core\Models\AdvancedDocumentInterface;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\HasThumbnailInterface;
 
@@ -33,6 +34,15 @@ class ImageRenderer extends AbstractImageRenderer
         $assignation['alt'] = !empty($options['alt']) ? $options['alt'] : $document->getAlternativeText();
         $assignation['sizes'] = $this->parseSizes($options);
         $assignation['srcset'] = $this->parseSrcSet($document, $options);
+
+        if (null === $assignation['sizes'] &&
+            $document instanceof AdvancedDocumentInterface &&
+            $document->getImageWidth() > 0 &&
+            $document->getImageHeight() > 0 &&
+            !$this->willResample($assignation)) {
+            $assignation['width'] = $document->getImageWidth();
+            $assignation['height'] = $document->getImageHeight();
+        }
 
         $this->additionalAssignation($document, $options, $assignation);
 

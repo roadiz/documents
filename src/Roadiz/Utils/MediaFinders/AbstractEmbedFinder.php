@@ -13,6 +13,7 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
+use SimpleXMLElement;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,28 +25,19 @@ use Symfony\Component\HttpFoundation\Response;
 abstract class AbstractEmbedFinder implements EmbedFinderInterface
 {
     /**
-     * @var array|\SimpleXMLElement|null
+     * @var array|SimpleXMLElement|null
      */
     protected $feed = null;
-    /**
-     * @var string
-     */
-    protected $embedId;
-    /**
-     * @var string
-     */
-    protected $key;
-    /**
-     * @var string
-     */
-    protected static $platform = 'abstract';
+    protected string $embedId;
+    protected ?string $key = null;
+    protected static string $platform = 'abstract';
 
     /**
      * @param string $embedId
      * @param bool $validate Validate the embed id passed at the constructor [default: true].
      * @throws InvalidEmbedId When embedId string is malformed
      */
-    public function __construct($embedId = '', $validate = true)
+    public function __construct(string $embedId = '', bool $validate = true)
     {
         if ($validate) {
             $this->embedId = $this->validateEmbedId($embedId);
@@ -62,7 +54,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * @return string
      */
-    public function getEmbedId()
+    public function getEmbedId(): string
     {
         return $this->embedId;
     }
@@ -72,7 +64,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @return AbstractEmbedFinder
      */
-    public function setEmbedId($embedId): AbstractEmbedFinder
+    public function setEmbedId(string $embedId): AbstractEmbedFinder
     {
         $this->embedId = $this->validateEmbedId($embedId);
         return $this;
@@ -85,9 +77,9 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @return string
      * @throws InvalidEmbedId When embedId string is malformed
      */
-    protected function validateEmbedId($embedId = "")
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (preg_match('#(?<id>[^\/^=^?]+)$#', $embedId, $matches)) {
+        if (preg_match('#(?<id>[^\/^=^?]+)$#', $embedId, $matches) === 1) {
             return $matches['id'];
         }
         throw new InvalidEmbedId($embedId);
@@ -96,9 +88,9 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Tell if embed media exists after its API feed.
      *
-     * @return boolean
+     * @return bool
      */
-    public function exists()
+    public function exists(): bool
     {
         return null !== $this->getFeed();
     }
@@ -106,7 +98,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Crawl and parse an API json feed for current embedID.
      *
-     * @return array|null
+     * @return array|SimpleXMLElement|null
      */
     public function getFeed()
     {
@@ -140,7 +132,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Crawl an embed API to get a Json feed.
      *
-     * @param string|bool $search
+     * @param string|bool|null $search
      *
      * @return string|StreamInterface
      */
@@ -150,12 +142,15 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * Crawl an embed API to get a Json feed against a search query.
      *
      * @param string  $searchTerm
-     * @param string  $author
-     * @param integer $maxResults
+     * @param ?string  $author
+     * @param int $maxResults
      *
      * @return string|StreamInterface|null
      */
-    abstract public function getSearchFeed($searchTerm, $author, $maxResults = 15);
+    public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15)
+    {
+        return null;
+    }
 
     /**
      * Compose an HTML iframe for viewing embed media.
@@ -296,7 +291,11 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @param string|null $embedPlatform
      * @return bool
      */
-    abstract protected function documentExists(ObjectManager $objectManager, $embedId, $embedPlatform);
+    abstract protected function documentExists(
+        ObjectManager $objectManager,
+        string $embedId,
+        ?string $embedPlatform
+    ): bool;
 
     /**
      * Store additional information into Document.
@@ -312,28 +311,28 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @return string|null
      */
-    abstract public function getMediaTitle();
+    abstract public function getMediaTitle(): ?string;
 
     /**
      * Get media description from feed.
      *
      * @return string|null
      */
-    abstract public function getMediaDescription();
+    abstract public function getMediaDescription(): ?string;
 
     /**
      * Get media copyright from feed.
      *
      * @return string|null
      */
-    abstract public function getMediaCopyright();
+    abstract public function getMediaCopyright(): ?string;
 
     /**
      * Get media thumbnail external URL from its feed.
      *
      * @return string|null
      */
-    abstract public function getThumbnailURL();
+    abstract public function getThumbnailURL(): ?string;
 
     /**
      * Send a CURL request and get its string output.
@@ -343,7 +342,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @return StreamInterface
      * @throws \RuntimeException
      */
-    public function downloadFeedFromAPI($url)
+    public function downloadFeedFromAPI(string $url): StreamInterface
     {
         $client = new Client();
         $response = $client->get($url);
@@ -360,7 +359,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @return string
      */
-    public function getThumbnailName($pathinfo)
+    public function getThumbnailName(string $pathinfo): string
     {
         return $this->embedId.'_'.$pathinfo;
     }
@@ -371,7 +370,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @return File|null
      */
-    public function downloadThumbnail()
+    public function downloadThumbnail(): ?File
     {
         $url = $this->getThumbnailURL();
 
@@ -390,9 +389,9 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * For example, for Youtube it must be your API server key. For SoundCloud
      * it should be you app client Id.
      *
-     * @return string
+     * @return string|null
      */
-    public function getKey()
+    public function getKey(): ?string
     {
         return $this->key;
     }
@@ -404,14 +403,13 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * For example, for Youtube it must be your API server key. For Soundcloud
      * it should be you app client Id.
      *
-     * @param string $key the key
+     * @param string|null $key the key
      *
      * @return self
      */
-    public function setKey($key)
+    public function setKey(?string $key)
     {
         $this->key = $key;
-
         return $this;
     }
 }

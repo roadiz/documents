@@ -8,16 +8,11 @@ use RZ\Roadiz\Utils\Asset\Packages;
 
 class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
 {
-    /** @var DocumentInterface */
-    private $document;
-    /** @var array  */
-    private $options = [];
-    /** @var Packages  */
-    private $packages;
+    private ?DocumentInterface $document = null;
+    private array $options = [];
+    private Packages $packages;
 
     /**
-     * DummyDocumentUrlGenerator constructor.
-     *
      * @param Packages $packages
      */
     public function __construct(Packages $packages)
@@ -27,8 +22,11 @@ class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
 
     public function getUrl(bool $absolute = false): string
     {
+        if (null === $this->document) {
+            throw new \BadMethodCallException('Document is null');
+        }
         if (!key_exists('noProcess', $this->options)) {
-            throw new \InvalidArgumentException('noProcess option is not set');
+            throw new \BadMethodCallException('noProcess option is not set');
         }
 
         if ($this->options['noProcess'] === true || !$this->document->isProcessable()) {
@@ -41,7 +39,7 @@ class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
 
         $compiler = new OptionsCompiler();
         $compiledOptions = $compiler->compile($this->options);
-        
+
         if ($absolute) {
             return 'http://dummy.test/assets/' . $compiledOptions . '/' . $this->document->getRelativePath();
         }

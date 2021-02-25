@@ -6,38 +6,24 @@ namespace RZ\Roadiz\Utils\MediaFinders;
 use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 /**
- * Dailymotion tools class.
- *
- * Manage a dailymotion video feed
+ * Manage a dailymotion video feed.
  */
 abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
 {
-    /**
-     * @var string
-     */
-    protected static $platform = 'dailymotion';
-    /**
-     * @var string
-     */
-    protected static $idPattern = '#^https\:\/\/(?:www\.)?(?:dailymotion\.com|dai\.ly)\/video\/(?<id>[a-zA-Z0-9\_\-]+)#';
-    /**
-     * @var string
-     */
-    protected static $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
-    /**
-     * @var string|null
-     */
-    protected $embedUrl;
+    protected static string $platform = 'dailymotion';
+    protected static string $idPattern = '#^https\:\/\/(?:www\.)?(?:dailymotion\.com|dai\.ly)\/video\/(?<id>[a-zA-Z0-9\_\-]+)#';
+    protected static string $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
+    protected ?string $embedUrl;
 
     /**
      * @inheritDoc
      */
-    protected function validateEmbedId($embedId = "")
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (preg_match(static::$idPattern, $embedId, $matches)) {
+        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
-        if (preg_match(static::$realIdPattern, $embedId, $matches)) {
+        if (preg_match(static::$realIdPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
@@ -46,39 +32,30 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
     /**
      * {@inheritdoc}
      */
-    public function getMediaTitle()
+    public function getMediaTitle(): string
     {
         return $this->getFeed()['title'] ?? '';
     }
     /**
      * {@inheritdoc}
      */
-    public function getMediaDescription()
+    public function getMediaDescription(): string
     {
         return "";
     }
     /**
      * {@inheritdoc}
      */
-    public function getMediaCopyright()
+    public function getMediaCopyright(): string
     {
         return "";
     }
     /**
      * {@inheritdoc}
      */
-    public function getThumbnailURL()
+    public function getThumbnailURL(): string
     {
         return $this->getFeed()['thumbnail_url'] ?? '';
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSearchFeed($searchTerm, $author, $maxResults = 15)
-    {
-        return null;
     }
 
     /**
@@ -123,14 +100,14 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getThumbnailName($pathinfo)
+    public function getThumbnailName(string $pathinfo): string
     {
         if (null === $this->embedUrl) {
             $embed = $this->embedId;
         } else {
             $embed = $this->embedUrl;
         }
-        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $matches)) {
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $matches) === 1) {
             $pathinfo = '.' . $matches['extension'];
         } else {
             $pathinfo = '.jpg';

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Utils\Document;
 
 /**
- * Class ViewOptionsResolver
  * @package RZ\Roadiz\Utils\Document
  */
 class ViewOptionsResolver extends UrlOptionsResolver
@@ -12,7 +11,6 @@ class ViewOptionsResolver extends UrlOptionsResolver
     public function __construct()
     {
         parent::__construct();
-
         $this->setDefaults([
             'identifier' => null,
             'id' => null,

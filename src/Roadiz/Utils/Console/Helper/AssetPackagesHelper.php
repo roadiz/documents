@@ -7,15 +7,11 @@ use Pimple\Container;
 use RZ\Roadiz\Utils\Asset\Packages;
 use Symfony\Component\Console\Helper\Helper;
 
-class AssetPackagesHelper extends Helper
+final class AssetPackagesHelper extends Helper
 {
-    /**
-     * @var Container
-     */
-    private $container;
+    private Container $container;
 
     /**
-     * AssetPackagesHelper constructor.
      * @param Container $container
      */
     public function __construct(Container $container)
@@ -26,7 +22,7 @@ class AssetPackagesHelper extends Helper
     /**
      * @return Packages
      */
-    public function getPackages()
+    public function getPackages(): Packages
     {
         return $this->container->offsetGet('assetPackages');
     }

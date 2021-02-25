@@ -7,21 +7,15 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
 {
-    /**
-     * @var string
-     */
-    protected static $platform = 'twitch';
-    /**
-     * @var string
-     */
-    protected static $idPattern = '#^https\:\/\/(www\.)?twitch\.tv\/videos\/(?<id>[0-9]+)#';
+    protected static string $platform = 'twitch';
+    protected static string $idPattern = '#^https\:\/\/(www\.)?twitch\.tv\/videos\/(?<id>[0-9]+)#';
 
     /**
      * @inheritDoc
      */
-    protected function validateEmbedId($embedId = "")
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (preg_match(static::$idPattern, $embedId, $matches)) {
+        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
@@ -40,57 +34,34 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
         return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getSearchFeed($searchTerm, $author, $maxResults = 15)
-    {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMediaTitle()
+    public function getMediaTitle(): string
     {
         return $this->getFeed()['title'] ?? '';
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getMediaDescription()
+    public function getMediaDescription(): string
     {
         return $this->getFeed()['description'] ?? '';
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getMediaCopyright()
+    public function getMediaCopyright(): string
     {
         return ($this->getFeed()['author_name'] ?? '') . ' - ' . ($this->getFeed()['provider_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? ''). ')';
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getThumbnailURL()
+    public function getThumbnailURL(): string
     {
         return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getThumbnailName($pathinfo)
+    public function getThumbnailName(string $pathinfo): string
     {
-        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext) === 1) {
             $pathinfo = '.' . $ext['extension'];
         } else {
             $pathinfo = '.jpg';
         }
-        if (preg_match(static::$idPattern, $this->embedId, $matches)) {
+        if (preg_match(static::$idPattern, $this->embedId, $matches) === 1) {
             return 'twitch_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($this->embedId, static::$platform);

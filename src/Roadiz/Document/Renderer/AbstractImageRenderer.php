@@ -11,10 +11,7 @@ use Twig\Environment;
 
 abstract class AbstractImageRenderer extends AbstractRenderer
 {
-    /**
-     * @var EmbedFinderFactory
-     */
-    protected $embedFinderFactory;
+    protected EmbedFinderFactory $embedFinderFactory;
 
     public function __construct(
         EmbedFinderFactory $embedFinderFactory,
@@ -52,15 +49,27 @@ abstract class AbstractImageRenderer extends AbstractRenderer
         return null;
     }
 
+    protected function willResample(array &$assignation): bool
+    {
+        return !empty($assignation['fit']) ||
+            !empty($assignation['crop']) ||
+            !empty($assignation['rotate']) ||
+            !empty($assignation['width']) ||
+            !empty($assignation['height']);
+    }
+
     /**
      * @param DocumentInterface $document
-     * @param array             $options
-     * @param bool              $convertToWebP
+     * @param array $options
+     * @param bool $convertToWebP
      *
      * @return string|null
      */
-    protected function parseSrcSet(DocumentInterface $document, array $options = [], $convertToWebP = false): ?string
-    {
+    protected function parseSrcSet(
+        DocumentInterface $document,
+        array $options = [],
+        bool $convertToWebP = false
+    ): ?string {
         if (count($options['srcset']) > 0) {
             return $this->parseSrcSetInner($document, $options['srcset'], $convertToWebP, $options['absolute']);
         }
@@ -69,17 +78,17 @@ abstract class AbstractImageRenderer extends AbstractRenderer
 
     /**
      * @param DocumentInterface $document
-     * @param array             $srcSetArray
-     * @param bool              $convertToWebP
-     * @param bool              $absolute
+     * @param array $srcSetArray
+     * @param bool $convertToWebP
+     * @param bool $absolute
      *
      * @return string
      */
     protected function parseSrcSetInner(
         DocumentInterface $document,
         array $srcSetArray = [],
-        $convertToWebP = false,
-        $absolute = false
+        bool $convertToWebP = false,
+        bool $absolute = false
     ): string {
         $output = [];
         foreach ($srcSetArray as $set) {
@@ -98,8 +107,8 @@ abstract class AbstractImageRenderer extends AbstractRenderer
 
     /**
      * @param string $hexColor
-     * @param int    $width
-     * @param int    $height
+     * @param int $width
+     * @param int $height
      *
      * @return string
      */
@@ -108,7 +117,7 @@ abstract class AbstractImageRenderer extends AbstractRenderer
         [$r, $g, $b] = \sscanf($hexColor, "#%02x%02x%02x");
         $im = \imageCreateTrueColor($width, $height);
         if ($im) {
-            \imageFill($im, 0, 0, \imageColorAllocate($im, $r, $g, $b));
+            \imageFill($im, 0, 0, \imageColorAllocate($im, $r, $g, $b) ?: 0);
             \ob_start();
             \imagejpeg($im, null, 30);
             $img = \ob_get_contents();
@@ -122,8 +131,8 @@ abstract class AbstractImageRenderer extends AbstractRenderer
 
     /**
      * @param DocumentInterface $document
-     * @param array             $options
-     * @param array             $assignation
+     * @param array $options
+     * @param array $assignation
      */
     protected function additionalAssignation(DocumentInterface $document, array $options, array &$assignation): void
     {

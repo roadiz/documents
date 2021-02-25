@@ -11,30 +11,13 @@ use Twig\Environment;
 
 abstract class AbstractRenderer implements RendererInterface
 {
-    /**
-     * @var Environment
-     */
-    protected $templating;
-    /**
-     * @var string
-     */
-    protected $templateBasePath;
-    /**
-     * @var DocumentUrlGeneratorInterface
-     */
-    protected $documentUrlGenerator;
-    /**
-     * @var UrlOptionsResolver
-     */
-    protected $urlOptionsResolver;
-    /**
-     * @var ViewOptionsResolver
-     */
-    protected $viewOptionsResolver;
+    protected Environment $templating;
+    protected DocumentUrlGeneratorInterface $documentUrlGenerator;
+    protected string $templateBasePath;
+    protected UrlOptionsResolver $urlOptionsResolver;
+    protected ViewOptionsResolver $viewOptionsResolver;
 
     /**
-     * AbstractRenderer constructor.
-     *
      * @param Environment                   $templating
      * @param DocumentUrlGeneratorInterface $documentUrlGenerator
      * @param string                        $templateBasePath
@@ -45,8 +28,8 @@ abstract class AbstractRenderer implements RendererInterface
         string $templateBasePath = 'documents'
     ) {
         $this->templating = $templating;
-        $this->templateBasePath = $templateBasePath;
         $this->documentUrlGenerator = $documentUrlGenerator;
+        $this->templateBasePath = $templateBasePath;
         $this->urlOptionsResolver = new UrlOptionsResolver();
         $this->viewOptionsResolver = new ViewOptionsResolver();
     }

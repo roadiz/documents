@@ -12,18 +12,10 @@ use Twig\Environment;
 
 class VideoRenderer extends AbstractRenderer
 {
-    /**
-     * @var Packages
-     */
-    private $packages;
-    /**
-     * @var DocumentFinderInterface
-     */
-    private $documentFinder;
+    protected Packages $packages;
+    protected DocumentFinderInterface $documentFinder;
 
     /**
-     * VideoRenderer constructor.
-     *
      * @param Packages                      $packages
      * @param DocumentFinderInterface       $documentFinder
      * @param Environment                   $templating

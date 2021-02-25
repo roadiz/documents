@@ -7,7 +7,6 @@ use RZ\Roadiz\Core\AbstractEntities\AbstractDateTimed;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * Class AbstractDocument
  * @package RZ\Roadiz\Core\Models
  * @Serializer\ExclusionPolicy("all")
  */
@@ -28,6 +27,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * - font
      *
      * @var array
+     * @internal
      */
     protected static $mimeToIcon = [
         'text/html' => 'code',
@@ -105,6 +105,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @var array Processable file mime type by GD or Imagick.
+     * @internal
      */
     protected static $processableMimeTypes = [
         'image/png',
@@ -119,7 +120,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      *
      * @return string
      */
-    public function getShortType()
+    public function getShortType(): string
     {
         if (null !== $this->getMimeType() && isset(static::$mimeToIcon[$this->getMimeType()])) {
             return static::$mimeToIcon[$this->getMimeType()];
@@ -133,7 +134,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      *
      * @return string
      */
-    public function getShortMimeType()
+    public function getShortMimeType(): string
     {
         if (null !== $this->getMimeType()) {
             $mime = explode('/', $this->getMimeType() ?? '');
@@ -145,9 +146,9 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     /**
      * Is current document an image.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isImage()
+    public function isImage(): bool
     {
         return static::getShortType() === 'image';
     }
@@ -155,9 +156,9 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     /**
      * Is current document a vector SVG file.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isSvg()
+    public function isSvg(): bool
     {
         return $this->getMimeType() === 'image/svg+xml' || $this->getMimeType() === 'image/svg';
     }
@@ -165,9 +166,9 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     /**
      * Is current document a video.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isVideo()
+    public function isVideo(): bool
     {
         return static::getShortType() === 'video';
     }
@@ -175,9 +176,9 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     /**
      * Is current document an audio file.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isAudio()
+    public function isAudio(): bool
     {
         return static::getShortType() === 'audio';
     }
@@ -187,7 +188,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      *
      * @return bool
      */
-    public function isPdf()
+    public function isPdf(): bool
     {
         return static::getShortType() === 'pdf';
     }
@@ -195,7 +196,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     /**
      * @return bool
      */
-    public function isWebp()
+    public function isWebp(): bool
     {
         return $this->getMimeType() === 'image/webp';
     }
@@ -204,15 +205,19 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * @deprecated Use getRelativePath instead, naming is better.
      * @return string|null
      */
-    public function getRelativeUrl()
+    public function getRelativeUrl(): ?string
     {
         return $this->getRelativePath();
     }
 
     /**
      * @return null|string
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("string")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("relativePath")
      */
-    public function getRelativePath()
+    public function getRelativePath(): ?string
     {
         if (!empty($this->getFilename())) {
             return $this->getFolder() . '/' . $this->getFilename();
@@ -224,25 +229,27 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     /**
      * Tells if current document has embed media information.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isEmbed()
+    public function isEmbed(): bool
     {
         return (!empty($this->getEmbedId()) && !empty($this->getEmbedPlatform()));
     }
 
-    /**
-     * AbstractDocument constructor.
-     */
     public function __construct()
     {
         $this->setFolder(substr(hash("crc32b", date('YmdHi')), 0, 12));
+        $this->initAbstractDateTimed();
     }
 
     /**
      * @inheritDoc
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("bool")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("processable")
      */
-    public function isProcessable()
+    public function isProcessable(): bool
     {
         if ($this->isImage() && in_array($this->getMimeType(), static::$processableMimeTypes)) {
             return true;
@@ -251,6 +258,12 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         return false;
     }
 
+    /**
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("string")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("alt")
+     */
     public function getAlternativeText(): string
     {
         return $this->getFilename();

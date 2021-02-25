@@ -1,20 +1,5 @@
-{% set attributes = {} %}
-{% if class %}
-    {% set attributes = attributes|merge({'class' : class|escape('html_attr')}) %}
-{% endif %}
-{% if identifier %}
-    {% set attributes = attributes|merge({'id' : identifier|escape('html_attr')}) %}
-{% endif %}
-{% set attributesCompiled = {} %}
-{% for key, value in attributes %}
-    {% if value is same as(true)  %}
-        {% set attributesCompiled = attributesCompiled|merge([key]) %}
-    {% else %}
-        {% set attributesCompiled = attributesCompiled|merge([key ~ '="' ~ value ~ '"']) %}
-    {% endif %}
-{% endfor %}
-
-<picture{% if attributesCompiled|length %} {{ attributesCompiled|join(' ')|raw }}{% endif %}>
+{# Picture element should not declare any attributes #}
+<picture{% block picture_attributes %}{% endblock %}>
     {%- if not mediaList -%}
         {%- include 'documents/picture-source.html.twig' -%}
     {%- else -%}

@@ -7,14 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class InvalidEmbedId extends \InvalidArgumentException
 {
-    /**
-     * @var string|null
-     */
-    protected $embedId;
-    /**
-     * @var string|null
-     */
-    protected $platform;
+    protected ?string $embedId;
+    protected ?string $platform;
 
     public function __construct(?string $embedId = null, ?string $platform = null)
     {

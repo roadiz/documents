@@ -13,14 +13,9 @@ use RZ\Roadiz\Core\Models\HasThumbnailInterface;
  */
 class ThumbnailRenderer implements RendererInterface
 {
-    /**
-     * @var ChainRenderer|null
-     */
-    protected $chainRenderer = null;
+    protected ?ChainRenderer $chainRenderer = null;
 
     /**
-     * ThumbnailRenderer constructor.
-     *
      * @param ChainRenderer|null $chainRenderer
      */
     public function __construct(?ChainRenderer $chainRenderer = null)

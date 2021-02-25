@@ -14,34 +14,14 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class DownscaleImageManager
 {
-    /**
-     * @var int
-     */
-    protected $maxPixelSize = 0;
-    /**
-     * @var string
-     */
-    protected $rawImageSuffix = ".raw";
-    /**
-     * @var ImageManager
-     */
-    protected $manager;
-    /**
-     * @var LoggerInterface|null
-     */
-    protected $logger;
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
-    /**
-     * @var Packages
-     */
-    private $packages;
+    protected EntityManagerInterface $em;
+    protected Packages $packages;
+    protected ?LoggerInterface $logger;
+    protected int $maxPixelSize = 0;
+    protected string $rawImageSuffix = ".raw";
+    protected ImageManager $manager;
 
     /**
-     * DownscaleImageManager constructor.
-     *
      * @param EntityManagerInterface $em
      * @param Packages               $packages
      * @param LoggerInterface|null   $logger
@@ -52,10 +32,10 @@ class DownscaleImageManager
     public function __construct(
         EntityManagerInterface $em,
         Packages $packages,
-        LoggerInterface $logger = null,
-        $imageDriver = 'gd',
-        $maxPixelSize = 0,
-        $rawImageSuffix = ".raw"
+        ?LoggerInterface $logger = null,
+        string $imageDriver = 'gd',
+        int $maxPixelSize = 0,
+        string $rawImageSuffix = ".raw"
     ) {
         $this->maxPixelSize = (int) $maxPixelSize;
         $this->rawImageSuffix = $rawImageSuffix;
@@ -70,7 +50,7 @@ class DownscaleImageManager
      *
      * @param DocumentInterface|null $document
      */
-    public function processAndOverrideDocument(DocumentInterface $document = null): void
+    public function processAndOverrideDocument(?DocumentInterface $document = null): void
     {
         if (null !== $document && $this->maxPixelSize > 0) {
             $rawDocumentFilePath = $this->packages->getDocumentFilePath($document);
@@ -91,7 +71,7 @@ class DownscaleImageManager
      *
      * @param DocumentInterface|null $document
      */
-    public function processDocumentFromExistingRaw(DocumentInterface $document = null): void
+    public function processDocumentFromExistingRaw(?DocumentInterface $document = null): void
     {
         if (null !== $document && $this->maxPixelSize > 0) {
             if (null !== $document->getRawDocument()) {

@@ -12,32 +12,20 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
  */
 abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
 {
-    /**
-     * @var string
-     */
-    protected static $platform = 'soundcloud';
-    /**
-     * @var string
-     */
-    protected static $idPattern = '#^https\:\/\/soundcloud\.com\/(?<user>[a-z0-9\-]+)\/?#';
-    /**
-     * @var string
-     */
-    protected static $realIdPattern = '#^https\:\/\/api\.soundcloud\.com\/(?<type>tracks|playlists|users)\/(?<id>[0-9]+)\/?#';
-    /**
-     * @var string|null
-     */
-    protected $embedUrl;
+    protected static string $platform = 'soundcloud';
+    protected static string $idPattern = '#^https\:\/\/soundcloud\.com\/(?<user>[a-z0-9\-]+)\/?#';
+    protected static string $realIdPattern = '#^https\:\/\/api\.soundcloud\.com\/(?<type>tracks|playlists|users)\/(?<id>[0-9]+)\/?#';
+    protected ?string $embedUrl;
 
     /**
      * @inheritDoc
      */
-    protected function validateEmbedId($embedId = "")
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (preg_match(static::$idPattern, $embedId, $matches)) {
+        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
-        if (preg_match(static::$realIdPattern, $embedId, $matches)) {
+        if (preg_match(static::$realIdPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
@@ -74,58 +62,42 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         return $feed;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMediaTitle()
+    public function getMediaTitle(): string
     {
         return $this->getFeed()['title'] ?? '';
     }
-    /**
-     * {@inheritdoc}
-     */
-    public function getMediaDescription()
+
+    public function getMediaDescription(): string
     {
         return $this->getFeed()['description'] ?? '';
     }
-    /**
-     * @inheritDoc
-     */
-    public function getMediaCopyright()
+
+    public function getMediaCopyright(): string
     {
         return ($this->getFeed()['author_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? '') . ')';
     }
-    /**
-     * {@inheritdoc}
-     */
-    public function getThumbnailURL()
+
+    public function getThumbnailURL(): string
     {
         return $this->getFeed()['thumbnail_url'] ?? '';
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function getSearchFeed($searchTerm, $author, $maxResults = 15)
-    {
-        return null;
     }
 
     /**
      * @inheritDoc
      */
-    public function getThumbnailName($pathinfo)
+    public function getThumbnailName(string $pathinfo): string
     {
         if (null === $this->embedUrl) {
             $embed = $this->embedId;
         } else {
             $embed = $this->embedUrl;
         }
-        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext) === 1) {
             $pathinfo = '.' . $ext['extension'];
         } else {
             $pathinfo = '.jpg';
         }
-        if (preg_match(static::$idPattern, $embed, $matches)) {
+        if (preg_match(static::$idPattern, $embed, $matches) === 1) {
             return 'soundcloud_' . $matches['user'] . $pathinfo;
         }
         throw new InvalidEmbedId($embed, static::$platform);

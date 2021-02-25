@@ -17,7 +17,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    protected function validateEmbedId($embedId = "")
+    protected function validateEmbedId(string $embedId = ""): string
     {
         return $embedId;
     }
@@ -49,7 +49,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
      *
      * @return string
      */
-    protected function getAudioName(SimpleXMLElement $item)
+    protected function getAudioName(SimpleXMLElement $item): string
     {
         if (null !== $item->enclosure->attributes()) {
             $url = (string) $item->enclosure->attributes()->url;
@@ -157,15 +157,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getSearchFeed($searchTerm, $author, $maxResults = 15)
-    {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMediaTitle()
+    public function getMediaTitle(): ?string
     {
         $feed = $this->getFeed();
         if (null !== $feed && $feed instanceof SimpleXMLElement) {
@@ -177,7 +169,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getMediaDescription()
+    public function getMediaDescription(): ?string
     {
         $feed = $this->getFeed();
         if (null !== $feed && $feed instanceof SimpleXMLElement) {
@@ -189,7 +181,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getMediaCopyright()
+    public function getMediaCopyright(): ?string
     {
         $feed = $this->getFeed();
         if (null !== $feed && $feed instanceof SimpleXMLElement) {
@@ -201,7 +193,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getThumbnailURL()
+    public function getThumbnailURL(): ?string
     {
         $feed = $this->getFeed();
         if (null !== $feed && $feed instanceof SimpleXMLElement) {

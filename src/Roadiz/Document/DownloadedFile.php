@@ -9,23 +9,22 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class DownloadedFile extends File
 {
-    /** @var string|null */
-    private $originalFilename;
+    protected ?string $originalFilename;
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getOriginalFilename()
+    public function getOriginalFilename(): ?string
     {
         return $this->originalFilename;
     }
 
     /**
-     * @param mixed $originalFilename
+     * @param string|null $originalFilename
      *
      * @return DownloadedFile
      */
-    public function setOriginalFilename($originalFilename)
+    public function setOriginalFilename(?string $originalFilename)
     {
         $this->originalFilename = $originalFilename;
 

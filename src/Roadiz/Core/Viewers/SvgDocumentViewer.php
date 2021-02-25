@@ -8,27 +8,15 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class SvgDocumentViewer
 {
-    /**
-     * @var string
-     */
-    protected $imagePath;
-    /**
-     * @var array
-     */
-    protected $attributes;
-    /**
-     * @var bool
-     */
-    protected $asObject = false;
-    /**
-     * @var string
-     */
-    protected $imageUrl;
+    protected string $imagePath;
+    protected array $attributes;
+    protected bool $asObject = false;
+    protected string $imageUrl;
 
     /**
      * @var string[]
      */
-    public static $allowedAttributes = [
+    public static array $allowedAttributes = [
         'width',
         'height',
         'identifier',
@@ -42,10 +30,10 @@ class SvgDocumentViewer
      * @param string  $imageUrl Only needed if you set $asObject to true.
      */
     public function __construct(
-        $imagePath,
+        string $imagePath,
         array $attributes = [],
-        $asObject = false,
-        $imageUrl = ""
+        bool $asObject = false,
+        string $imageUrl = ""
     ) {
         $this->imagePath = $imagePath;
         $this->imageUrl = $imageUrl;
@@ -58,7 +46,7 @@ class SvgDocumentViewer
      *
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         if (false === $this->asObject) {
             return $this->getInlineSvg();
@@ -70,7 +58,7 @@ class SvgDocumentViewer
     /**
      * @return array
      */
-    protected function getAllowedAttributes()
+    protected function getAllowedAttributes(): array
     {
         $attributes = [];
         foreach ($this->attributes as $key => $value) {
@@ -88,7 +76,7 @@ class SvgDocumentViewer
     /**
      * @return string
      */
-    protected function getInlineSvg()
+    protected function getInlineSvg(): string
     {
         if (!file_exists($this->imagePath)) {
             throw new FileNotFoundException('SVG file does not exist: ' . $this->imagePath);
@@ -115,7 +103,7 @@ class SvgDocumentViewer
      * @param string $svg
      * @return string
      */
-    protected function injectAttributes($svg)
+    protected function injectAttributes($svg): string
     {
         $attributes = $this->getAllowedAttributes();
         if (count($attributes) > 0) {
@@ -155,7 +143,7 @@ class SvgDocumentViewer
      * @return string
      * @deprecated  Use SvgRenderer to render HTML object.
      */
-    protected function getObjectSvg()
+    protected function getObjectSvg(): string
     {
         $attributes = $this->getAllowedAttributes();
         $attributes['type'] = 'image/svg+xml';

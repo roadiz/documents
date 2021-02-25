@@ -9,40 +9,18 @@ use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 
 /**
- * Class AbstractDocumentUrlGenerator
- *
  * @package RZ\Roadiz\Utils\UrlGenerators
  */
 abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInterface
 {
-    /**
-     * @var DocumentInterface|null
-     */
-    protected $document;
-    /**
-     * @var array
-     */
-    protected $options;
-    /**
-     * @var Packages
-     */
-    protected $packages;
-    /**
-     * @var CacheProvider|null
-     */
-    protected $optionsCacheProvider;
-    /**
-     * @var ViewOptionsResolver
-     */
-    protected $viewOptionsResolver;
-    /**
-     * @var OptionsCompiler
-     */
-    protected $optionCompiler;
+    protected Packages $packages;
+    protected ?DocumentInterface $document;
+    protected array $options;
+    protected ?CacheProvider $optionsCacheProvider;
+    protected ViewOptionsResolver $viewOptionsResolver;
+    protected OptionsCompiler $optionCompiler;
 
     /**
-     * AbstractDocumentUrlGenerator constructor.
-     *
      * @param Packages               $packages
      * @param DocumentInterface|null $document
      * @param array                  $options
@@ -80,7 +58,7 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
                 $resolvedOptions = $this->viewOptionsResolver->resolve($options);
                 $this->optionsCacheProvider->save($optionsHash, $resolvedOptions);
             }
-            $this->options = $this->optionsCacheProvider->fetch($optionsHash);
+            $this->options = $this->optionsCacheProvider->fetch($optionsHash) ?: [];
         } else {
             $this->options = $this->viewOptionsResolver->resolve($options);
         }
@@ -90,7 +68,7 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
     /**
      * @return DocumentInterface|null
      */
-    public function getDocument()
+    public function getDocument(): ?DocumentInterface
     {
         return $this->document;
     }

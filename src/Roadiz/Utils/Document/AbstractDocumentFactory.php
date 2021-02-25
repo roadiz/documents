@@ -29,34 +29,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 abstract class AbstractDocumentFactory
 {
-    /**
-     * @var File
-     */
-    private $file;
-    /**
-     * @var FolderInterface|null
-     */
-    private $folder;
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $dispatcher;
-    /**
-     * @var Packages
-     */
-    private $packages;
+    private EntityManagerInterface $em;
+    private EventDispatcherInterface $dispatcher;
+    private Packages $packages;
+    private LoggerInterface $logger;
+    private ?File $file = null;
+    private ?FolderInterface $folder = null;
 
     /**
-     * AbstractDocumentFactory constructor.
-     *
      * @param EntityManagerInterface   $em
      * @param EventDispatcherInterface $dispatcher
      * @param Packages                 $packages
@@ -66,23 +46,27 @@ abstract class AbstractDocumentFactory
         EntityManagerInterface $em,
         EventDispatcherInterface $dispatcher,
         Packages $packages,
-        LoggerInterface $logger = null
+        ?LoggerInterface $logger = null
     ) {
-        $this->logger = $logger;
         $this->em = $em;
         $this->dispatcher = $dispatcher;
         $this->packages = $packages;
 
-        if (null === $this->logger) {
+        if (null === $logger) {
             $this->logger = new NullLogger();
+        } else {
+            $this->logger = $logger;
         }
     }
 
     /**
      * @return File
      */
-    public function getFile()
+    public function getFile(): File
     {
+        if (null === $this->file) {
+            throw new \BadMethodCallException('File should be defined before using it.');
+        }
         return $this->file;
     }
 
@@ -99,7 +83,7 @@ abstract class AbstractDocumentFactory
     /**
      * @return FolderInterface|null
      */
-    public function getFolder()
+    public function getFolder(): ?FolderInterface
     {
         return $this->folder;
     }
@@ -108,7 +92,7 @@ abstract class AbstractDocumentFactory
      * @param FolderInterface|null $folder
      * @return AbstractDocumentFactory
      */
-    public function setFolder(FolderInterface $folder = null)
+    public function setFolder(?FolderInterface $folder = null)
     {
         $this->folder = $folder;
         return $this;
@@ -134,7 +118,7 @@ abstract class AbstractDocumentFactory
     /**
      * @return DocumentInterface
      */
-    abstract protected function createDocument();
+    abstract protected function createDocument(): DocumentInterface;
 
     /**
      * Create a document from UploadedFile, Be careful, this method does not flush, only
@@ -144,26 +128,29 @@ abstract class AbstractDocumentFactory
      *
      * @return null|DocumentInterface
      */
-    public function getDocument($allowEmpty = false)
+    public function getDocument(bool $allowEmpty = false): ?DocumentInterface
     {
         $document = $this->createDocument();
 
-        if ($allowEmpty === false && null === $this->file) {
-            throw new \InvalidArgumentException('File must be set before getting document.');
+        if ($allowEmpty === false) {
+            // Getter throw exception on null file
+            $file = $this->getFile();
+        } else {
+            $file = $this->file;
         }
 
-        if (null !== $this->file) {
-            if ($this->file instanceof UploadedFile && !$this->file->isValid()) {
+        if (null !== $file) {
+            if ($file instanceof UploadedFile && !$file->isValid()) {
                 return null;
             }
             $document->setFilename($this->getFileName());
-            if ($this->file instanceof UploadedFile) {
-                $document->setMimeType($this->file->getClientMimeType() ?? '');
+            if ($file instanceof UploadedFile) {
+                $document->setMimeType($file->getClientMimeType() ?? '');
             } else {
-                $document->setMimeType($this->file->getMimeType() ?? '');
+                $document->setMimeType($file->getMimeType() ?? '');
             }
             $this->parseSvgMimeType($document);
-            $this->file->move(
+            $file->move(
                 $this->packages->getDocumentFolderPath($document),
                 $document->getFilename()
             );
@@ -209,16 +196,13 @@ abstract class AbstractDocumentFactory
      * @param DocumentInterface $document
      * @return DocumentInterface
      */
-    public function updateDocument(DocumentInterface $document)
+    public function updateDocument(DocumentInterface $document): DocumentInterface
     {
-        if (null === $this->file) {
-            throw new \InvalidArgumentException('File must be set before getting document.');
-        }
-
+        $file = $this->getFile();
         $fs = new Filesystem();
 
-        if ($this->file instanceof UploadedFile &&
-            !$this->file->isValid()) {
+        if ($file instanceof UploadedFile &&
+            !$file->isValid()) {
             return $document;
         }
 
@@ -247,14 +231,14 @@ abstract class AbstractDocumentFactory
         }
 
         $document->setFilename($this->getFileName());
-        if ($this->file instanceof UploadedFile) {
-            $document->setMimeType($this->file->getClientMimeType() ?? '');
+        if ($file instanceof UploadedFile) {
+            $document->setMimeType($file->getClientMimeType() ?? '');
         } else {
-            $document->setMimeType($this->file->getMimeType() ?? '');
+            $document->setMimeType($file->getMimeType() ?? '');
         }
         $this->parseSvgMimeType($document);
 
-        $this->file->move(
+        $file->move(
             $this->packages->getDocumentFolderPath($document),
             $document->getFilename()
         );
@@ -267,18 +251,19 @@ abstract class AbstractDocumentFactory
     /**
      * @return string
      */
-    protected function getFileName()
+    protected function getFileName(): string
     {
-        if (null === $this->file) {
-            throw new \InvalidArgumentException('File must be set before getting its fileName.');
-        }
+        $file = $this->getFile();
 
-        if ($this->file instanceof UploadedFile) {
-            $fileName = $this->file->getClientOriginalName();
-        } elseif ($this->file instanceof DownloadedFile && $this->file->getOriginalFilename() !== '') {
-            $fileName = $this->file->getOriginalFilename();
+        if ($file instanceof UploadedFile) {
+            $fileName = $file->getClientOriginalName();
+        } elseif ($file instanceof DownloadedFile &&
+            $file->getOriginalFilename() !== null &&
+            $file->getOriginalFilename() !== ''
+        ) {
+            $fileName = $file->getOriginalFilename();
         } else {
-            $fileName = $this->file->getFilename();
+            $fileName = $file->getFilename();
         }
 
         return $fileName;

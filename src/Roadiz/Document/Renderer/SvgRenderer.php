@@ -10,19 +10,10 @@ use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 
 class SvgRenderer implements RendererInterface
 {
-    /**
-     * @var Packages
-     */
-    private $packages;
+    protected Packages $packages;
+    protected ViewOptionsResolver $viewOptionsResolver;
 
     /**
-     * @var ViewOptionsResolver
-     */
-    protected $viewOptionsResolver;
-
-    /**
-     * SvgRenderer constructor.
-     *
      * @param Packages $packages
      */
     public function __construct(Packages $packages)
@@ -40,9 +31,11 @@ class SvgRenderer implements RendererInterface
     {
         $options = $this->viewOptionsResolver->resolve($options);
         $assignation = array_filter($options);
-
         $attributes = $this->getAttributes($assignation);
-        $attributes['data'] = $this->packages->getUrl($document->getRelativePath() ?? '', Packages::DOCUMENTS);
+        $attributes['src'] = $this->packages->getUrl(
+            $document->getRelativePath() ?? '',
+            Packages::DOCUMENTS
+        );
 
         $attrs = [];
         foreach ($attributes as $key => $value) {
@@ -52,7 +45,7 @@ class SvgRenderer implements RendererInterface
             $attrs[] = $key . '="' . $value . '"';
         }
 
-        return '<object ' . implode(' ', $attrs) . '></object>';
+        return '<img ' . implode(' ', $attrs) . ' />';
     }
 
     /**
@@ -62,11 +55,16 @@ class SvgRenderer implements RendererInterface
      */
     protected function getAttributes(array $options): array
     {
-        $attributes = [
-            'type' => 'image/svg+xml'
-        ];
+        $attributes = [];
+        $allowedAttributes = array_merge(
+            SvgDocumentViewer::$allowedAttributes,
+            [
+                'loading',
+                'alt'
+            ]
+        );
         foreach ($options as $key => $value) {
-            if (in_array($key, SvgDocumentViewer::$allowedAttributes)) {
+            if (in_array($key, $allowedAttributes)) {
                 if ($key === 'identifier') {
                     $attributes['id'] = $value;
                 } else {

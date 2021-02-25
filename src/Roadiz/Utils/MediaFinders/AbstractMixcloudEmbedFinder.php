@@ -7,21 +7,15 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
 {
-    /**
-     * @var string
-     */
-    protected static $platform = 'mixcloud';
-    /**
-     * @var string
-     */
-    protected static $idPattern = '#^https\:\/\/www\.mixcloud\.com\/(?<author>[a-zA-Z0-9\-]+)\/(?<id>[a-zA-Z0-9\-]+)\/?$#';
+    protected static string $platform = 'mixcloud';
+    protected static string $idPattern = '#^https\:\/\/www\.mixcloud\.com\/(?<author>[a-zA-Z0-9\-]+)\/(?<id>[a-zA-Z0-9\-]+)\/?$#';
 
     /**
      * @inheritDoc
      */
-    protected function validateEmbedId($embedId = "")
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (preg_match(static::$idPattern, $embedId, $matches)) {
+        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
@@ -44,15 +38,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getSearchFeed($searchTerm, $author, $maxResults = 15)
-    {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMediaTitle()
+    public function getMediaTitle(): string
     {
         return $this->getFeed()['title'] ?? '';
     }
@@ -60,7 +46,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getMediaDescription()
+    public function getMediaDescription(): string
     {
         return $this->getFeed()['description'] ?? '';
     }
@@ -68,7 +54,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getMediaCopyright()
+    public function getMediaCopyright(): string
     {
         return ($this->getFeed()['author_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? '') . ')';
     }
@@ -76,7 +62,7 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getThumbnailURL()
+    public function getThumbnailURL(): string
     {
         return $this->getFeed()['image'] ?? '';
     }
@@ -84,14 +70,14 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
     /**
      * @inheritDoc
      */
-    public function getThumbnailName($pathinfo)
+    public function getThumbnailName(string $pathinfo): string
     {
-        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext) === 1) {
             $pathinfo = '.' . $ext['extension'];
         } else {
             $pathinfo = '.jpg';
         }
-        if (preg_match(static::$idPattern, $this->embedId, $matches)) {
+        if (preg_match(static::$idPattern, $this->embedId, $matches) === 1) {
             return $matches['author'] . '_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($this->embedId, static::$platform);

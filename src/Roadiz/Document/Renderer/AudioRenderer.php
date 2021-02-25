@@ -11,18 +11,10 @@ use Twig\Environment;
 
 class AudioRenderer extends AbstractRenderer
 {
-    /**
-     * @var Packages
-     */
-    private $packages;
-    /**
-     * @var DocumentFinderInterface
-     */
-    private $documentFinder;
+    protected Packages $packages;
+    protected DocumentFinderInterface $documentFinder;
 
     /**
-     * AudioRenderer constructor.
-     *
      * @param Packages                      $packages
      * @param DocumentFinderInterface       $documentFinder
      * @param Environment                   $templating

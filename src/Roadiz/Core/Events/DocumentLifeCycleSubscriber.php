@@ -18,14 +18,9 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class DocumentLifeCycleSubscriber implements EventSubscriber
 {
-    /**
-     * @var FileAwareInterface
-     */
-    private $fileAware;
+    private FileAwareInterface $fileAware;
 
     /**
-     * DocumentLifeCycleSubscriber constructor.
-     *
      * @param FileAwareInterface $fileAware
      */
     public function __construct(FileAwareInterface $fileAware)
@@ -171,9 +166,9 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * @param DocumentInterface $document
      * @param string $filename
      *
-     * @return null|string
+     * @return string
      */
-    protected function getDocumentRelativePathForFilename(DocumentInterface $document, $filename)
+    protected function getDocumentRelativePathForFilename(DocumentInterface $document, string $filename): string
     {
         return $document->getFolder() . DIRECTORY_SEPARATOR . $filename;
     }
@@ -184,7 +179,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      *
      * @return string
      */
-    protected function getDocumentPathForFilename(DocumentInterface $document, $filename)
+    protected function getDocumentPathForFilename(DocumentInterface $document, string $filename): string
     {
         if ($document->isPrivate()) {
             return $this->fileAware->getPrivateFilesPath() .
@@ -200,7 +195,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * @param DocumentInterface $document
      * @return string
      */
-    protected function getDocumentPath(DocumentInterface $document)
+    protected function getDocumentPath(DocumentInterface $document): string
     {
         if ($document->isPrivate()) {
             return $this->getDocumentPrivatePath($document);
@@ -212,7 +207,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * @param DocumentInterface $document
      * @return string
      */
-    protected function getDocumentPublicPath(DocumentInterface $document)
+    protected function getDocumentPublicPath(DocumentInterface $document): string
     {
         return $this->fileAware->getPublicFilesPath() . DIRECTORY_SEPARATOR . $document->getRelativePath();
     }
@@ -221,7 +216,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * @param DocumentInterface $document
      * @return string
      */
-    protected function getDocumentPrivatePath(DocumentInterface $document)
+    protected function getDocumentPrivatePath(DocumentInterface $document): string
     {
         return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getRelativePath();
     }
@@ -230,7 +225,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * @param DocumentInterface $document
      * @return string
      */
-    protected function getDocumentFolderPath(DocumentInterface $document)
+    protected function getDocumentFolderPath(DocumentInterface $document): string
     {
         if ($document->isPrivate()) {
             return $this->getDocumentPrivateFolderPath($document);
@@ -242,7 +237,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * @param DocumentInterface $document
      * @return string
      */
-    protected function getDocumentPublicFolderPath(DocumentInterface $document)
+    protected function getDocumentPublicFolderPath(DocumentInterface $document): string
     {
         return $this->fileAware->getPublicFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
     }
@@ -251,7 +246,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * @param DocumentInterface $document
      * @return string
      */
-    protected function getDocumentPrivateFolderPath(DocumentInterface $document)
+    protected function getDocumentPrivateFolderPath(DocumentInterface $document): string
     {
         return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
     }
