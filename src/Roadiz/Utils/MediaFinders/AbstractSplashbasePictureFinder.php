@@ -89,7 +89,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
 
                 if (is_string($url)) {
                     if (false !== strpos($url, '.jpg') || false !== strpos($url, '.png')) {
-                        $this->embedId = $feed['id'];
+                        $this->embedId = (string) $feed['id'];
                         $this->feed = $feed;
                         return $this->feed;
                     }
