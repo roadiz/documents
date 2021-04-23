@@ -73,7 +73,7 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
 
     public function getThumbnailURL(): string
     {
-        return isset($this->getFeed()['thumbnail_url']) ? $this->getFeed()['thumbnail_url'] : '';
+        return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
     /**

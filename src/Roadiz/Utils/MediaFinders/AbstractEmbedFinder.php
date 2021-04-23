@@ -10,6 +10,8 @@ use Psr\Http\Message\StreamInterface;
 use RZ\Roadiz\Core\Exceptions\APINeedsAuthentificationException;
 use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Core\Models\SizeableInterface;
+use RZ\Roadiz\Core\Models\TimeableInterface;
 use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -282,6 +284,15 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         $document->setEmbedId($this->getEmbedId());
         $document->setEmbedPlatform(static::$platform);
 
+        if ($document instanceof SizeableInterface) {
+            $document->setImageWidth($this->getMediaWidth() ?? 0);
+            $document->setImageHeight($this->getMediaHeight() ?? 0);
+        }
+
+        if ($document instanceof TimeableInterface) {
+            $document->setMediaDuration($this->getMediaDuration() ?? 0);
+        }
+
         return $document;
     }
 
@@ -333,6 +344,30 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @return string|null
      */
     abstract public function getThumbnailURL(): ?string;
+
+    /**
+     * @return int|null
+     */
+    public function getMediaWidth(): ?int
+    {
+        return null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMediaHeight(): ?int
+    {
+        return null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMediaDuration(): ?int
+    {
+        return null;
+    }
 
     /**
      * Send a CURL request and get its string output.

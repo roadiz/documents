@@ -40,6 +40,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'image/gif' => 'image',
         'image/tiff' => 'image',
         'image/webp' => 'image',
+        'image/avif' => 'image',
         'image/vnd.microsoft.icon' => 'image',
         'image/x-icon' => 'image',
         'application/pdf' => 'pdf',
@@ -113,6 +114,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'image/gif',
         'image/tiff',
         'image/webp',
+        'image/avif',
     ];
 
     /**

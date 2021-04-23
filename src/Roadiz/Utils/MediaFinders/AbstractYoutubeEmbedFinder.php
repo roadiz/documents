@@ -92,6 +92,22 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getMediaWidth(): ?int
+    {
+        return $this->getFeed()['width'] ?? null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMediaHeight(): ?int
+    {
+        return $this->getFeed()['height'] ?? null;
+    }
+
     public function getThumbnailName(string $pathinfo): string
     {
         if (null === $this->embedUrl) {
