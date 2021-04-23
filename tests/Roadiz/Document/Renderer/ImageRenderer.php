@@ -24,7 +24,6 @@ class ImageRenderer extends atoum
         $mockValidDocument->setFilename('file.jpg');
         $mockValidDocument->setMimeType('image/jpeg');
 
-
         /** @var DocumentInterface $mockExternalValidDocument */
         $mockExternalValidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
         $mockExternalValidDocument->setFilename('file.jpg');

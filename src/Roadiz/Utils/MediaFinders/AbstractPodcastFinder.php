@@ -7,6 +7,7 @@ use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use Psr\Http\Message\StreamInterface;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Core\Models\TimeableInterface;
 use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Document\AbstractDocumentFactory;
 use SimpleXMLElement;
@@ -86,6 +87,8 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
                     $podcastUrl = (string) $item->enclosure->attributes()->url;
                     $thumbnailName = $this->getAudioName($item);
                     $file = DownloadedFile::fromUrl($podcastUrl, $thumbnailName);
+                    $namespaces = $item->getNameSpaces(true);
+                    $itunes = $item->children($namespaces['itunes']);
 
                     if (null !== $file) {
                         $documentFactory->setFile($file);
@@ -98,6 +101,20 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
                             $this->injectMetaFromPodcastItem($objectManager, $document, $item);
                             $document->setEmbedId((string) $item->guid);
                             $document->setEmbedPlatform(null);
+
+                            if ($document instanceof TimeableInterface && !empty((string) $itunes->duration)) {
+                                if (preg_match(
+                                    '#([0-9]+)\:([0-9]+)\:([0-9]+)#',
+                                    (string) $itunes->duration,
+                                    $matches
+                                )) {
+                                    $seconds = ((int) $matches[1] * 3600) +
+                                        ((int) $matches[2] * 60) +
+                                        (int) $matches[3];
+                                    $document->setMediaDuration($seconds);
+                                }
+                            }
+
                             $documents[] = $document;
                         }
                     }

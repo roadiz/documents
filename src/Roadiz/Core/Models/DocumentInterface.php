@@ -185,4 +185,6 @@ interface DocumentInterface
     public function isProcessable(): bool;
 
     public function getAlternativeText(): string;
+
+    public function __toString();
 }

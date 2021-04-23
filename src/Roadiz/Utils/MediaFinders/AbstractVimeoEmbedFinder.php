@@ -12,6 +12,7 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
  */
 abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
 {
+    protected static string $realIdPattern = '#(?<id>[0-9]+)$#';
     protected static string $platform = 'vimeo';
 
     protected function validateEmbedId(string $embedId = ""): string
@@ -23,6 +24,14 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     }
 
     /**
+     * @return bool Allow video without thumbnails
+     */
+    public function isEmptyThumbnailAllowed(): bool
+    {
+        return true;
+    }
+
+    /**
      * Tell if embed media exists after its API feed.
      *
      * @return bool
@@ -30,55 +39,47 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     public function exists(): bool
     {
         $feed = $this->getFeed();
-        return is_array($feed) && isset($feed[0]);
+        return is_array($feed) && isset($feed['video_id']);
     }
 
     public function getMediaTitle(): string
     {
-        $feed = $this->getFeed();
-        if (is_array($feed) && isset($feed[0])) {
-            return $feed[0]['title'] ?? '';
-        }
-
-        return '';
+        return $this->getFeed()['title'] ?? '';
     }
 
     public function getMediaDescription(): string
     {
-        $feed = $this->getFeed();
-        if (is_array($feed) && isset($feed[0])) {
-            return $feed[0]['description'] ?? '';
-        }
-
-        return "";
+        return $this->getFeed()['description'] ?? '';
     }
 
     public function getMediaCopyright(): string
     {
-        return "";
+        return $this->getFeed()['author_name'] ?? '';
     }
 
     public function getThumbnailURL(): string
     {
-        $feed = $this->getFeed();
-        if (is_array($feed) && isset($feed[0])) {
-            return $feed[0]['thumbnail_large'];
-        }
-
-        return "";
+        return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    public function getMediaWidth(): ?int
+    {
+        return $this->getFeed()['width'] ?? null;
+    }
+
+    public function getMediaHeight(): ?int
+    {
+        return $this->getFeed()['height'] ?? null;
+    }
+
+    public function getMediaDuration(): ?int
+    {
+        return $this->getFeed()['duration'] ?? null;
+    }
+
     public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15)
     {
-        $url = "http://gdata.youtube.com/feeds/api/videos/?q=" . $searchTerm . "&v=2&alt=json&max-results=" . $maxResults;
-        if (null !== $author && !empty($author)) {
-            $url .= '&author=' . $author;
-        }
-
-        return $this->downloadFeedFromAPI($url);
+        return null;
     }
 
     /**
@@ -86,11 +87,18 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaFeed($search = null)
     {
-        // http://gdata.youtube.com/feeds/api/videos/<Code de la vidéo>?v=2&alt=json ---> JSON
-        //
-        $url = "http://vimeo.com/api/v2/video/" . $this->embedId . ".json";
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
+            $url = 'https://vimeo.com/video/' . $this->embedId;
+        } else {
+            $url = $this->embedId;
+        }
+        $endpoint = 'https://vimeo.com/api/oembed.json';
+        $query = [
+            'url' => $url,
+            'format' => 'json',
+        ];
 
-        return $this->downloadFeedFromAPI($url);
+        return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
     }
 
     /**
