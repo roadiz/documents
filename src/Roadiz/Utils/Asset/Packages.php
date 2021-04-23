@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\Asset;
 
+use RZ\Roadiz\Core\Exceptions\DocumentWithoutFileException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\FileAwareInterface;
 use Symfony\Component\Asset\Context\RequestStackContext;
@@ -299,9 +300,13 @@ class Packages extends BasePackages
     /**
      * @param DocumentInterface $document
      * @return string Document file absolute path according if document is private or not.
+     * @throws DocumentWithoutFileException
      */
     public function getDocumentFilePath(DocumentInterface $document)
     {
+        if (!$document->isLocal()) {
+            throw new DocumentWithoutFileException($document);
+        }
         if ($document->isPrivate()) {
             return $this->getPrivateFilesPath($document->getRelativePath() ?? '');
         }
@@ -311,9 +316,13 @@ class Packages extends BasePackages
     /**
      * @param DocumentInterface $document
      * @return string Document folder absolute path according if document is private or not.
+     * @throws DocumentWithoutFileException
      */
     public function getDocumentFolderPath(DocumentInterface $document)
     {
+        if (!$document->isLocal()) {
+            throw new DocumentWithoutFileException($document);
+        }
         if ($document->isPrivate()) {
             return $this->getPrivateFilesPath($document->getFolder());
         }
