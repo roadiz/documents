@@ -7,6 +7,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
+use RZ\Roadiz\Core\Exceptions\DocumentWithoutFileException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\FileAwareInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -45,7 +46,10 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     public function preUpdate(PreUpdateEventArgs $args): void
     {
         $document = $args->getObject();
-        if ($document instanceof DocumentInterface && $args->hasChangedField('filename')) {
+        if ($document instanceof DocumentInterface &&
+            $args->hasChangedField('filename') &&
+            $args->getOldValue('filename') !== null &&
+            $args->getOldValue('filename') !== '') {
             $fs = new Filesystem();
             $oldPath = $this->getDocumentPathForFilename($document, $args->getOldValue('filename'));
             $newPath = $this->getDocumentPathForFilename($document, $args->getNewValue('filename'));
@@ -74,6 +78,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      */
     protected function makePublic(DocumentInterface $document, PreUpdateEventArgs $args): void
     {
+        $this->validateDocument($document);
         $documentPublicPath = $this->getDocumentPublicPath($document);
         $documentPrivatePath = $this->getDocumentPrivatePath($document);
 
@@ -101,6 +106,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      */
     protected function makePrivate(DocumentInterface $document, PreUpdateEventArgs $args): void
     {
+        $this->validateDocument($document);
         $documentPublicPath = $this->getDocumentPublicPath($document);
         $documentPrivatePath = $this->getDocumentPrivatePath($document);
 
@@ -129,15 +135,18 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     {
         $document = $args->getObject();
         if ($document instanceof DocumentInterface) {
-            $fileSystem = new Filesystem();
-            $document->setRawDocument(null);
-            $documentPath = $this->getDocumentPath($document);
+            try {
+                $this->validateDocument($document);
+                $fileSystem = new Filesystem();
+                $document->setRawDocument(null);
+                $documentPath = $this->getDocumentPath($document);
 
-            if ($document->getFilename() !== '') {
                 if ($fileSystem->exists($documentPath) && is_file($documentPath)) {
                     $fileSystem->remove($documentPath);
                 }
                 $this->cleanFileDirectory($this->getDocumentFolderPath($document));
+            } catch (DocumentWithoutFileException $e) {
+                // Do nothing when document does not have any file on system.
             }
         }
     }
@@ -170,6 +179,8 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      */
     protected function getDocumentRelativePathForFilename(DocumentInterface $document, string $filename): string
     {
+        $this->validateDocument($document);
+
         return $document->getFolder() . DIRECTORY_SEPARATOR . $filename;
     }
 
@@ -197,6 +208,8 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      */
     protected function getDocumentPath(DocumentInterface $document): string
     {
+        $this->validateDocument($document);
+
         if ($document->isPrivate()) {
             return $this->getDocumentPrivatePath($document);
         }
@@ -249,5 +262,16 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     protected function getDocumentPrivateFolderPath(DocumentInterface $document): string
     {
         return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @throws DocumentWithoutFileException
+     */
+    protected function validateDocument(DocumentInterface $document): void
+    {
+        if (!$document->isLocal()) {
+            throw new DocumentWithoutFileException($document);
+        }
     }
 }

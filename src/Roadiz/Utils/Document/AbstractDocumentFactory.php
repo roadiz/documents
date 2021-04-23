@@ -150,10 +150,12 @@ abstract class AbstractDocumentFactory
                 $document->setMimeType($file->getMimeType() ?? '');
             }
             $this->parseSvgMimeType($document);
-            $file->move(
-                $this->packages->getDocumentFolderPath($document),
-                $document->getFilename()
-            );
+            if ($document->getFilename() !== '') {
+                $file->move(
+                    $this->packages->getDocumentFolderPath($document),
+                    $document->getFilename()
+                );
+            }
         }
 
         $this->em->persist($document);
@@ -206,13 +208,15 @@ abstract class AbstractDocumentFactory
             return $document;
         }
 
-        $documentPath = $this->packages->getDocumentFilePath($document);
+        if ($document->isLocal()) {
+            $documentPath = $this->packages->getDocumentFilePath($document);
 
-        /*
-         * In case file already exists
-         */
-        if ($fs->exists($documentPath)) {
-            $fs->remove($documentPath);
+            /*
+             * In case file already exists
+             */
+            if ($fs->exists($documentPath)) {
+                $fs->remove($documentPath);
+            }
         }
 
         if (StringHandler::cleanForFilename($this->getFileName()) == $document->getFilename()) {
@@ -221,7 +225,7 @@ abstract class AbstractDocumentFactory
 
             if ($fs->exists($previousFolder)) {
                 $finder->files()->in($previousFolder);
-                // Remove Precious folder if it's empty
+                // Remove previous folder if it's empty
                 if ($finder->count() == 0) {
                     $fs->remove($previousFolder);
                 }

@@ -86,6 +86,9 @@ class VideoRenderer extends AbstractRenderer
         /*
          * Then look for document with same filename
          */
+        if (!$document->isLocal()) {
+            return null;
+        }
         $basename = pathinfo($document->getFilename());
         $basename = $basename['filename'];
 
@@ -120,6 +123,9 @@ class VideoRenderer extends AbstractRenderer
      */
     protected function getSourcesFiles(DocumentInterface $document): array
     {
+        if (!$document->isLocal()) {
+            return [];
+        }
         $basename = pathinfo($document->getFilename());
         $basename = $basename['filename'];
 

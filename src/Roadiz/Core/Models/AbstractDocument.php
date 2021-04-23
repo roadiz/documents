@@ -221,7 +221,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function getRelativePath(): ?string
     {
-        if (!empty($this->getFilename())) {
+        if ($this->isLocal()) {
             return $this->getFolder() . '/' . $this->getFilename();
         } else {
             return null;
@@ -269,5 +269,15 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     public function getAlternativeText(): string
     {
         return $this->getFilename();
+    }
+
+    /**
+     * Return false if no local file is linked to document. i.e no filename, no folder
+     *
+     * @return bool
+     */
+    public function isLocal(): bool
+    {
+        return $this->getFilename() !== '' && $this->getFolder() !== '';
     }
 }

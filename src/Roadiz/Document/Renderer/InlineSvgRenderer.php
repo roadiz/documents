@@ -25,7 +25,7 @@ class InlineSvgRenderer implements RendererInterface
 
     public function supports(DocumentInterface $document, array $options): bool
     {
-        return $document->isSvg() && (isset($options['inline']) && $options['inline'] === true);
+        return $document->isLocal() && $document->isSvg() && (isset($options['inline']) && $options['inline'] === true);
     }
 
     public function render(DocumentInterface $document, array $options): string
