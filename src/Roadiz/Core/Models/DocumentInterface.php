@@ -178,6 +178,12 @@ interface DocumentInterface
     public function removeFolder(FolderInterface $folder);
 
     /**
+     * Return false if no local file is linked to document. i.e no filename, no folder
+     *
+     * @return bool
+     */
+    public function isLocal(): bool;
+    /**
      * Return true if current document can be processed by intervention-image (GD, Imagick…).
      *
      * @return bool

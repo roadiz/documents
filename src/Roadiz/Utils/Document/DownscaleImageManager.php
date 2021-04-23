@@ -52,7 +52,7 @@ class DownscaleImageManager
      */
     public function processAndOverrideDocument(?DocumentInterface $document = null): void
     {
-        if (null !== $document && $this->maxPixelSize > 0) {
+        if (null !== $document && $document->isLocal() && $this->maxPixelSize > 0) {
             $rawDocumentFilePath = $this->packages->getDocumentFilePath($document);
             $processImage = $this->getDownscaledImage($this->manager->make($rawDocumentFilePath));
             if (false !== $processImage) {
@@ -73,8 +73,8 @@ class DownscaleImageManager
      */
     public function processDocumentFromExistingRaw(?DocumentInterface $document = null): void
     {
-        if (null !== $document && $this->maxPixelSize > 0) {
-            if (null !== $document->getRawDocument()) {
+        if (null !== $document && $document->isLocal() && $this->maxPixelSize > 0) {
+            if (null !== $document->getRawDocument() && $document->getRawDocument()->isLocal()) {
                 $rawDocumentFile = $this->packages->getDocumentFilePath($document->getRawDocument());
             } else {
                 $rawDocumentFile = $this->packages->getDocumentFilePath($document);

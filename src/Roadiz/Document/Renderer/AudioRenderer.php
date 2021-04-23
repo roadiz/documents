@@ -65,6 +65,9 @@ class AudioRenderer extends AbstractRenderer
      */
     protected function getSourcesFiles(DocumentInterface $document): array
     {
+        if (!$document->isLocal()) {
+            return [];
+        }
         $basename = pathinfo($document->getFilename());
         $basename = $basename['filename'];
 
