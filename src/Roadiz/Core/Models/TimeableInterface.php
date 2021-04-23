@@ -5,6 +5,14 @@ namespace RZ\Roadiz\Core\Models;
 
 interface TimeableInterface
 {
+    /**
+     * @return int
+     */
     public function getMediaDuration(): int;
+
+    /**
+     * @param int $duration
+     * @return static
+     */
     public function setMediaDuration(int $duration);
 }

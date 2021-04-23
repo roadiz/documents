@@ -248,4 +248,9 @@ class SimpleDocument extends AbstractDocument
         $this->folders->removeElement($folder);
         return $this;
     }
+
+    public function __toString()
+    {
+        return $this->getFilename() ?? '';
+    }
 }
