@@ -15,6 +15,7 @@ final class SvgSizeResolver
 
     /**
      * @param DocumentInterface $document
+     * @param Packages $packages
      */
     public function __construct(DocumentInterface $document, Packages $packages)
     {
@@ -29,8 +30,12 @@ final class SvgSizeResolver
      */
     public function getWidth(): int
     {
-        $width = $this->getSvgNode()->attributes->getNamedItem('width');
-        $viewBox = $this->getSvgNode()->attributes->getNamedItem('viewBox');
+        try {
+            $width = $this->getSvgNodeAttributes()->getNamedItem('width');
+            $viewBox = $this->getSvgNodeAttributes()->getNamedItem('viewBox');
+        } catch (\RuntimeException $exception) {
+            return 0;
+        }
 
         if (null !== $width &&
             $width->textContent !== "" &&
@@ -52,8 +57,12 @@ final class SvgSizeResolver
      */
     public function getHeight(): int
     {
-        $height = $this->getSvgNode()->attributes->getNamedItem('height');
-        $viewBox = $this->getSvgNode()->attributes->getNamedItem('viewBox');
+        try {
+            $height = $this->getSvgNodeAttributes()->getNamedItem('height');
+            $viewBox = $this->getSvgNodeAttributes()->getNamedItem('viewBox');
+        } catch (\RuntimeException $exception) {
+            return 0;
+        }
 
         if (null !== $height &&
             $height->textContent !== "" &&
@@ -68,17 +77,26 @@ final class SvgSizeResolver
         return 0;
     }
 
-    private function getSvgNode(): \DOMNode
+    private function getSvgNode(): \DOMElement
     {
         if (null === $this->svgNode) {
             $svg = $this->getDOMDocument()->getElementsByTagName('svg');
             if (!isset($svg[0])) {
-                throw new \RuntimeException(sprintf('SVG (%s) does not contain a valid <svg> tag', $documentPath));
+                throw new \RuntimeException('SVG does not contain a valid <svg> tag');
             }
             $this->svgNode = $svg[0];
         }
 
         return $this->svgNode;
+    }
+
+    private function getSvgNodeAttributes(): \DOMNamedNodeMap
+    {
+        if (null === $this->getSvgNode()->attributes) {
+            throw new \RuntimeException('SVG tag <svg> does not contain any attribute');
+        }
+
+        return $this->getSvgNode()->attributes;
     }
 
     private function getDOMDocument(): \DOMDocument
