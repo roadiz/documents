@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 
 /**
- * Util to grab a facebook profile picture from userAlias.
+ * @deprecated http://www.splashbase.co is not available anymore
  */
 abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder
 {
