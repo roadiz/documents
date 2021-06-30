@@ -58,7 +58,7 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
 
             $url = $this->getBestUrl($feed);
 
-            if (is_string($url)) {
+            if (null !== $url) {
                 $this->embedId = (string) $feed['id'];
                 $this->feed = $feed;
                 return $this->feed;
@@ -97,6 +97,22 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
     public function getMediaTitle(): string
     {
         return $this->feed['description'] ?? '';
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMediaWidth(): ?int
+    {
+        return $this->feed['width'] ?? null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMediaHeight(): ?int
+    {
+        return $this->feed['height'] ?? null;
     }
 
     /**
