@@ -7,8 +7,6 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 /**
  * Soundcloud tools class.
- *
- * Manage a youtube video feed
  */
 abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
 {

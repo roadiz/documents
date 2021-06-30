@@ -8,8 +8,6 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 /**
  * Youtube tools class.
- *
- * Manage a youtube video feed
  */
 abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {

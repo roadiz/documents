@@ -7,8 +7,6 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 
 /**
  * Vimeo tools class.
- *
- * Manage a Vimeo video feed
  */
 abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
 {
