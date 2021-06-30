@@ -74,6 +74,12 @@ class DownloadedFile extends File
             } else {
                 $file->setOriginalFilename($baseName);
             }
+            /*
+             * Some OEmbed providers won't add any extension in original filename.
+             */
+            if ($file->getExtension() === '' && null !== $guessedExtension = $file->guessExtension()) {
+                $file->setOriginalFilename($file->getOriginalFilename().'.'.$guessedExtension);
+            }
 
             if ($file->isReadable() && filesize($file->getPathname()) > 0) {
                 return $file;
