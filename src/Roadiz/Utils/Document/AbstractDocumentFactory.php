@@ -29,7 +29,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 abstract class AbstractDocumentFactory
 {
-    private EntityManagerInterface $em;
     private EventDispatcherInterface $dispatcher;
     private Packages $packages;
     private LoggerInterface $logger;
@@ -37,26 +36,18 @@ abstract class AbstractDocumentFactory
     private ?FolderInterface $folder = null;
 
     /**
-     * @param EntityManagerInterface   $em
      * @param EventDispatcherInterface $dispatcher
      * @param Packages                 $packages
      * @param LoggerInterface|null     $logger
      */
     public function __construct(
-        EntityManagerInterface $em,
         EventDispatcherInterface $dispatcher,
         Packages $packages,
         ?LoggerInterface $logger = null
     ) {
-        $this->em = $em;
         $this->dispatcher = $dispatcher;
         $this->packages = $packages;
-
-        if (null === $logger) {
-            $this->logger = new NullLogger();
-        } else {
-            $this->logger = $logger;
-        }
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**
@@ -121,6 +112,11 @@ abstract class AbstractDocumentFactory
     abstract protected function createDocument(): DocumentInterface;
 
     /**
+     * @param DocumentInterface $document
+     */
+    abstract protected function persistDocument(DocumentInterface $document): void;
+
+    /**
      * Create a document from UploadedFile, Be careful, this method does not flush, only
      * persists current Document.
      *
@@ -158,7 +154,7 @@ abstract class AbstractDocumentFactory
             }
         }
 
-        $this->em->persist($document);
+        $this->persistDocument($document);
 
         if (null !== $this->folder) {
             $document->addFolder($this->folder);
