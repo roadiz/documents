@@ -11,7 +11,7 @@ interface TimeableInterface
     public function getMediaDuration(): int;
 
     /**
-     * @param int $duration
+     * @param  int $duration
      * @return static
      */
     public function setMediaDuration(int $duration);

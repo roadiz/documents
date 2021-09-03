@@ -24,7 +24,7 @@ final class RawDocumentsSubscriber implements EventSubscriberInterface
         $this->downscaleImageManager = $downscaleImageManager;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             // Keeps Raw document process before any other document subscribers to perform operations
@@ -33,7 +33,7 @@ final class RawDocumentsSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onImageUploaded(FilterDocumentEvent $event)
+    public function onImageUploaded(FilterDocumentEvent $event): void
     {
         if (null !== $event->getDocument() && $event->getDocument()->isProcessable()) {
             $this->downscaleImageManager->processAndOverrideDocument($event->getDocument());

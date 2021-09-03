@@ -205,7 +205,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @deprecated Use getRelativePath instead, naming is better.
-     * @return string|null
+     * @return     string|null
      */
     public function getRelativeUrl(): ?string
     {
@@ -213,8 +213,8 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     }
 
     /**
-     * @return null|string
-     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @return                                    null|string
+     * @Serializer\Groups({"document",            "document_display", "nodes_sources", "tag", "attribute"})
      * @Serializer\Type("string")
      * @Serializer\VirtualProperty
      * @Serializer\SerializedName("relativePath")
@@ -246,7 +246,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @inheritDoc
-     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Groups({"document",           "document_display", "nodes_sources", "tag", "attribute"})
      * @Serializer\Type("bool")
      * @Serializer\VirtualProperty
      * @Serializer\SerializedName("processable")

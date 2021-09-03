@@ -17,7 +17,6 @@ class EmbedFinderFactory
      * ]
      *
      * @var array
-     *
      */
     private array $embedPlatforms;
 
@@ -56,7 +55,6 @@ class EmbedFinderFactory
             in_array(
                 $mediaPlatform,
                 array_keys($this->embedPlatforms)
-            )
-        ;
+            );
     }
 }

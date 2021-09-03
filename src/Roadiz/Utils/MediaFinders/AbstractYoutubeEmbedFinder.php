@@ -60,9 +60,10 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
          * We need to extract REAL embedId from oEmbed response, from the HTML field.
          */
         $this->embedUrl = $this->embedId;
-        if (is_array($feed) &&
-            !empty($feed['html']) &&
-            preg_match('#src\=\"https\:\/\/www\.youtube\.com\/embed\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)) {
+        if (is_array($feed)
+            && !empty($feed['html'])
+            && preg_match('#src\=\"https\:\/\/www\.youtube\.com\/embed\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)
+        ) {
             $this->embedId = urldecode($matches['realId']);
         }
 
@@ -129,7 +130,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 
     /**
      * @inheritdoc
-     * @throws APINeedsAuthentificationException
+     * @throws     APINeedsAuthentificationException
      */
     public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15)
     {

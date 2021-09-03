@@ -44,12 +44,13 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         /*
          * We need to extract REAL embedId from oEmbed response, from the HTML field.
          */
-        if (!empty($feed['html']) &&
-            preg_match(
+        if (!empty($feed['html'])
+            && preg_match(
                 '#src\=[\"|\']https\:\/\/www\.deezer\.com\/plugins\/player\?type\=tracks\&id\=(?<realId>[a-zA-Z0-9\_\-]+)#',
                 $feed['html'],
                 $matches
-            )) {
+            )
+        ) {
             $this->embedId = urldecode($matches['realId']);
         }
 

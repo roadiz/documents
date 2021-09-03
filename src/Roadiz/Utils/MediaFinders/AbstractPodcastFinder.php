@@ -70,8 +70,8 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
      *
      * Be careful, this method does not flush.
      *
-     * @param ObjectManager $objectManager
-     * @param AbstractDocumentFactory $documentFactory
+     * @param  ObjectManager           $objectManager
+     * @param  AbstractDocumentFactory $documentFactory
      * @return DocumentInterface|array<DocumentInterface>
      */
     public function createDocumentFromFeed(
@@ -82,8 +82,9 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
         $feed = $this->getFeed();
         if (null !== $feed && $feed instanceof SimpleXMLElement) {
             foreach ($feed->channel->item as $item) {
-                if (!empty($item->enclosure->attributes()->url) &&
-                    !$this->documentExists($objectManager, $item->guid, null)) {
+                if (!empty($item->enclosure->attributes()->url)
+                    && !$this->documentExists($objectManager, $item->guid, null)
+                ) {
                     $podcastUrl = (string) $item->enclosure->attributes()->url;
                     $thumbnailName = $this->getAudioName($item);
                     $file = DownloadedFile::fromUrl($podcastUrl, $thumbnailName);
@@ -107,7 +108,8 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
                                     '#([0-9]+)\:([0-9]+)\:([0-9]+)#',
                                     (string) $itunes->duration,
                                     $matches
-                                )) {
+                                )
+                                ) {
                                     $seconds = ((int) $matches[1] * 3600) +
                                         ((int) $matches[2] * 60) +
                                         (int) $matches[3];

@@ -107,7 +107,7 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
     }
 
     /**
-     * @param bool $absolute
+     * @param  bool $absolute
      * @return string
      */
     abstract protected function getProcessedDocumentUrlByArray(bool $absolute = false): string;

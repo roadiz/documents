@@ -56,11 +56,15 @@ class DownscaleImageManager
             $rawDocumentFilePath = $this->packages->getDocumentFilePath($document);
             $processImage = $this->getDownscaledImage($this->manager->make($rawDocumentFilePath));
             if (false !== $processImage) {
-                if (false !== $this->createDocumentFromImage($document, $processImage) &&
-                    null !== $this->logger) {
-                    $this->logger->info('Document has been downscaled.', [
+                if (false !== $this->createDocumentFromImage($document, $processImage)
+                    && null !== $this->logger
+                ) {
+                    $this->logger->info(
+                        'Document has been downscaled.',
+                        [
                         'path' => $rawDocumentFilePath
-                    ]);
+                        ]
+                    );
                 }
             }
         }
@@ -81,8 +85,9 @@ class DownscaleImageManager
             }
 
             if (false !== $processImage = $this->getDownscaledImage($this->manager->make($rawDocumentFile))) {
-                if (false !== $this->createDocumentFromImage($document, $processImage, true) &&
-                    null !== $this->logger) {
+                if (false !== $this->createDocumentFromImage($document, $processImage, true)
+                    && null !== $this->logger
+                ) {
                     $this->logger->info('Document has been downscaled.', ['path' => $rawDocumentFile]);
                 }
             }
@@ -93,18 +98,23 @@ class DownscaleImageManager
      * Get downscaled image if size is higher than limit,
      * returns original image if lower or if image is a GIF.
      *
-     * @param Image $processImage
+     * @param  Image $processImage
      * @return Image|null
      */
     protected function getDownscaledImage(Image $processImage): ?Image
     {
-        if ($processImage->mime() != 'image/gif' &&
-            ($processImage->width() > $this->maxPixelSize || $processImage->height() > $this->maxPixelSize)) {
+        if ($processImage->mime() != 'image/gif'
+            && ($processImage->width() > $this->maxPixelSize || $processImage->height() > $this->maxPixelSize)
+        ) {
             // prevent possible upsizing
-            $processImage->resize($this->maxPixelSize, $this->maxPixelSize, function (Constraint $constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+            $processImage->resize(
+                $this->maxPixelSize,
+                $this->maxPixelSize,
+                function (Constraint $constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                }
+            );
             return $processImage;
         } else {
             return null;
@@ -113,8 +123,8 @@ class DownscaleImageManager
 
     /**
      * @param  DocumentInterface $originalDocument
-     * @param  Image|null $processImage
-     * @param  boolean $keepExistingRaw
+     * @param  Image|null        $processImage
+     * @param  boolean           $keepExistingRaw
      * @return DocumentInterface|bool Return new Document or FALSE
      */
     protected function createDocumentFromImage(
@@ -162,8 +172,9 @@ class DownscaleImageManager
                 $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
                 $rawDocumentPath = $this->packages->getDocumentFilePath($rawDocument);
 
-                if ($fs->exists($originalDocumentPath) &&
-                    !$fs->exists($rawDocumentPath)) {
+                if ($fs->exists($originalDocumentPath)
+                    && !$fs->exists($rawDocumentPath)
+                ) {
                     /*
                      * Original document path becomes raw document path. Rename it.
                      */

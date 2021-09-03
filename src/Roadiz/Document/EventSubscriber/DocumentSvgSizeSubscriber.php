@@ -19,7 +19,7 @@ final class DocumentSvgSizeSubscriber implements EventSubscriberInterface
     private LoggerInterface $logger;
 
     /**
-     * @param Packages $packages
+     * @param Packages             $packages
      * @param LoggerInterface|null $logger
      */
     public function __construct(
@@ -30,7 +30,7 @@ final class DocumentSvgSizeSubscriber implements EventSubscriberInterface
         $this->logger = $logger ?? new NullLogger();
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             DocumentSvgUploadedEvent::class => ['onImageUploaded', 0],
@@ -38,10 +38,10 @@ final class DocumentSvgSizeSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return bool
      */
-    protected function supports(DocumentInterface $document)
+    protected function supports(DocumentInterface $document): bool
     {
         if ($document->isLocal() && $document->isSvg()) {
             return true;
@@ -53,7 +53,7 @@ final class DocumentSvgSizeSubscriber implements EventSubscriberInterface
     /**
      * @param FilterDocumentEvent $event
      */
-    public function onImageUploaded(FilterDocumentEvent $event)
+    public function onImageUploaded(FilterDocumentEvent $event): void
     {
         $document = $event->getDocument();
         if ($this->supports($document) && $document instanceof SizeableInterface) {

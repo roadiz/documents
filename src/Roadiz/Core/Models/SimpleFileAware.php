@@ -49,4 +49,14 @@ class SimpleFileAware implements FileAwareInterface
     {
         return '/fonts';
     }
+
+    public function getPublicCachePath(): string
+    {
+        return '/cache';
+    }
+
+    public function getPublicCacheBasePath(): string
+    {
+        return '/cache';
+    }
 }

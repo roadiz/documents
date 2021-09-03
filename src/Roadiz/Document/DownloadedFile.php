@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Document;
 
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Utils;
 use RZ\Roadiz\Utils\StringHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -57,13 +58,13 @@ class DownloadedFile extends File
             if (false === $distantHandle) {
                 return null;
             }
-            $original = \GuzzleHttp\Psr7\stream_for($distantHandle);
+            $original = Utils::streamFor($distantHandle);
             $tmpFile = tempnam(sys_get_temp_dir(), StringHandler::cleanForFilename($baseName));
             if (false === $tmpFile) {
                 return null;
             }
             $handle = fopen($tmpFile, 'w');
-            $local = \GuzzleHttp\Psr7\stream_for($handle);
+            $local = Utils::streamFor($handle);
             $local->write($original->getContents());
             $local->close();
 

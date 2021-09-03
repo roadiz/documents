@@ -17,7 +17,7 @@ final class SvgDocumentSubscriber implements EventSubscriberInterface
     private LoggerInterface $logger;
 
     /**
-     * @param Packages $packages
+     * @param Packages             $packages
      * @param LoggerInterface|null $logger
      */
     public function __construct(
@@ -28,7 +28,7 @@ final class SvgDocumentSubscriber implements EventSubscriberInterface
         $this->logger = $logger ?? new NullLogger();
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             DocumentSvgUploadedEvent::class => 'onSvgUploaded',
@@ -38,7 +38,7 @@ final class SvgDocumentSubscriber implements EventSubscriberInterface
     /**
      * @param FilterDocumentEvent $event
      */
-    public function onSvgUploaded(FilterDocumentEvent $event)
+    public function onSvgUploaded(FilterDocumentEvent $event): void
     {
         $document = $event->getDocument();
         if (!$document->isLocal()) {

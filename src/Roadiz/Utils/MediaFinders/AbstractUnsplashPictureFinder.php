@@ -20,7 +20,8 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
     {
         parent::__construct($embedId);
 
-        $this->client = new Client([
+        $this->client = new Client(
+            [
             // Base URI is used with relative requests
             'base_uri' => 'https://api.unsplash.com',
             // You can set any number of default request options.
@@ -28,7 +29,8 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
             'headers' => [
                 'Authorization' => 'Client-ID ' . $clientId
             ]
-        ]);
+            ]
+        );
     }
 
     protected function validateEmbedId(string $embedId = ""): string
@@ -37,20 +39,26 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
     }
 
     /**
-     * @see https://unsplash.com/documentation#get-a-random-photo
-     * @param array $options
+     * @see    https://unsplash.com/documentation#get-a-random-photo
+     * @param  array $options
      * @return array|null
      * @throws GuzzleException
      */
     public function getRandom(array $options = []): ?array
     {
         try {
-            $response = $this->client->get('/photos/random', [
-                'query' => array_merge([
+            $response = $this->client->get(
+                '/photos/random',
+                [
+                'query' => array_merge(
+                    [
                     'content_filter' => 'high',
                     'orientation' => 'landscape'
-                ], $options)
-            ]);
+                    ],
+                    $options
+                )
+                ]
+            );
             $feed = json_decode($response->getBody()->getContents(), true) ?? null;
             if (!is_array($feed)) {
                 return null;
@@ -70,16 +78,18 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
     }
 
     /**
-     * @param string $keyword
-     * @param array $options
+     * @param  string $keyword
+     * @param  array  $options
      * @return array|null
      * @throws GuzzleException
      */
     public function getRandomBySearch(string $keyword, array $options = [])
     {
-        return $this->getRandom([
+        return $this->getRandom(
+            [
             'query' => $keyword
-        ]);
+            ]
+        );
     }
 
 
@@ -136,7 +146,7 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
 
     /**
      * @inheritdoc
-     * @throws GuzzleException
+     * @throws     GuzzleException
      */
     public function getThumbnailURL(): ?string
     {

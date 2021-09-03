@@ -11,7 +11,8 @@ interface DisplayableInterface
     public function getImageAverageColor(): ?string;
 
     /**
-     * @param string|null $imageAverageColor
+     * @param  string|null $imageAverageColor
+     * @return self
      */
     public function setImageAverageColor(?string $imageAverageColor);
 }

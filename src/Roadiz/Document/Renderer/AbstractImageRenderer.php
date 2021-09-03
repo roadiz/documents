@@ -37,7 +37,7 @@ abstract class AbstractImageRenderer extends AbstractRenderer
     }
 
     /**
-     * @param array $options
+     * @param  array $options
      * @return string|null
      */
     protected function parseSizes(array $options = []): ?string
@@ -60,8 +60,8 @@ abstract class AbstractImageRenderer extends AbstractRenderer
 
     /**
      * @param DocumentInterface $document
-     * @param array $options
-     * @param bool $convertToWebP
+     * @param array             $options
+     * @param bool              $convertToWebP
      *
      * @return string|null
      */
@@ -78,9 +78,9 @@ abstract class AbstractImageRenderer extends AbstractRenderer
 
     /**
      * @param DocumentInterface $document
-     * @param array $srcSetArray
-     * @param bool $convertToWebP
-     * @param bool $absolute
+     * @param array             $srcSetArray
+     * @param bool              $convertToWebP
+     * @param bool              $absolute
      *
      * @return string
      */
@@ -107,12 +107,11 @@ abstract class AbstractImageRenderer extends AbstractRenderer
 
     /**
      * @param string $hexColor
-     * @param int $width
-     * @param int $height
-     *
+     * @param int    $width
+     * @param int    $height
      * @return string
      */
-    protected function createTransparentDataURI(string $hexColor, int $width = 1, int $height = 1)
+    protected function createTransparentDataURI(string $hexColor, int $width = 1, int $height = 1): string
     {
         [$r, $g, $b] = \sscanf($hexColor, "#%02x%02x%02x");
         $im = \imageCreateTrueColor($width, $height);
@@ -131,8 +130,8 @@ abstract class AbstractImageRenderer extends AbstractRenderer
 
     /**
      * @param DocumentInterface $document
-     * @param array $options
-     * @param array $assignation
+     * @param array             $options
+     * @param array             $assignation
      */
     protected function additionalAssignation(DocumentInterface $document, array $options, array &$assignation): void
     {

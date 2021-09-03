@@ -22,12 +22,14 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
     {
         parent::__construct($embedId);
 
-        $this->client = new Client([
+        $this->client = new Client(
+            [
             // Base URI is used with relative requests
             'base_uri' => 'http://www.splashbase.co',
             // You can set any number of default request options.
             'timeout'  => 5.0,
-        ]);
+            ]
+        );
     }
 
     protected function validateEmbedId(string $embedId = ""): string
@@ -36,19 +38,22 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
     }
 
     /**
-     * @see http://www.splashbase.co/api#images_random
-     * @param array $options
+     * @see    http://www.splashbase.co/api#images_random
+     * @param  array $options
      * @return array|null
      * @throws GuzzleException
      */
     public function getRandom(array $options = []): ?array
     {
         try {
-            $response = $this->client->get('/api/v1/images/random', [
+            $response = $this->client->get(
+                '/api/v1/images/random',
+                [
                 'query' => [
                     'images_only' => 'true'
                 ]
-            ]);
+                ]
+            );
             $feed = json_decode($response->getBody()->getContents(), true) ?? null;
             if (!is_array($feed)) {
                 return null;
@@ -69,8 +74,8 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
     }
 
     /**
-     * @param string $keyword
-     * @param array $options
+     * @param  string $keyword
+     * @param  array  $options
      * @return array|bool|mixed
      * @throws GuzzleException
      */
@@ -80,9 +85,12 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
             $query = [
                 'query' => $keyword,
             ];
-            $response = $this->client->get('/api/v1/images/search', [
+            $response = $this->client->get(
+                '/api/v1/images/search',
+                [
                 'query' => $query
-            ]);
+                ]
+            );
             $multipleFeed = json_decode($response->getBody()->getContents(), true);
             if (is_array($multipleFeed) && isset($multipleFeed['images']) && count($multipleFeed['images']) > 0) {
                 $maxIndex = count($multipleFeed['images']) - 1;
@@ -167,8 +175,9 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
         if (null === $feed) {
             return null;
         }
-        if (!empty($feed['large_url']) &&
-            (false !== strpos($feed['large_url'], '.jpg') || false !== strpos($feed['large_url'], '.png'))) {
+        if (!empty($feed['large_url'])
+            && (false !== strpos($feed['large_url'], '.jpg') || false !== strpos($feed['large_url'], '.png'))
+        ) {
             return $feed['large_url'];
         }
         return $feed['url'] ?? null;

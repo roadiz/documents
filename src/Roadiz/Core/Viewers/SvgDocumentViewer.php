@@ -102,6 +102,7 @@ class SvgDocumentViewer
     /**
      * @param string $svg
      * @return string
+     * @throws \Exception
      */
     protected function injectAttributes($svg): string
     {
@@ -140,8 +141,8 @@ class SvgDocumentViewer
     }
 
     /**
-     * @return string
-     * @deprecated  Use SvgRenderer to render HTML object.
+     * @return     string
+     * @deprecated Use SvgRenderer to render HTML object.
      */
     protected function getObjectSvg(): string
     {

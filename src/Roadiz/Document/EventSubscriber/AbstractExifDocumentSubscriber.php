@@ -17,14 +17,13 @@ abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterfac
     private LoggerInterface $logger;
 
     /**
-     * @param Packages $packages
+     * @param Packages             $packages
      * @param LoggerInterface|null $logger
      */
     public function __construct(
         Packages $packages,
         ?LoggerInterface $logger = null
-    )
-    {
+    ) {
         $this->packages = $packages;
         $this->logger = $logger ?? new NullLogger();
     }
@@ -38,10 +37,9 @@ abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterfac
 
     /**
      * @param DocumentInterface $document
-     *
      * @return bool
      */
-    protected function supports(DocumentInterface $document)
+    protected function supports(DocumentInterface $document): bool
     {
         if (!$document->isLocal()) {
             return false;
@@ -63,34 +61,35 @@ abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterfac
 
     /**
      * @param FilterDocumentEvent $event
-     *
-     * @throws \Doctrine\ORM\ORMException
      */
-    public function onImageUploaded(FilterDocumentEvent $event)
+    public function onImageUploaded(FilterDocumentEvent $event): void
     {
         $document = $event->getDocument();
         if ($this->supports($document) && function_exists('exif_read_data')) {
             $filePath = $this->packages->getDocumentFilePath($document);
-            $exif = @exif_read_data($filePath, null, false);
+            $exif = @exif_read_data($filePath, 'FILE,COMPUTED,ANY_TAG,EXIF,COMMENT');
 
             if (false !== $exif) {
                 $copyright = $this->getCopyright($exif);
                 $description = $this->getDescription($exif);
 
                 if (null !== $copyright || null !== $description) {
-                    $this->logger->debug('EXIF information available for document.', [
-                        'document' => (string)$document
-                    ]);
-                    $this->writeExifData($document, $copyright, $description);
+                    $this->logger->debug(
+                        'EXIF information available for document.',
+                        [
+                            'document' => (string)$document
+                        ]
+                    );
+                    $this->writeExifData($document, $copyright ?? '', $description ?? '');
                 }
             }
         }
     }
 
-    protected abstract function writeExifData(DocumentInterface $document, string $copyright, string $description): void;
+    abstract protected function writeExifData(DocumentInterface $document, string $copyright, string $description): void;
 
     /**
-     * @param array $exif
+     * @param  array $exif
      * @return string|null
      */
     protected function getCopyright(array $exif)
@@ -109,7 +108,7 @@ abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterfac
     }
 
     /**
-     * @param array $exif
+     * @param  array $exif
      * @return string|null
      */
     protected function getDescription(array $exif)

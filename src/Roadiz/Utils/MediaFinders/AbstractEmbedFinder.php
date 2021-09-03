@@ -35,8 +35,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     protected static string $platform = 'abstract';
 
     /**
-     * @param string $embedId
-     * @param bool $validate Validate the embed id passed at the constructor [default: true].
+     * @param  string $embedId
+     * @param  bool   $validate Validate the embed id passed at the constructor [default: true].
      * @throws InvalidEmbedId When embedId string is malformed
      */
     public function __construct(string $embedId = '', bool $validate = true)
@@ -75,7 +75,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Validate extern Id against platform naming policy.
      *
-     * @param string $embedId
+     * @param  string $embedId
      * @return string
      * @throws InvalidEmbedId When embedId string is malformed
      */
@@ -144,8 +144,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * Crawl an embed API to get a Json feed against a search query.
      *
      * @param string  $searchTerm
-     * @param ?string  $author
-     * @param int $maxResults
+     * @param ?string $author
+     * @param int     $maxResults
      *
      * @return string|StreamInterface|null
      */
@@ -163,7 +163,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * * id
      * * class
      *
-     * @param array $options
+     * @param  array $options
      * @final
      * @return string
      */
@@ -234,8 +234,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * Be careful, this method does not flush.
      *
-     * @param ObjectManager $objectManager
-     * @param AbstractDocumentFactory $documentFactory
+     * @param  ObjectManager           $objectManager
+     * @param  AbstractDocumentFactory $documentFactory
      * @return DocumentInterface|array<DocumentInterface>
      */
     public function createDocumentFromFeed(
@@ -297,9 +297,9 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     }
 
     /**
-     * @param ObjectManager $objectManager
-     * @param string $embedId
-     * @param string|null $embedPlatform
+     * @param  ObjectManager $objectManager
+     * @param  string        $embedId
+     * @param  string|null   $embedPlatform
      * @return bool
      */
     abstract protected function documentExists(
@@ -311,8 +311,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Store additional information into Document.
      *
-     * @param ObjectManager $objectManager
-     * @param DocumentInterface $document
+     * @param  ObjectManager     $objectManager
+     * @param  DocumentInterface $document
      * @return DocumentInterface
      */
     abstract protected function injectMetaInDocument(ObjectManager $objectManager, DocumentInterface $document);
