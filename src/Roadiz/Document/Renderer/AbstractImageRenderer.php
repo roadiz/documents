@@ -106,9 +106,9 @@ abstract class AbstractImageRenderer extends AbstractRenderer
     }
 
     /**
-     * @param string $hexColor
-     * @param int    $width
-     * @param int    $height
+     * @param  string $hexColor
+     * @param  int    $width
+     * @param  int    $height
      * @return string
      */
     protected function createTransparentDataURI(string $hexColor, int $width = 1, int $height = 1): string
@@ -141,9 +141,10 @@ abstract class AbstractImageRenderer extends AbstractRenderer
             } elseif (null !== $document->getImageRatio()) {
                 $assignation['ratio'] = $document->getImageRatio();
             }
-            if (null !== $document->getImageAverageColor() &&
-                $document->getImageAverageColor() !== '#ffffff' &&
-                $document->getImageAverageColor() !== '#000000') {
+            if (null !== $document->getImageAverageColor()
+                && $document->getImageAverageColor() !== '#ffffff'
+                && $document->getImageAverageColor() !== '#000000'
+            ) {
                 $assignation['averageColor'] = $document->getImageAverageColor();
             }
             if ($options['blurredFallback'] === true) {
@@ -156,10 +157,16 @@ abstract class AbstractImageRenderer extends AbstractRenderer
                 if (!empty($options['height'])) {
                     unset($options['height']);
                 }
-                $assignation['fallback'] = $this->getSource($document, array_merge($options, [
-                    'quality' => 10,
-                    'width' => 60
-                ]));
+                $assignation['fallback'] = $this->getSource(
+                    $document,
+                    array_merge(
+                        $options,
+                        [
+                            'quality' => 10,
+                            'width' => 60
+                        ]
+                    )
+                );
             }
         }
     }

@@ -26,20 +26,24 @@ class ImageRenderer extends AbstractImageRenderer
             $document = $document->getThumbnails()->first();
         }
 
-        $assignation = array_merge(array_filter($options), [
+        $assignation = array_merge(
+            array_filter($options),
+            [
             'mimetype' => $document->getMimeType(),
             'url' => $this->getSource($document, $options),
             'media' => null
-        ]);
+            ]
+        );
         $assignation['alt'] = !empty($options['alt']) ? $options['alt'] : $document->getAlternativeText();
         $assignation['sizes'] = $this->parseSizes($options);
         $assignation['srcset'] = $this->parseSrcSet($document, $options);
 
-        if (null === $assignation['sizes'] &&
-            $document instanceof AdvancedDocumentInterface &&
-            $document->getImageWidth() > 0 &&
-            $document->getImageHeight() > 0 &&
-            !$this->willResample($assignation)) {
+        if (null === $assignation['sizes']
+            && $document instanceof AdvancedDocumentInterface
+            && $document->getImageWidth() > 0
+            && $document->getImageHeight() > 0
+            && !$this->willResample($assignation)
+        ) {
             $assignation['width'] = $document->getImageWidth();
             $assignation['height'] = $document->getImageHeight();
         }

@@ -26,8 +26,8 @@ class SvgDocumentViewer
     /**
      * @param string  $imagePath
      * @param array   $attributes
-     * @param boolean $asObject Default false
-     * @param string  $imageUrl Only needed if you set $asObject to true.
+     * @param boolean $asObject   Default false
+     * @param string  $imageUrl   Only needed if you set $asObject to true.
      */
     public function __construct(
         string $imagePath,
@@ -90,7 +90,9 @@ class SvgDocumentViewer
         if (false === $dirtySVG) {
             throw new \RuntimeException($this->imagePath . ' file is not readable.');
         }
-        /** @var string|false $cleanSVG */
+        /**
+         * @var string|false $cleanSVG
+         */
         $cleanSVG = $sanitizer->sanitize($dirtySVG);
         if (false !== $cleanSVG) {
             // Pass it to the sanitizer and get it back clean
@@ -100,7 +102,7 @@ class SvgDocumentViewer
     }
 
     /**
-     * @param string $svg
+     * @param  string $svg
      * @return string
      * @throws \Exception
      */

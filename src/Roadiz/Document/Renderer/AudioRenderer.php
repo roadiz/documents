@@ -82,7 +82,9 @@ class AudioRenderer extends AbstractRenderer
 
         $sourcesDocs = $this->documentFinder->findAllByFilenames($sourcesDocsName);
         if (count($sourcesDocs) > 0) {
-            /** @var DocumentInterface $source */
+            /**
+             * @var DocumentInterface $source
+             */
             foreach ($sourcesDocs as $source) {
                 $sources[$source->getMimeType()] = [
                     'mime' => $source->getMimeType(),

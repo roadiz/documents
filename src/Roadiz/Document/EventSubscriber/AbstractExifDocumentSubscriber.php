@@ -17,7 +17,7 @@ abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterfac
     private LoggerInterface $logger;
 
     /**
-     * @param Packages             $packages
+     * @param Packages $packages
      * @param LoggerInterface|null $logger
      */
     public function __construct(
@@ -36,7 +36,7 @@ abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterfac
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return bool
      */
     protected function supports(DocumentInterface $document): bool

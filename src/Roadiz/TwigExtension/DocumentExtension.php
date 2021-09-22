@@ -27,10 +27,10 @@ final class DocumentExtension extends AbstractExtension
     private Packages $assetPackages;
 
     /**
-     * @param RendererInterface $renderer
+     * @param RendererInterface  $renderer
      * @param EmbedFinderFactory $embedFinderFactory
-     * @param Packages $assetPackages
-     * @param bool $throwExceptions Trigger exception if using filter on NULL values (default: false)
+     * @param Packages           $assetPackages
+     * @param bool               $throwExceptions    Trigger exception if using filter on NULL values (default: false)
      */
     public function __construct(
         RendererInterface $renderer,
@@ -62,8 +62,8 @@ final class DocumentExtension extends AbstractExtension
     }
 
     /**
-     * @param string|int $bytes
-     * @param int $precision
+     * @param  string|int $bytes
+     * @param  int        $precision
      * @return string
      */
     public function formatBytes($bytes, int $precision = 2)
@@ -74,7 +74,7 @@ final class DocumentExtension extends AbstractExtension
     }
 
     /**
-     * @param DocumentInterface|null $document
+     * @param  DocumentInterface|null $document
      * @return null|EmbedFinderInterface
      * @throws RuntimeError
      */
@@ -89,8 +89,9 @@ final class DocumentExtension extends AbstractExtension
         }
 
         try {
-            if (null !== $document->getEmbedPlatform() &&
-                $this->embedFinderFactory->supports($document->getEmbedPlatform())) {
+            if (null !== $document->getEmbedPlatform()
+                && $this->embedFinderFactory->supports($document->getEmbedPlatform())
+            ) {
                 return $this->embedFinderFactory->createForPlatform(
                     $document->getEmbedPlatform(),
                     $document->getEmbedId()
@@ -109,7 +110,7 @@ final class DocumentExtension extends AbstractExtension
 
     /**
      * @param DocumentInterface|null $document
-     * @param array|null $options
+     * @param array|null             $options
      *
      * @return string
      * @throws RuntimeError
@@ -146,7 +147,7 @@ final class DocumentExtension extends AbstractExtension
      * - Return `'landscape'` if width is higher or equal to height
      * - Return `'portrait'` if height is strictly lower to width
      *
-     * @param SizeableInterface |null $document
+     * @param  SizeableInterface |null $document
      * @return null|string
      * @throws RuntimeError
      */
@@ -164,7 +165,7 @@ final class DocumentExtension extends AbstractExtension
     }
 
     /**
-     * @param SizeableInterface |null $document
+     * @param  SizeableInterface |null $document
      * @return array
      * @throws RuntimeError
      */
@@ -187,7 +188,7 @@ final class DocumentExtension extends AbstractExtension
     }
 
     /**
-     * @param SizeableInterface|null $document
+     * @param  SizeableInterface|null $document
      * @return float
      * @throws RuntimeError
      */
@@ -209,7 +210,7 @@ final class DocumentExtension extends AbstractExtension
     }
 
     /**
-     * @param DocumentInterface|null $document
+     * @param  DocumentInterface|null $document
      * @return null|string
      */
     public function getPath(DocumentInterface $document = null)
@@ -222,7 +223,7 @@ final class DocumentExtension extends AbstractExtension
     }
 
     /**
-     * @param DocumentInterface|null $document
+     * @param  DocumentInterface|null $document
      * @return bool
      */
     public function exists(DocumentInterface $document = null)
