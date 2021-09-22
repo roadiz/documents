@@ -23,16 +23,20 @@ final class ArrayDocumentFinder implements DocumentFinderInterface
 
     public function findAllByFilenames(array $fileNames)
     {
-        return $this->documents->filter(function (DocumentInterface $document) use ($fileNames) {
-            return in_array($document->getFilename(), $fileNames);
-        });
+        return $this->documents->filter(
+            function (DocumentInterface $document) use ($fileNames) {
+                return in_array($document->getFilename(), $fileNames);
+            }
+        );
     }
 
     public function findOneByFilenames(array $fileNames): ?DocumentInterface
     {
-        return $this->documents->filter(function (DocumentInterface $document) use ($fileNames) {
-            return in_array($document->getFilename(), $fileNames);
-        })->first() ?: null;
+        return $this->documents->filter(
+            function (DocumentInterface $document) use ($fileNames) {
+                return in_array($document->getFilename(), $fileNames);
+            }
+        )->first() ?: null;
     }
 
     /**

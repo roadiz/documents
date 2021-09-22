@@ -46,10 +46,11 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     public function preUpdate(PreUpdateEventArgs $args): void
     {
         $document = $args->getObject();
-        if ($document instanceof DocumentInterface &&
-            $args->hasChangedField('filename') &&
-            $args->getOldValue('filename') !== null &&
-            $args->getOldValue('filename') !== '') {
+        if ($document instanceof DocumentInterface
+            && $args->hasChangedField('filename')
+            && $args->getOldValue('filename') !== null
+            && $args->getOldValue('filename') !== ''
+        ) {
             $fs = new Filesystem();
             $oldPath = $this->getDocumentPathForFilename($document, $args->getOldValue('filename'));
             $newPath = $this->getDocumentPathForFilename($document, $args->getNewValue('filename'));
@@ -154,7 +155,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     /**
      * Remove document directory if there is no other file in it.
      *
-     * @param string $documentFolderPath
+     * @param  string $documentFolderPath
      * @return bool
      */
     protected function cleanFileDirectory(string $documentFolderPath)
@@ -173,7 +174,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
 
     /**
      * @param DocumentInterface $document
-     * @param string $filename
+     * @param string            $filename
      *
      * @return string
      */
@@ -186,7 +187,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
 
     /**
      * @param DocumentInterface $document
-     * @param string $filename
+     * @param string            $filename
      *
      * @return string
      */
@@ -203,7 +204,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return string
      */
     protected function getDocumentPath(DocumentInterface $document): string
@@ -217,7 +218,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return string
      */
     protected function getDocumentPublicPath(DocumentInterface $document): string
@@ -226,7 +227,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return string
      */
     protected function getDocumentPrivatePath(DocumentInterface $document): string
@@ -235,7 +236,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return string
      */
     protected function getDocumentFolderPath(DocumentInterface $document): string
@@ -247,7 +248,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return string
      */
     protected function getDocumentPublicFolderPath(DocumentInterface $document): string
@@ -256,7 +257,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return string
      */
     protected function getDocumentPrivateFolderPath(DocumentInterface $document): string
@@ -265,7 +266,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @throws DocumentWithoutFileException
      */
     protected function validateDocument(DocumentInterface $document): void

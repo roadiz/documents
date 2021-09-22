@@ -205,7 +205,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @deprecated Use getRelativePath instead, naming is better.
-     * @return string|null
+     * @return     string|null
      */
     public function getRelativeUrl(): ?string
     {

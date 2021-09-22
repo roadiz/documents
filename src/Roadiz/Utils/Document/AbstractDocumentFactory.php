@@ -29,7 +29,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 abstract class AbstractDocumentFactory
 {
-    private EntityManagerInterface $em;
     private EventDispatcherInterface $dispatcher;
     private Packages $packages;
     private LoggerInterface $logger;
@@ -37,26 +36,18 @@ abstract class AbstractDocumentFactory
     private ?FolderInterface $folder = null;
 
     /**
-     * @param EntityManagerInterface   $em
      * @param EventDispatcherInterface $dispatcher
      * @param Packages                 $packages
      * @param LoggerInterface|null     $logger
      */
     public function __construct(
-        EntityManagerInterface $em,
         EventDispatcherInterface $dispatcher,
         Packages $packages,
         ?LoggerInterface $logger = null
     ) {
-        $this->em = $em;
         $this->dispatcher = $dispatcher;
         $this->packages = $packages;
-
-        if (null === $logger) {
-            $this->logger = new NullLogger();
-        } else {
-            $this->logger = $logger;
-        }
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**
@@ -71,7 +62,7 @@ abstract class AbstractDocumentFactory
     }
 
     /**
-     * @param File $file
+     * @param  File $file
      * @return AbstractDocumentFactory
      */
     public function setFile(File $file)
@@ -89,7 +80,7 @@ abstract class AbstractDocumentFactory
     }
 
     /**
-     * @param FolderInterface|null $folder
+     * @param  FolderInterface|null $folder
      * @return AbstractDocumentFactory
      */
     public function setFolder(?FolderInterface $folder = null)
@@ -105,9 +96,10 @@ abstract class AbstractDocumentFactory
      */
     protected function parseSvgMimeType(DocumentInterface $document): void
     {
-        if (($document->getMimeType() == "text/plain" ||
-                $document->getMimeType() == 'text/html') &&
-                preg_match('#\.svg$#', $document->getFilename())) {
+        if (($document->getMimeType() == "text/plain"
+            || $document->getMimeType() == 'text/html')
+            && preg_match('#\.svg$#', $document->getFilename())
+        ) {
             if (null !== $this->logger) {
                 $this->logger->debug('Uploaded a SVG without xml declaration. Presuming it’s a valid SVG file.');
             }
@@ -119,6 +111,11 @@ abstract class AbstractDocumentFactory
      * @return DocumentInterface
      */
     abstract protected function createDocument(): DocumentInterface;
+
+    /**
+     * @param DocumentInterface $document
+     */
+    abstract protected function persistDocument(DocumentInterface $document): void;
 
     /**
      * Create a document from UploadedFile, Be careful, this method does not flush, only
@@ -158,7 +155,7 @@ abstract class AbstractDocumentFactory
             }
         }
 
-        $this->em->persist($document);
+        $this->persistDocument($document);
 
         if (null !== $this->folder) {
             $document->addFolder($this->folder);
@@ -195,7 +192,7 @@ abstract class AbstractDocumentFactory
     /**
      * Updates a document from UploadedFile, Be careful, this method does not flush.
      *
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return DocumentInterface
      */
     public function updateDocument(DocumentInterface $document): DocumentInterface
@@ -203,8 +200,9 @@ abstract class AbstractDocumentFactory
         $file = $this->getFile();
         $fs = new Filesystem();
 
-        if ($file instanceof UploadedFile &&
-            !$file->isValid()) {
+        if ($file instanceof UploadedFile
+            && !$file->isValid()
+        ) {
             return $document;
         }
 
@@ -261,9 +259,9 @@ abstract class AbstractDocumentFactory
 
         if ($file instanceof UploadedFile) {
             $fileName = $file->getClientOriginalName();
-        } elseif ($file instanceof DownloadedFile &&
-            $file->getOriginalFilename() !== null &&
-            $file->getOriginalFilename() !== ''
+        } elseif ($file instanceof DownloadedFile
+            && $file->getOriginalFilename() !== null
+            && $file->getOriginalFilename() !== ''
         ) {
             $fileName = $file->getOriginalFilename();
         } else {
@@ -277,7 +275,7 @@ abstract class AbstractDocumentFactory
      * @param string $url
      * @param string $thumbnailName
      *
-     * @return DownloadedFile
+     * @return     DownloadedFile
      * @deprecated Use DownloadedFile::fromUrl($url);
      */
     public function downloadFileFromUrl(string $url, string $thumbnailName): ?DownloadedFile

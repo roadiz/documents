@@ -21,10 +21,10 @@ class EmbedRenderer implements RendererInterface
 
     public function supports(DocumentInterface $document, array $options): bool
     {
-        if ($document->isEmbed() &&
-            $this->embedFinderFactory->supports($document->getEmbedPlatform()) &&
-            isset($options['embed']) &&
-            $options['embed'] === true
+        if ($document->isEmbed()
+            && $this->embedFinderFactory->supports($document->getEmbedPlatform())
+            && isset($options['embed'])
+            && $options['embed'] === true
         ) {
             return true;
         } else {

@@ -5,7 +5,8 @@ namespace RZ\Roadiz\Core\Events;
 
 /**
  * Class DocumentEvents
- * @package RZ\Roadiz\Core\Events
+ *
+ * @package    RZ\Roadiz\Core\Events
  * @deprecated Do not use event name constants, directly use event class FQN
  */
 final class DocumentEvents
@@ -17,7 +18,7 @@ final class DocumentEvents
      * Event listener will be given a:
      * RZ\Roadiz\Core\Events\FilterDocumentEvent instance
      *
-     * @var string
+     * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
     const DOCUMENT_CREATED = DocumentCreatedEvent::class;
@@ -29,7 +30,7 @@ final class DocumentEvents
      * Event listener will be given a:
      * RZ\Roadiz\Core\Events\FilterDocumentEvent instance
      *
-     * @var string
+     * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
     const DOCUMENT_UPDATED = DocumentUpdatedEvent::class;
@@ -41,7 +42,7 @@ final class DocumentEvents
      * Event listener will be given a:
      * RZ\Roadiz\Core\Events\FilterDocumentEvent instance
      *
-     * @var string
+     * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
     const DOCUMENT_DELETED = DocumentDeletedEvent::class;
@@ -53,7 +54,7 @@ final class DocumentEvents
      * Event listener will be given a:
      * RZ\Roadiz\Core\Events\FilterDocumentEvent instance
      *
-     * @var string
+     * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
     const DOCUMENT_IMAGE_UPLOADED = DocumentImageUploadedEvent::class;
@@ -67,7 +68,7 @@ final class DocumentEvents
      * Event listener will be given a:
      * RZ\Roadiz\Core\Events\FilterDocumentEvent instance
      *
-     * @var string
+     * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
     const DOCUMENT_FILE_UPLOADED = DocumentFileUploadedEvent::class;
@@ -79,7 +80,7 @@ final class DocumentEvents
      * Event listener will be given a:
      * RZ\Roadiz\Core\Events\FilterDocumentEvent instance
      *
-     * @var string
+     * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
     const DOCUMENT_SVG_UPLOADED = DocumentSvgUploadedEvent::class;
@@ -90,7 +91,7 @@ final class DocumentEvents
      * Event listener will be given a:
      * RZ\Roadiz\Core\Events\FilterDocumentEvent instance
      *
-     * @var string
+     * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
     const DOCUMENT_IN_FOLDER = DocumentInFolderEvent::class;
@@ -101,7 +102,7 @@ final class DocumentEvents
      * Event listener will be given a:
      * RZ\Roadiz\Core\Events\FilterDocumentEvent instance
      *
-     * @var string
+     * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
     const DOCUMENT_OUT_FOLDER = DocumentOutFolderEvent::class;

@@ -39,4 +39,14 @@ interface FileAwareInterface
      * @return string Return relative path to private font files folder.
      */
     public function getFontsFilesBasePath(): string;
+
+    /**
+     * @return string Return absolute path to public images cache.
+     */
+    public function getPublicCachePath(): string;
+
+    /**
+     * @return string Return relative path to public images cache.
+     */
+    public function getPublicCacheBasePath(): string;
 }

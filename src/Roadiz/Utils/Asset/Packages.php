@@ -69,9 +69,9 @@ class Packages extends BasePackages
      * Build a new asset packages for Roadiz root and documents.
      *
      * @param VersionStrategyInterface $versionStrategy
-     * @param RequestStack $requestStack
-     * @param FileAwareInterface $fileAware
-     * @param string $staticDomain
+     * @param RequestStack             $requestStack
+     * @param FileAwareInterface       $fileAware
+     * @param string                   $staticDomain
      */
     public function __construct(
         VersionStrategyInterface $versionStrategy,
@@ -140,17 +140,19 @@ class Packages extends BasePackages
          */
         $staticDomainAndPort = $this->staticDomain;
         $request = $this->getRequest();
-        if (null !== $request &&
-            (($this->requestStackContext->isSecure() && $request->getPort() != 443) ||
-            (!$this->requestStackContext->isSecure() && $request->getPort() != 80))) {
+        if (null !== $request
+            && (($this->requestStackContext->isSecure() && $request->getPort() != 443)
+            || (!$this->requestStackContext->isSecure() && $request->getPort() != 80))
+        ) {
             $staticDomainAndPort .= ':' . $request->getPort();
         }
 
         /*
          * If no protocol, use https as default
          */
-        if (!preg_match("~^//~i", $staticDomainAndPort) &&
-            !preg_match("~^(?:f|ht)tps?://~i", $staticDomainAndPort)) {
+        if (!preg_match("~^//~i", $staticDomainAndPort)
+            && !preg_match("~^(?:f|ht)tps?://~i", $staticDomainAndPort)
+        ) {
             $staticDomainAndPort = "https://" . $staticDomainAndPort;
         }
 
@@ -267,7 +269,7 @@ class Packages extends BasePackages
     /**
      * Shortcut for $this->getUrl($relativePath, static::FONTS_PATH).
      *
-     * @param string $relativePath
+     * @param  string $relativePath
      * @return string
      */
     public function getFontsPath($relativePath)
@@ -278,7 +280,7 @@ class Packages extends BasePackages
     /**
      * Shortcut for $this->getUrl($relativePath, static::PUBLIC_PATH).
      *
-     * @param string $relativePath
+     * @param  string $relativePath
      * @return string
      */
     public function getPublicFilesPath($relativePath)
@@ -289,7 +291,7 @@ class Packages extends BasePackages
     /**
      * Shortcut for $this->getUrl($relativePath, static::PRIVATE_PATH).
      *
-     * @param string $relativePath
+     * @param  string $relativePath
      * @return string
      */
     public function getPrivateFilesPath($relativePath)
@@ -298,7 +300,7 @@ class Packages extends BasePackages
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return string Document file absolute path according if document is private or not.
      * @throws DocumentWithoutFileException
      */
@@ -314,7 +316,7 @@ class Packages extends BasePackages
     }
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return string Document folder absolute path according if document is private or not.
      * @throws DocumentWithoutFileException
      */
@@ -338,7 +340,7 @@ class Packages extends BasePackages
     }
 
     /**
-     * @param string $staticDomain
+     * @param  string $staticDomain
      * @return Packages
      */
     public function setStaticDomain($staticDomain)

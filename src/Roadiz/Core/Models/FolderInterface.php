@@ -14,13 +14,13 @@ interface FolderInterface extends LeafInterface
     public function getDocuments();
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return FolderInterface
      */
     public function addDocument(DocumentInterface $document);
 
     /**
-     * @param DocumentInterface $document
+     * @param  DocumentInterface $document
      * @return FolderInterface
      */
     public function removeDocument(DocumentInterface $document);
@@ -31,7 +31,7 @@ interface FolderInterface extends LeafInterface
     public function getVisible();
 
     /**
-     * @param boolean $visible
+     * @param  boolean $visible
      * @return FolderInterface
      */
     public function setVisible($visible);
@@ -47,7 +47,7 @@ interface FolderInterface extends LeafInterface
     public function getName(): ?string;
 
     /**
-     * @param string $folderName
+     * @param  string $folderName
      * @return FolderInterface
      */
     public function setFolderName($folderName);
@@ -58,7 +58,7 @@ interface FolderInterface extends LeafInterface
     public function getDirtyFolderName();
 
     /**
-     * @param string $dirtyFolderName
+     * @param  string $dirtyFolderName
      * @return FolderInterface
      */
     public function setDirtyFolderName($dirtyFolderName);

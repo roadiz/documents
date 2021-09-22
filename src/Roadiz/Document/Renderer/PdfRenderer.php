@@ -18,9 +18,12 @@ class PdfRenderer extends AbstractRenderer
     {
         $options = $this->viewOptionsResolver->resolve($options);
 
-        $assignation = array_merge(array_filter($options), [
-            'url' => $this->getSource($document, $options),
-        ]);
+        $assignation = array_merge(
+            array_filter($options),
+            [
+                'url' => $this->getSource($document, $options),
+            ]
+        );
 
         return $this->renderHtmlElement('pdf.html.twig', $assignation);
     }

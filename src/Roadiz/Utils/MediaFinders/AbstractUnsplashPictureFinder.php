@@ -7,27 +7,28 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 
-/**
- * @deprecated http://www.splashbase.co is not available anymore
- */
-abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder implements RandomImageFinder
+abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder implements RandomImageFinder
 {
     protected Client $client;
-    protected static string $platform = 'splashbase';
+    protected static string $platform = 'unsplash';
 
     /**
+     * @param string $clientId
      * @param string $embedId
      */
-    public function __construct(string $embedId = '')
+    public function __construct(string $clientId, string $embedId = '')
     {
         parent::__construct($embedId);
 
         $this->client = new Client(
             [
             // Base URI is used with relative requests
-            'base_uri' => 'http://www.splashbase.co',
+            'base_uri' => 'https://api.unsplash.com',
             // You can set any number of default request options.
-            'timeout'  => 5.0,
+            'timeout' => 3.0,
+            'headers' => [
+                'Authorization' => 'Client-ID ' . $clientId
+            ]
             ]
         );
     }
@@ -38,7 +39,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
     }
 
     /**
-     * @see    http://www.splashbase.co/api#images_random
+     * @see    https://unsplash.com/documentation#get-a-random-photo
      * @param  array $options
      * @return array|null
      * @throws GuzzleException
@@ -47,25 +48,28 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
     {
         try {
             $response = $this->client->get(
-                '/api/v1/images/random',
+                '/photos/random',
                 [
-                'query' => [
-                    'images_only' => 'true'
-                ]
+                'query' => array_merge(
+                    [
+                    'content_filter' => 'high',
+                    'orientation' => 'landscape'
+                    ],
+                    $options
+                )
                 ]
             );
             $feed = json_decode($response->getBody()->getContents(), true) ?? null;
             if (!is_array($feed)) {
                 return null;
             }
+
             $url = $this->getBestUrl($feed);
 
-            if (is_string($url)) {
-                if (false !== strpos($url, '.jpg') || false !== strpos($url, '.png')) {
-                    $this->embedId = (string) $feed['id'];
-                    $this->feed = $feed;
-                    return $this->feed;
-                }
+            if (null !== $url) {
+                $this->embedId = (string) $feed['id'];
+                $this->feed = $feed;
+                return $this->feed;
             }
             return null;
         } catch (ClientException $e) {
@@ -76,39 +80,16 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
     /**
      * @param  string $keyword
      * @param  array  $options
-     * @return array|bool|mixed
+     * @return array|null
      * @throws GuzzleException
      */
     public function getRandomBySearch(string $keyword, array $options = [])
     {
-        try {
-            $query = [
-                'query' => $keyword,
-            ];
-            $response = $this->client->get(
-                '/api/v1/images/search',
-                [
-                'query' => $query
-                ]
-            );
-            $multipleFeed = json_decode($response->getBody()->getContents(), true);
-            if (is_array($multipleFeed) && isset($multipleFeed['images']) && count($multipleFeed['images']) > 0) {
-                $maxIndex = count($multipleFeed['images']) - 1;
-                $feed = $multipleFeed['images'][rand(0, $maxIndex)];
-                $url = $this->getBestUrl($feed);
-
-                if (is_string($url)) {
-                    if (false !== strpos($url, '.jpg') || false !== strpos($url, '.png')) {
-                        $this->embedId = (string) $feed['id'];
-                        $this->feed = $feed;
-                        return $this->feed;
-                    }
-                }
-            }
-            return false;
-        } catch (ClientException $e) {
-            return false;
-        }
+        return $this->getRandom(
+            [
+            'query' => $keyword
+            ]
+        );
     }
 
 
@@ -125,7 +106,23 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
      */
     public function getMediaTitle(): string
     {
-        return '';
+        return $this->feed['description'] ?? '';
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMediaWidth(): ?int
+    {
+        return $this->feed['width'] ?? null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMediaHeight(): ?int
+    {
+        return $this->feed['height'] ?? null;
     }
 
     /**
@@ -133,7 +130,7 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
      */
     public function getMediaDescription(): string
     {
-        return '';
+        return $this->feed['alt_description'] ?? '';
     }
 
     /**
@@ -141,11 +138,15 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
      */
     public function getMediaCopyright(): string
     {
-        return ($this->feed['copyright'] ?? '').' — '.($this->feed['site'] ?? '');
+        if (isset($this->feed['user'])) {
+            return trim(($this->feed['user']['name'] ?? '') . ', Unsplash', " \t\n\r\0\x0B-");
+        }
+        return 'Unsplash';
     }
 
     /**
      * @inheritdoc
+     * @throws     GuzzleException
      */
     public function getThumbnailURL(): ?string
     {
@@ -156,9 +157,6 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
                 return null;
             }
         }
-        /*
-         * http://www.splashbase.co/api#images_random
-         */
         if (is_array($this->feed)) {
             return $this->getBestUrl($this->feed);
         }
@@ -175,11 +173,6 @@ abstract class AbstractSplashbasePictureFinder extends AbstractEmbedFinder imple
         if (null === $feed) {
             return null;
         }
-        if (!empty($feed['large_url'])
-            && (false !== strpos($feed['large_url'], '.jpg') || false !== strpos($feed['large_url'], '.png'))
-        ) {
-            return $feed['large_url'];
-        }
-        return $feed['url'] ?? null;
+        return $feed['urls']['full'] ?? $feed['urls']['raw'] ?? null;
     }
 }

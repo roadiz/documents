@@ -70,8 +70,8 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
      *
      * Be careful, this method does not flush.
      *
-     * @param ObjectManager $objectManager
-     * @param AbstractDocumentFactory $documentFactory
+     * @param  ObjectManager           $objectManager
+     * @param  AbstractDocumentFactory $documentFactory
      * @return DocumentInterface|array<DocumentInterface>
      */
     public function createDocumentFromFeed(
@@ -80,10 +80,11 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     ) {
         $documents = [];
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement) {
             foreach ($feed->channel->item as $item) {
-                if (!empty($item->enclosure->attributes()->url) &&
-                    !$this->documentExists($objectManager, $item->guid, null)) {
+                if (!empty($item->enclosure->attributes()->url)
+                    && !$this->documentExists($objectManager, $item->guid->__toString(), null)
+                ) {
                     $podcastUrl = (string) $item->enclosure->attributes()->url;
                     $thumbnailName = $this->getAudioName($item);
                     $file = DownloadedFile::fromUrl($podcastUrl, $thumbnailName);
@@ -107,7 +108,8 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
                                     '#([0-9]+)\:([0-9]+)\:([0-9]+)#',
                                     (string) $itunes->duration,
                                     $matches
-                                )) {
+                                )
+                                ) {
                                     $seconds = ((int) $matches[1] * 3600) +
                                         ((int) $matches[2] * 60) +
                                         (int) $matches[3];
@@ -177,7 +179,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     public function getMediaTitle(): ?string
     {
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement && $feed->channel instanceof SimpleXMLElement) {
             return (string) ($feed->channel->title ?? null);
         }
         return null;
@@ -189,7 +191,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     public function getMediaDescription(): ?string
     {
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement && $feed->channel instanceof SimpleXMLElement) {
             return (string) ($feed->channel->description ?? null);
         }
         return null;
@@ -201,7 +203,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     public function getMediaCopyright(): ?string
     {
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement && $feed->channel instanceof SimpleXMLElement) {
             return (string) ($feed->channel->copyright ?? null);
         }
         return null;
@@ -213,7 +215,10 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     public function getThumbnailURL(): ?string
     {
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement
+            && $feed->channel instanceof SimpleXMLElement
+            && $feed->channel->image instanceof SimpleXMLElement
+        ) {
             return (string) ($feed->channel->image->url ?? null);
         }
         return null;

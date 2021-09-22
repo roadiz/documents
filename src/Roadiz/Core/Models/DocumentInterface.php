@@ -10,7 +10,7 @@ interface DocumentInterface
     public function getFilename(): string;
 
     /**
-     * @param string $filename
+     * @param  string $filename
      * @return DocumentInterface
      */
     public function setFilename(string $filename);
@@ -21,7 +21,7 @@ interface DocumentInterface
     public function getMimeType(): ?string;
 
     /**
-     * @param string|null $mimeType
+     * @param  string|null $mimeType
      * @return DocumentInterface
      */
     public function setMimeType(?string $mimeType);
@@ -85,14 +85,14 @@ interface DocumentInterface
     public function getFolder(): string;
 
     /**
-     * @param string $folder
+     * @param  string $folder
      * @return DocumentInterface
      */
     public function setFolder(string $folder);
 
     /**
      * @deprecated Use getRelativePath instead, naming is better.
-     * @return string|null
+     * @return     string|null
      */
     public function getRelativeUrl(): ?string;
 
@@ -101,7 +101,7 @@ interface DocumentInterface
     public function getEmbedId(): ?string;
 
     /**
-     * @param string|null $embedId
+     * @param  string|null $embedId
      * @return DocumentInterface
      */
     public function setEmbedId(?string $embedId);
@@ -109,7 +109,7 @@ interface DocumentInterface
     public function getEmbedPlatform(): ?string;
 
     /**
-     * @param string|null $embedPlatform
+     * @param  string|null $embedPlatform
      * @return DocumentInterface
      */
     public function setEmbedPlatform(?string $embedPlatform);
@@ -127,7 +127,7 @@ interface DocumentInterface
     public function isPrivate(): bool;
 
     /**
-     * @param bool $private
+     * @param  bool $private
      * @return DocumentInterface
      */
     public function setPrivate(bool $private);
@@ -135,7 +135,7 @@ interface DocumentInterface
     public function getRawDocument(): ?DocumentInterface;
 
     /**
-     * @param DocumentInterface|null $rawDocument the raw document
+     * @param  DocumentInterface|null $rawDocument the raw document
      * @return DocumentInterface
      */
     public function setRawDocument(?DocumentInterface $rawDocument = null);
@@ -148,7 +148,7 @@ interface DocumentInterface
     public function isRaw(): bool;
 
     /**
-     * @param boolean $raw the raw
+     * @param  boolean $raw the raw
      * @return DocumentInterface
      */
     public function setRaw(bool $raw);
@@ -166,13 +166,13 @@ interface DocumentInterface
     public function getFolders(): Collection;
 
     /**
-     * @param FolderInterface $folder
+     * @param  FolderInterface $folder
      * @return DocumentInterface
      */
     public function addFolder(FolderInterface $folder);
 
     /**
-     * @param FolderInterface $folder
+     * @param  FolderInterface $folder
      * @return DocumentInterface
      */
     public function removeFolder(FolderInterface $folder);

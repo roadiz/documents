@@ -68,9 +68,10 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
          * We need to extract REAL embedId from oEmbed response, from the HTML field.
          */
         $this->embedUrl = $this->embedId;
-        if (is_array($feed) &&
-            !empty($feed['html']) &&
-            preg_match('#src\=\"https\:\/\/www\.dailymotion\.com\/embed\/video\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)) {
+        if (is_array($feed)
+            && !empty($feed['html'])
+            && preg_match('#src\=\"https\:\/\/www\.dailymotion\.com\/embed\/video\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)
+        ) {
             $this->embedId = urldecode($matches['realId']);
         }
 

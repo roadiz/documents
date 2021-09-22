@@ -11,7 +11,8 @@ class ViewOptionsResolver extends UrlOptionsResolver
     public function __construct()
     {
         parent::__construct();
-        $this->setDefaults([
+        $this->setDefaults(
+            [
             'identifier' => null,
             'id' => null,
             'class' => null,
@@ -73,7 +74,8 @@ class ViewOptionsResolver extends UrlOptionsResolver
             'light' => true,
             'hide_cover' => true,
             'hide_artwork' => false,
-        ]);
+            ]
+        );
 
         $this->setAllowedTypes('identifier', ['null', 'string']);
         $this->setAllowedTypes('id', ['null', 'string']);

@@ -15,7 +15,7 @@ final class SvgSizeResolver
 
     /**
      * @param DocumentInterface $document
-     * @param Packages $packages
+     * @param Packages          $packages
      */
     public function __construct(DocumentInterface $document, Packages $packages)
     {
@@ -37,9 +37,10 @@ final class SvgSizeResolver
             return 0;
         }
 
-        if (null !== $width &&
-            $width->textContent !== "" &&
-            false === strpos($width->textContent, '%')) {
+        if (null !== $width
+            && $width->textContent !== ""
+            && false === strpos($width->textContent, '%')
+        ) {
             return (int) $width->textContent;
         }
         if (null !== $viewBox && $viewBox->textContent !== "") {
@@ -64,9 +65,10 @@ final class SvgSizeResolver
             return 0;
         }
 
-        if (null !== $height &&
-            $height->textContent !== "" &&
-            false === strpos($height->textContent, '%')) {
+        if (null !== $height
+            && $height->textContent !== ""
+            && false === strpos($height->textContent, '%')
+        ) {
             return (int) $height->textContent;
         }
         if (null !== $viewBox && $viewBox->textContent !== "") {

@@ -40,7 +40,7 @@ interface AdvancedDocumentInterface extends DocumentInterface
     public function getImageAverageColor(): ?string;
 
     /**
-     * @param string|null $imageAverageColor
+     * @param  string|null $imageAverageColor
      * @return AdvancedDocumentInterface
      */
     public function setImageAverageColor(?string $imageAverageColor);
@@ -51,7 +51,7 @@ interface AdvancedDocumentInterface extends DocumentInterface
     public function getFilesize(): ?int;
 
     /**
-     * @param int|null $filesize
+     * @param  int|null $filesize
      * @return AdvancedDocumentInterface
      */
     public function setFilesize(?int $filesize);

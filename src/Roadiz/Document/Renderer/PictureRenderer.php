@@ -26,15 +26,18 @@ class PictureRenderer extends AbstractImageRenderer
             $document = $document->getThumbnails()->first();
         }
 
-        $assignation = array_merge(array_filter($options), [
-            'mimetype' => $document->getMimeType(),
-            'isWebp' => $document->isWebp(),
-            'url' => $this->getSource($document, $options),
-            'media' => null,
-            'srcset' => null,
-            'webp_srcset' => null,
-            'mediaList' => null,
-        ]);
+        $assignation = array_merge(
+            array_filter($options),
+            [
+                'mimetype' => $document->getMimeType(),
+                'isWebp' => $document->isWebp(),
+                'url' => $this->getSource($document, $options),
+                'media' => null,
+                'srcset' => null,
+                'webp_srcset' => null,
+                'mediaList' => null,
+            ]
+        );
         $assignation['alt'] = !empty($options['alt']) ? $options['alt'] : $document->getAlternativeText();
         $assignation['sizes'] = $this->parseSizes($options);
 

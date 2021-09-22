@@ -13,7 +13,8 @@ class UrlOptionsResolver extends OptionsResolver
 {
     public function __construct()
     {
-        $this->setDefaults([
+        $this->setDefaults(
+            [
             'crop' => null,
             'fit' => null,
             'align' => null,
@@ -32,7 +33,8 @@ class UrlOptionsResolver extends OptionsResolver
             'contrast' => 0,
             'rotate' => 0,
             'ratio' => null,
-        ]);
+            ]
+        );
         $this->setAllowedTypes('width', ['int']);
         $this->setAllowedTypes('height', ['int']);
         $this->setAllowedTypes('crop', ['null', 'string']);
@@ -40,7 +42,9 @@ class UrlOptionsResolver extends OptionsResolver
         $this->setAllowedTypes('flip', ['null', 'string']);
         $this->setAllowedTypes('align', ['null', 'string']);
         $this->setAllowedTypes('ratio', ['null', 'float']);
-        $this->setAllowedValues('align', [
+        $this->setAllowedValues(
+            'align',
+            [
             null,
             'top-left',
             'top',
@@ -51,7 +55,8 @@ class UrlOptionsResolver extends OptionsResolver
             'bottom-left',
             'bottom',
             'bottom-right',
-        ]);
+            ]
+        );
         $this->setAllowedTypes('background', ['null', 'string']);
         $this->setAllowedTypes('quality', ['int']);
         $this->setAllowedTypes('blur', ['int']);
@@ -64,33 +69,42 @@ class UrlOptionsResolver extends OptionsResolver
         $this->setAllowedTypes('noProcess', ['boolean']);
         $this->setAllowedTypes('interlace', ['boolean']);
 
-        $this->setDefault('ratio', function (Options $options) {
-            $compositing = $options['crop'] ?? $options['fit'] ?? '';
-            if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $compositing, $matches)) {
-                return (float) $matches['width'] / $matches['height'];
+        $this->setDefault(
+            'ratio',
+            function (Options $options) {
+                $compositing = $options['crop'] ?? $options['fit'] ?? '';
+                if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $compositing, $matches)) {
+                    return (float) $matches['width'] / $matches['height'];
+                }
+                return null;
             }
-            return null;
-        });
+        );
         /*
          * Guess width and height options from fit
          */
-        $this->setDefault('width', function (Options $options) {
-            $compositing = $options['fit'] ?? '';
-            if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $compositing, $matches)) {
-                return (int) $matches['width'];
-            } elseif (null !== $options['ratio'] && $options['height'] !== 0 && $options['ratio'] !== 0) {
-                return (int) ($options['height'] * $options['ratio']);
+        $this->setDefault(
+            'width',
+            function (Options $options) {
+                $compositing = $options['fit'] ?? '';
+                if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $compositing, $matches)) {
+                    return (int) $matches['width'];
+                } elseif (null !== $options['ratio'] && $options['height'] !== 0 && $options['ratio'] !== 0) {
+                    return (int) ($options['height'] * $options['ratio']);
+                }
+                return 0;
             }
-            return 0;
-        });
-        $this->setDefault('height', function (Options $options) {
-            $compositing = $options['fit'] ?? '';
-            if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $compositing, $matches)) {
-                return (int) $matches['height'];
-            } elseif (null !== $options['ratio'] && $options['width'] !== 0 && $options['ratio'] !== 0) {
-                return (int) ($options['width'] / $options['ratio']);
+        );
+        $this->setDefault(
+            'height',
+            function (Options $options) {
+                $compositing = $options['fit'] ?? '';
+                if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $compositing, $matches)) {
+                    return (int) $matches['height'];
+                } elseif (null !== $options['ratio'] && $options['width'] !== 0 && $options['ratio'] !== 0) {
+                    return (int) ($options['width'] / $options['ratio']);
+                }
+                return 0;
             }
-            return 0;
-        });
+        );
     }
 }

@@ -17,7 +17,7 @@ class OptionsCompiler
     /**
      * Compile Intervention Request options into a single query string.
      *
-     * @param array $options Resolved options
+     * @param  array $options Resolved options
      * @return string
      */
     public function compile(array $options): string
@@ -84,8 +84,9 @@ class OptionsCompiler
             'br' => 'bottom-right',
         ];
         $availablePositionShort = array_flip($availablePosition);
-        if (null !== $this->options['align'] &&
-            isset($availablePositionShort[$this->options['align']])) {
+        if (null !== $this->options['align']
+            && isset($availablePositionShort[$this->options['align']])
+        ) {
             $shortOptions['a'] = 'a' . $availablePositionShort[$this->options['align']];
         }
 
