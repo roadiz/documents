@@ -5,6 +5,7 @@ namespace RZ\Roadiz\Core\Models;
 
 use RZ\Roadiz\Core\AbstractEntities\AbstractDateTimed;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Serializer\Annotation as SymfonySerializer;
 
 /**
  * @package RZ\Roadiz\Core\Models
@@ -28,6 +29,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      *
      * @var array
      * @internal
+     * @SymfonySerializer\Ignore()
      */
     protected static $mimeToIcon = [
         'text/html' => 'code',
@@ -107,6 +109,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     /**
      * @var array Processable file mime type by GD or Imagick.
      * @internal
+     * @SymfonySerializer\Ignore()
      */
     protected static $processableMimeTypes = [
         'image/png',
@@ -121,6 +124,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * Get short type name for current document Mime type.
      *
      * @return string
+     * @SymfonySerializer\Ignore()
      */
     public function getShortType(): string
     {
@@ -135,6 +139,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * Get short Mime type.
      *
      * @return string
+     * @SymfonySerializer\Ignore()
      */
     public function getShortMimeType(): string
     {
@@ -149,6 +154,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * Is current document an image.
      *
      * @return bool
+     * @SymfonySerializer\Ignore()
      */
     public function isImage(): bool
     {
@@ -159,6 +165,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * Is current document a vector SVG file.
      *
      * @return bool
+     * @SymfonySerializer\Ignore()
      */
     public function isSvg(): bool
     {
@@ -169,6 +176,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * Is current document a video.
      *
      * @return bool
+     * @SymfonySerializer\Ignore()
      */
     public function isVideo(): bool
     {
@@ -179,6 +187,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * Is current document an audio file.
      *
      * @return bool
+     * @SymfonySerializer\Ignore()
      */
     public function isAudio(): bool
     {
@@ -189,6 +198,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * Is current document a PDF file.
      *
      * @return bool
+     * @SymfonySerializer\Ignore()
      */
     public function isPdf(): bool
     {
@@ -197,6 +207,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @return bool
+     * @SymfonySerializer\Ignore()
      */
     public function isWebp(): bool
     {
@@ -205,6 +216,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @deprecated Use getRelativePath instead, naming is better.
+     * @SymfonySerializer\Ignore()
      * @return     string|null
      */
     public function getRelativeUrl(): ?string
@@ -215,9 +227,11 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     /**
      * @return null|string
      * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @SymfonySerializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
      * @Serializer\Type("string")
      * @Serializer\VirtualProperty
      * @Serializer\SerializedName("relativePath")
+     * @SymfonySerializer\SerializedName("relativePath")
      */
     public function getRelativePath(): ?string
     {
@@ -232,6 +246,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * Tells if current document has embed media information.
      *
      * @return bool
+     * @SymfonySerializer\Ignore()
      */
     public function isEmbed(): bool
     {
@@ -247,9 +262,11 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     /**
      * @inheritDoc
      * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @SymfonySerializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
      * @Serializer\Type("bool")
      * @Serializer\VirtualProperty
      * @Serializer\SerializedName("processable")
+     * @SymfonySerializer\SerializedName("processable")
      */
     public function isProcessable(): bool
     {
@@ -262,9 +279,11 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @SymfonySerializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
      * @Serializer\Type("string")
      * @Serializer\VirtualProperty
      * @Serializer\SerializedName("alt")
+     * @SymfonySerializer\SerializedName("alt")
      */
     public function getAlternativeText(): string
     {
@@ -275,6 +294,7 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * Return false if no local file is linked to document. i.e no filename, no folder
      *
      * @return bool
+     * @SymfonySerializer\Ignore()
      */
     public function isLocal(): bool
     {
