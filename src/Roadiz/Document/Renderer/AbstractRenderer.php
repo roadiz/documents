@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Document\Renderer;
 
+use RZ\Roadiz\Core\Exceptions\DocumentWithoutFileException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Document\UrlOptionsResolver;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -42,6 +43,9 @@ abstract class AbstractRenderer implements RendererInterface
      */
     protected function getSource(DocumentInterface $document, array $options): string
     {
+        if (empty($document->getRelativePath())) {
+            throw new DocumentWithoutFileException($document);
+        }
         $this->documentUrlGenerator->setOptions($options);
         $this->documentUrlGenerator->setDocument($document);
         return $this->documentUrlGenerator->getUrl($options['absolute']);
@@ -49,9 +53,12 @@ abstract class AbstractRenderer implements RendererInterface
 
     /**
      * @param string $template
-     * @param array  $assignation
+     * @param array $assignation
      *
      * @return string
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     protected function renderHtmlElement(string $template, array $assignation): string
     {

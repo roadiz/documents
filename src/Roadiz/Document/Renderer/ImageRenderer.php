@@ -29,9 +29,9 @@ class ImageRenderer extends AbstractImageRenderer
         $assignation = array_merge(
             array_filter($options),
             [
-            'mimetype' => $document->getMimeType(),
-            'url' => $this->getSource($document, $options),
-            'media' => null
+                'mimetype' => $document->getMimeType(),
+                'url' => $this->getSource($document, $options),
+                'media' => null
             ]
         );
         $assignation['alt'] = !empty($options['alt']) ? $options['alt'] : $document->getAlternativeText();

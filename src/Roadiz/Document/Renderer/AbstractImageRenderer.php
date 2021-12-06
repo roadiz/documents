@@ -25,7 +25,9 @@ abstract class AbstractImageRenderer extends AbstractRenderer
 
     public function supports(DocumentInterface $document, array $options): bool
     {
-        return $document->isImage() && !$this->isEmbeddable($document, $options);
+        return $document->isImage() &&
+            !empty($document->getRelativePath()) &&
+            !$this->isEmbeddable($document, $options);
     }
 
     public function isEmbeddable(DocumentInterface $document, array $options): bool
@@ -92,7 +94,7 @@ abstract class AbstractImageRenderer extends AbstractRenderer
     ): string {
         $output = [];
         foreach ($srcSetArray as $set) {
-            if (isset($set['format']) && isset($set['rule'])) {
+            if (isset($set['format']) && isset($set['rule']) && !empty($document->getRelativePath())) {
                 $this->documentUrlGenerator->setOptions($this->urlOptionsResolver->resolve($set['format']));
                 $this->documentUrlGenerator->setDocument($document);
                 $path = $this->documentUrlGenerator->getUrl($absolute);
