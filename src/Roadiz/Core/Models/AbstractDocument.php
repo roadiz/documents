@@ -7,7 +7,6 @@ use RZ\Roadiz\Core\AbstractEntities\AbstractDateTimed;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * Class AbstractDocument
  * @package RZ\Roadiz\Core\Models
  * @Serializer\ExclusionPolicy("all")
  */
@@ -211,6 +210,10 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @return null|string
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("string")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("relativePath")
      */
     public function getRelativePath()
     {
@@ -241,6 +244,10 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
 
     /**
      * @inheritDoc
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("bool")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("processable")
      */
     public function isProcessable()
     {
@@ -251,6 +258,13 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         return false;
     }
 
+    /**
+     * @return string
+     * @Serializer\Groups({"document", "document_display", "nodes_sources", "tag", "attribute"})
+     * @Serializer\Type("string")
+     * @Serializer\VirtualProperty
+     * @Serializer\SerializedName("alt")
+     */
     public function getAlternativeText(): string
     {
         return $this->getFilename();

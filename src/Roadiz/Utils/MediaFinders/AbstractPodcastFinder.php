@@ -79,10 +79,10 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     ) {
         $documents = [];
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement) {
             foreach ($feed->channel->item as $item) {
                 if (!empty($item->enclosure->attributes()->url) &&
-                    !$this->documentExists($objectManager, $item->guid, null)) {
+                    !$this->documentExists($objectManager, (string) $item->guid, null)) {
                     $podcastUrl = (string) $item->enclosure->attributes()->url;
                     $thumbnailName = $this->getAudioName($item);
                     $file = DownloadedFile::fromUrl($podcastUrl, $thumbnailName);
@@ -168,7 +168,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     public function getMediaTitle()
     {
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement && $feed->channel instanceof SimpleXMLElement) {
             return (string) ($feed->channel->title ?? null);
         }
         return null;
@@ -180,7 +180,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     public function getMediaDescription()
     {
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement && $feed->channel instanceof SimpleXMLElement) {
             return (string) ($feed->channel->description ?? null);
         }
         return null;
@@ -192,7 +192,7 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     public function getMediaCopyright()
     {
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement && $feed->channel instanceof SimpleXMLElement) {
             return (string) ($feed->channel->copyright ?? null);
         }
         return null;
@@ -204,7 +204,9 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     public function getThumbnailURL()
     {
         $feed = $this->getFeed();
-        if (null !== $feed && $feed instanceof SimpleXMLElement) {
+        if ($feed instanceof SimpleXMLElement &&
+            $feed->channel instanceof SimpleXMLElement &&
+            $feed->channel->image instanceof SimpleXMLElement) {
             return (string) ($feed->channel->image->url ?? null);
         }
         return null;
