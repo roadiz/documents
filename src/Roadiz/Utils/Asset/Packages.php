@@ -97,13 +97,17 @@ class Packages extends BasePackages
     {
         $this->setDefaultPackage($this->getDefaultPackage());
         $packages = [
-            static::ABSOLUTE => $this->getAbsoluteDefaultPackage(),
             static::DOCUMENTS => $this->getDocumentPackage(),
-            static::ABSOLUTE_DOCUMENTS => $this->getAbsoluteDocumentPackage(),
             static::PUBLIC_PATH => $this->getPublicPathPackage(),
             static::PRIVATE_PATH => $this->getPrivatePathPackage(),
             static::FONTS_PATH => $this->getFontsPathPackage(),
         ];
+        if (null !== $this->getRequest()) {
+            $packages = array_merge($packages, [
+                static::ABSOLUTE => $this->getAbsoluteDefaultPackage(),
+                static::ABSOLUTE_DOCUMENTS => $this->getAbsoluteDocumentPackage(),
+            ]);
+        }
         foreach ($packages as $name => $package) {
             $this->addPackage((string) $name, $package);
         }
@@ -354,6 +358,6 @@ class Packages extends BasePackages
      */
     protected function getRequest()
     {
-        return $this->requestStack->getMasterRequest();
+        return $this->requestStack->getMainRequest();
     }
 }
