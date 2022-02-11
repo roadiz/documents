@@ -1,9 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\UrlGenerators;
 
-use Doctrine\Common\Cache\CacheProvider;
+use Psr\Cache\CacheItemPoolInterface;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -16,52 +17,45 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
     protected Packages $packages;
     protected ?DocumentInterface $document;
     protected array $options;
-    protected ?CacheProvider $optionsCacheProvider;
+    protected CacheItemPoolInterface $optionsCacheAdapter;
     protected ViewOptionsResolver $viewOptionsResolver;
     protected OptionsCompiler $optionCompiler;
 
     /**
-     * @param Packages               $packages
+     * @param Packages $packages
+     * @param CacheItemPoolInterface $optionsCacheAdapter
      * @param DocumentInterface|null $document
-     * @param array                  $options
-     * @param CacheProvider|null     $optionsCacheProvider
+     * @param array $options
      */
     public function __construct(
         Packages $packages,
+        CacheItemPoolInterface $optionsCacheAdapter,
         DocumentInterface $document = null,
-        array $options = [],
-        ?CacheProvider $optionsCacheProvider = null
+        array $options = []
     ) {
         $this->document = $document;
         $this->packages = $packages;
-        $this->optionsCacheProvider = $optionsCacheProvider;
         $this->viewOptionsResolver = new ViewOptionsResolver();
         $this->optionCompiler = new OptionsCompiler();
+        $this->optionsCacheAdapter = $optionsCacheAdapter;
 
         $this->setOptions($options);
     }
 
     /**
      * @param array $options
-     *
      * @return AbstractDocumentUrlGenerator
      */
     public function setOptions(array $options = [])
     {
-        if (null !== $this->optionsCacheProvider) {
-            /*
-             * Use optionsCacheProvider to resolve valid options once, especially if
-             * you are rendering a lot of documents with the same options.
-             */
-            $optionsHash = md5(json_encode($options) ?: '');
-            if (!$this->optionsCacheProvider->contains($optionsHash)) {
-                $resolvedOptions = $this->viewOptionsResolver->resolve($options);
-                $this->optionsCacheProvider->save($optionsHash, $resolvedOptions);
-            }
-            $this->options = $this->optionsCacheProvider->fetch($optionsHash) ?: [];
-        } else {
-            $this->options = $this->viewOptionsResolver->resolve($options);
+        $optionsCacheItem = $this->optionsCacheAdapter->getItem(md5(json_encode($options) ?: ''));
+        if (!$optionsCacheItem->isHit()) {
+            $resolvedOptions = $this->viewOptionsResolver->resolve($options);
+            $optionsCacheItem->set($resolvedOptions);
+            $this->optionsCacheAdapter->save($optionsCacheItem);
         }
+        $this->options = $optionsCacheItem->get() ?: [];
+
         return $this;
     }
 

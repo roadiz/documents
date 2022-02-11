@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\Asset;
@@ -23,40 +24,40 @@ class Packages extends BasePackages
      * Absolute package is for reaching
      * resources at server root.
      */
-    const ABSOLUTE = 'absolute';
+    public const ABSOLUTE = 'absolute';
 
     /**
      * Document package is for reaching
      * files with relative path to server root.
      */
-    const DOCUMENTS = 'doc';
+    public const DOCUMENTS = 'doc';
 
     /**
      * Document package is for reaching
      * files with absolute url with domain-name.
      */
-    const ABSOLUTE_DOCUMENTS = 'absolute_doc';
+    public const ABSOLUTE_DOCUMENTS = 'absolute_doc';
 
     /**
      * Public path package is for internally reaching
      * public files with absolute path.
      * Be careful, this provides server paths.
      */
-    const PUBLIC_PATH = 'public_path';
+    public const PUBLIC_PATH = 'public_path';
 
     /**
      * Private path package is for internally reaching
      * private files with absolute path.
      * Be careful, this provides server paths.
      */
-    const PRIVATE_PATH = 'private_path';
+    public const PRIVATE_PATH = 'private_path';
 
     /**
      * Fonts path package is for internally reaching
      * font files with absolute path.
      * Be careful, this provides server paths.
      */
-    const FONTS_PATH = 'fonts_path';
+    public const FONTS_PATH = 'fonts_path';
 
     private VersionStrategyInterface $versionStrategy;
     private RequestStack $requestStack;
@@ -144,7 +145,8 @@ class Packages extends BasePackages
          */
         $staticDomainAndPort = $this->staticDomain;
         $request = $this->getRequest();
-        if (null !== $request
+        if (
+            null !== $request
             && (($this->requestStackContext->isSecure() && $request->getPort() != 443)
             || (!$this->requestStackContext->isSecure() && $request->getPort() != 80))
         ) {
@@ -154,7 +156,8 @@ class Packages extends BasePackages
         /*
          * If no protocol, use https as default
          */
-        if (!preg_match("~^//~i", $staticDomainAndPort)
+        if (
+            !preg_match("~^//~i", $staticDomainAndPort)
             && !preg_match("~^(?:f|ht)tps?://~i", $staticDomainAndPort)
         ) {
             $staticDomainAndPort = "https://" . $staticDomainAndPort;

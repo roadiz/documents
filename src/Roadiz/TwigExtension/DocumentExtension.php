@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\TwigExtension;
@@ -89,7 +90,8 @@ final class DocumentExtension extends AbstractExtension
         }
 
         try {
-            if (null !== $document->getEmbedPlatform()
+            if (
+                null !== $document->getEmbedPlatform()
                 && $this->embedFinderFactory->supports($document->getEmbedPlatform())
             ) {
                 return $this->embedFinderFactory->createForPlatform(
@@ -133,7 +135,7 @@ final class DocumentExtension extends AbstractExtension
             if ($this->throwExceptions) {
                 throw new RuntimeError($embedException->getMessage());
             } else {
-                return '<p>'.$embedException->getMessage().'</p>';
+                return '<p>' . $embedException->getMessage() . '</p>';
             }
         } catch (InvalidArgumentException $e) {
             throw new RuntimeError($e->getMessage(), -1, null, $e);

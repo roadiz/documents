@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -59,7 +60,7 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
     public function getMediaCopyright(): string
     {
         $feed = $this->getFeed();
-        return is_array($feed) ? $feed['provider_name'] . ' (' . $feed['provider_url']. ')' : '';
+        return is_array($feed) ? $feed['provider_name'] . ' (' . $feed['provider_url'] . ')' : '';
     }
 
     /**

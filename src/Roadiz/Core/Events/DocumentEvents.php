@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Core\Events;
@@ -21,7 +22,7 @@ final class DocumentEvents
      * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
-    const DOCUMENT_CREATED = DocumentCreatedEvent::class;
+    public const DOCUMENT_CREATED = DocumentCreatedEvent::class;
 
     /**
      * Event document.updated is triggered each time a document
@@ -33,7 +34,7 @@ final class DocumentEvents
      * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
-    const DOCUMENT_UPDATED = DocumentUpdatedEvent::class;
+    public const DOCUMENT_UPDATED = DocumentUpdatedEvent::class;
 
     /**
      * Event document.deleted is triggered each time a document
@@ -45,7 +46,7 @@ final class DocumentEvents
      * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
-    const DOCUMENT_DELETED = DocumentDeletedEvent::class;
+    public const DOCUMENT_DELETED = DocumentDeletedEvent::class;
 
     /**
      * Event document.image.uploaded is triggered each time a document
@@ -57,7 +58,7 @@ final class DocumentEvents
      * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
-    const DOCUMENT_IMAGE_UPLOADED = DocumentImageUploadedEvent::class;
+    public const DOCUMENT_IMAGE_UPLOADED = DocumentImageUploadedEvent::class;
 
     /**
      * Event document.file.uploaded is triggered each time a document
@@ -71,7 +72,7 @@ final class DocumentEvents
      * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
-    const DOCUMENT_FILE_UPLOADED = DocumentFileUploadedEvent::class;
+    public const DOCUMENT_FILE_UPLOADED = DocumentFileUploadedEvent::class;
 
     /**
      * Event document.svg.uploaded is triggered each time a document
@@ -83,7 +84,7 @@ final class DocumentEvents
      * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
-    const DOCUMENT_SVG_UPLOADED = DocumentSvgUploadedEvent::class;
+    public const DOCUMENT_SVG_UPLOADED = DocumentSvgUploadedEvent::class;
 
     /**
      * Event document.in.folder is triggered each time a document is linked to a folder.
@@ -94,7 +95,7 @@ final class DocumentEvents
      * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
-    const DOCUMENT_IN_FOLDER = DocumentInFolderEvent::class;
+    public const DOCUMENT_IN_FOLDER = DocumentInFolderEvent::class;
 
     /**
      * Event document.out.folder is triggered each time a document is linked to a folder.
@@ -105,5 +106,5 @@ final class DocumentEvents
      * @var        string
      * @deprecated Do not use event name constant, directly event class FQN
      */
-    const DOCUMENT_OUT_FOLDER = DocumentOutFolderEvent::class;
+    public const DOCUMENT_OUT_FOLDER = DocumentOutFolderEvent::class;
 }

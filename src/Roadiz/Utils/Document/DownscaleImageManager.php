@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\Document;
@@ -37,7 +38,7 @@ class DownscaleImageManager
         int $maxPixelSize = 0,
         string $rawImageSuffix = ".raw"
     ) {
-        $this->maxPixelSize = (int) $maxPixelSize;
+        $this->maxPixelSize = $maxPixelSize;
         $this->rawImageSuffix = $rawImageSuffix;
         $this->em = $em;
         $this->logger = $logger;
@@ -56,7 +57,8 @@ class DownscaleImageManager
             $rawDocumentFilePath = $this->packages->getDocumentFilePath($document);
             $processImage = $this->getDownscaledImage($this->manager->make($rawDocumentFilePath));
             if (false !== $processImage) {
-                if (false !== $this->createDocumentFromImage($document, $processImage)
+                if (
+                    false !== $this->createDocumentFromImage($document, $processImage)
                     && null !== $this->logger
                 ) {
                     $this->logger->info(
@@ -85,7 +87,8 @@ class DownscaleImageManager
             }
 
             if (false !== $processImage = $this->getDownscaledImage($this->manager->make($rawDocumentFile))) {
-                if (false !== $this->createDocumentFromImage($document, $processImage, true)
+                if (
+                    false !== $this->createDocumentFromImage($document, $processImage, true)
                     && null !== $this->logger
                 ) {
                     $this->logger->info('Document has been downscaled.', ['path' => $rawDocumentFile]);
@@ -103,7 +106,8 @@ class DownscaleImageManager
      */
     protected function getDownscaledImage(Image $processImage): ?Image
     {
-        if ($processImage->mime() != 'image/gif'
+        if (
+            $processImage->mime() != 'image/gif'
             && ($processImage->width() > $this->maxPixelSize || $processImage->height() > $this->maxPixelSize)
         ) {
             // prevent possible upsizing
@@ -172,7 +176,8 @@ class DownscaleImageManager
                 $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
                 $rawDocumentPath = $this->packages->getDocumentFilePath($rawDocument);
 
-                if ($fs->exists($originalDocumentPath)
+                if (
+                    $fs->exists($originalDocumentPath)
                     && !$fs->exists($rawDocumentPath)
                 ) {
                     /*

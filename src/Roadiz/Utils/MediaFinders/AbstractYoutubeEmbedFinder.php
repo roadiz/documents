@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -60,7 +61,8 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
          * We need to extract REAL embedId from oEmbed response, from the HTML field.
          */
         $this->embedUrl = $this->embedId;
-        if (is_array($feed)
+        if (
+            is_array($feed)
             && !empty($feed['html'])
             && preg_match('#src\=\"https\:\/\/www\.youtube\.com\/embed\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)
         ) {
@@ -83,7 +85,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 
     public function getMediaCopyright(): string
     {
-        return ($this->getFeed()['author_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? ''). ')';
+        return ($this->getFeed()['author_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? '') . ')';
     }
 
     public function getThumbnailURL(): string
@@ -135,9 +137,9 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
     public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15)
     {
         if (null !== $this->getKey() && $this->getKey() != "") {
-            $url = "https://www.googleapis.com/youtube/v3/search?q=".$searchTerm."&part=snippet&key=".$this->getKey()."&maxResults=".$maxResults;
+            $url = "https://www.googleapis.com/youtube/v3/search?q=" . $searchTerm . "&part=snippet&key=" . $this->getKey() . "&maxResults=" . $maxResults;
             if (null !== $author && !empty($author)) {
-                $url .= '&author='.$author;
+                $url .= '&author=' . $author;
             }
             return $this->downloadFeedFromAPI($url);
         } else {
@@ -200,6 +202,6 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         $queryString['enablejsapi'] = (int) $options['enablejsapi'];
         $queryString['mute'] = (int) $options['muted'];
 
-        return static::YOUTUBE_EMBED_DOMAIN . '/embed/'.$this->embedId.'?'.http_build_query($queryString);
+        return static::YOUTUBE_EMBED_DOMAIN . '/embed/' . $this->embedId . '?' . http_build_query($queryString);
     }
 }

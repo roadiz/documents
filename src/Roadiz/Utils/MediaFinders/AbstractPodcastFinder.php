@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -82,7 +83,8 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
         $feed = $this->getFeed();
         if ($feed instanceof SimpleXMLElement) {
             foreach ($feed->channel->item as $item) {
-                if (!empty($item->enclosure->attributes()->url)
+                if (
+                    !empty($item->enclosure->attributes()->url)
                     && !$this->documentExists($objectManager, $item->guid->__toString(), null)
                 ) {
                     $podcastUrl = (string) $item->enclosure->attributes()->url;
@@ -104,11 +106,12 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
                             $document->setEmbedPlatform(null);
 
                             if ($document instanceof TimeableInterface && !empty((string) $itunes->duration)) {
-                                if (preg_match(
-                                    '#([0-9]+)\:([0-9]+)\:([0-9]+)#',
-                                    (string) $itunes->duration,
-                                    $matches
-                                )
+                                if (
+                                    preg_match(
+                                        '#([0-9]+)\:([0-9]+)\:([0-9]+)#',
+                                        (string) $itunes->duration,
+                                        $matches
+                                    )
                                 ) {
                                     $seconds = ((int) $matches[1] * 3600) +
                                         ((int) $matches[2] * 60) +
@@ -215,7 +218,8 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
     public function getThumbnailURL(): ?string
     {
         $feed = $this->getFeed();
-        if ($feed instanceof SimpleXMLElement
+        if (
+            $feed instanceof SimpleXMLElement
             && $feed->channel instanceof SimpleXMLElement
             && $feed->channel->image instanceof SimpleXMLElement
         ) {

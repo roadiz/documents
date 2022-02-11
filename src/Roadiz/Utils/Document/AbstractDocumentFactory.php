@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\Document;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RZ\Roadiz\Core\Events\DocumentFileUploadedEvent;
@@ -96,7 +96,8 @@ abstract class AbstractDocumentFactory
      */
     protected function parseSvgMimeType(DocumentInterface $document): void
     {
-        if (($document->getMimeType() == "text/plain"
+        if (
+            ($document->getMimeType() == "text/plain"
             || $document->getMimeType() == 'text/html')
             && preg_match('#\.svg$#', $document->getFilename())
         ) {
@@ -200,7 +201,8 @@ abstract class AbstractDocumentFactory
         $file = $this->getFile();
         $fs = new Filesystem();
 
-        if ($file instanceof UploadedFile
+        if (
+            $file instanceof UploadedFile
             && !$file->isValid()
         ) {
             return $document;
@@ -259,7 +261,8 @@ abstract class AbstractDocumentFactory
 
         if ($file instanceof UploadedFile) {
             $fileName = $file->getClientOriginalName();
-        } elseif ($file instanceof DownloadedFile
+        } elseif (
+            $file instanceof DownloadedFile
             && $file->getOriginalFilename() !== null
             && $file->getOriginalFilename() !== ''
         ) {
@@ -282,7 +285,7 @@ abstract class AbstractDocumentFactory
     {
         @trigger_error(
             'AbstractDocumentFactory::downloadFileFromUrl method is deprecated.' .
-                ' Use '.DownloadedFile::class.'::fromUrl($url)',
+                ' Use ' . DownloadedFile::class . '::fromUrl($url)',
             E_USER_DEPRECATED
         );
         return DownloadedFile::fromUrl($url, $thumbnailName);

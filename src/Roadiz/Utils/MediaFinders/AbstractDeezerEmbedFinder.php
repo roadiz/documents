@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -44,7 +45,8 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         /*
          * We need to extract REAL embedId from oEmbed response, from the HTML field.
          */
-        if (!empty($feed['html'])
+        if (
+            !empty($feed['html'])
             && preg_match(
                 '#src\=[\"|\']https\:\/\/www\.deezer\.com\/plugins\/player\?type\=tracks\&id\=(?<realId>[a-zA-Z0-9\_\-]+)#',
                 $feed['html'],
@@ -135,6 +137,6 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         $queryString['enablejsapi'] = (int) $options['enablejsapi'];
         $queryString['mute'] = (int) $options['muted'];
 
-        return 'https://www.deezer.com/plugins/player?'.http_build_query($queryString);
+        return 'https://www.deezer.com/plugins/player?' . http_build_query($queryString);
     }
 }

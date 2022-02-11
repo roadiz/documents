@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -153,6 +154,6 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
             $queryString['muted'] = (int) $options['muted'];
         }
 
-        return 'https://player.vimeo.com/video/'.$this->embedId.'?'.http_build_query($queryString);
+        return 'https://player.vimeo.com/video/' . $this->embedId . '?' . http_build_query($queryString);
     }
 }

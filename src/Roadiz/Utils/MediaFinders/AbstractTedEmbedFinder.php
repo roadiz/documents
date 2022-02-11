@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -40,7 +41,7 @@ abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
 
     public function getMediaCopyright(): string
     {
-        return ($this->getFeed()['author_name'] ?? '') . ' - ' . ($this->getFeed()['provider_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? ''). ')';
+        return ($this->getFeed()['author_name'] ?? '') . ' - ' . ($this->getFeed()['provider_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? '') . ')';
     }
 
     public function getThumbnailURL(): string

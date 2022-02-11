@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Core\Events;
@@ -46,7 +47,8 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     public function preUpdate(PreUpdateEventArgs $args): void
     {
         $document = $args->getObject();
-        if ($document instanceof DocumentInterface
+        if (
+            $document instanceof DocumentInterface
             && $args->hasChangedField('filename')
             && $args->getOldValue('filename') !== null
             && $args->getOldValue('filename') !== ''

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Document\Renderer;
@@ -143,7 +144,8 @@ abstract class AbstractImageRenderer extends AbstractRenderer
             } elseif (null !== $document->getImageRatio()) {
                 $assignation['ratio'] = $document->getImageRatio();
             }
-            if (null !== $document->getImageAverageColor()
+            if (
+                null !== $document->getImageAverageColor()
                 && $document->getImageAverageColor() !== '#ffffff'
                 && $document->getImageAverageColor() !== '#000000'
             ) {

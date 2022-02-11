@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -68,7 +69,8 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
          * We need to extract REAL embedId from oEmbed response, from the HTML field.
          */
         $this->embedUrl = $this->embedId;
-        if (is_array($feed)
+        if (
+            is_array($feed)
             && !empty($feed['html'])
             && preg_match('#src\=\"https\:\/\/www\.dailymotion\.com\/embed\/video\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)
         ) {
@@ -146,6 +148,6 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
         $queryString['controls'] = (int) $options['controls'];
         $queryString['muted'] = (int) $options['muted'];
 
-        return 'https://www.dailymotion.com/embed/video/'.$this->embedId . '?' . http_build_query($queryString);
+        return 'https://www.dailymotion.com/embed/video/' . $this->embedId . '?' . http_build_query($queryString);
     }
 }
