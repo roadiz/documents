@@ -13,6 +13,7 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
     // https://open.spotify.com/embed/track/6U67bz1ggGoOUllUOvfKFF
     protected static string $idPattern = '#^https\:\/\/open\.spotify\.com\/(?<type>track|playlist|artist|album|show|episode)\/(?<id>[a-zA-Z0-9]+)#';
     protected static string $realIdPattern = '#^(?<type>track|playlist|artist|album|show|episode)\/(?<id>[a-zA-Z0-9]+)$#';
+    protected ?string $embedUrl;
 
     /**
      * @inheritDoc

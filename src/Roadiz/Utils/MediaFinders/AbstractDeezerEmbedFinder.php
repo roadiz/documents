@@ -12,6 +12,7 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
     // https://www.deezer.com/fr/playlist/9313425622
     protected static string $idPattern = '#^https?:\/\/(www.)?deezer\.com\/(?:\\w+/)?(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)#';
     protected static string $realIdPattern = '#^(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)$#';
+    protected ?string $embedUrl;
 
     public function isEmptyThumbnailAllowed(): bool
     {
@@ -34,7 +35,7 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaFeed($search = null)
     {
-        if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
+        if (preg_match(static::$realIdPattern, $this->embedId)) {
             $url = 'https://www.deezer.com/fr/' . $this->embedId;
         } else {
             $url = $this->embedId;
@@ -141,9 +142,10 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
 
         if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
             $baseUri = 'https://widget.deezer.com/widget/auto/' . $this->embedId;
-        }
-        if (preg_match(static::$idPattern, $this->embedId, $matches)) {
+        } elseif (preg_match(static::$idPattern, $this->embedId, $matches)) {
             $baseUri = 'https://widget.deezer.com/widget/auto/' . $matches['type'] . '/' . $matches['id'];
+        } else {
+            $baseUri = 'https://widget.deezer.com/widget/auto/';
         }
 
         // https://widget.deezer.com/widget/dark/playlist/9313425622
