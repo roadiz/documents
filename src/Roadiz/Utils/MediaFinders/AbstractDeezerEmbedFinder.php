@@ -9,8 +9,9 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
 {
     protected static string $platform = 'deezer';
-    protected static string $idPattern = '#^https?:\/\/(www.)?deezer\.com\/(?:\\w+/)?(?<type>track|playlist|album)\/(?<id>[a-zA-Z0-9]+)#';
-    protected static string $realIdPattern = '#^(?<id>[a-zA-Z0-9]+)$#';
+    // https://www.deezer.com/fr/playlist/9313425622
+    protected static string $idPattern = '#^https?:\/\/(www.)?deezer\.com\/(?:\\w+/)?(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)#';
+    protected static string $realIdPattern = '#^(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)$#';
 
     public function isEmptyThumbnailAllowed(): bool
     {
@@ -28,32 +29,37 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         throw new InvalidEmbedId($embedId, static::$platform);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getMediaFeed($search = null)
     {
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
+            $url = 'https://www.deezer.com/fr/' . $this->embedId;
+        } else {
+            $url = $this->embedId;
+        }
         $endpoint = "https://api.deezer.com/oembed";
         $query = [
-            'url' => $this->embedId,
+            'url' => $url,
             'format' => 'json',
         ];
 
         return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getFeed()
     {
         $feed = parent::getFeed();
         /*
          * We need to extract REAL embedId from oEmbed response, from the HTML field.
          */
-        if (
-            !empty($feed['html'])
-            && preg_match(
-                '#src\=[\"|\']https\:\/\/www\.deezer\.com\/plugins\/player\?type\=tracks\&id\=(?<realId>[a-zA-Z0-9\_\-]+)#',
-                $feed['html'],
-                $matches
-            )
-        ) {
-            $this->embedId = urldecode($matches['realId']);
+        $this->embedUrl = $this->embedId;
+        if (preg_match(static::$idPattern, $this->embedId, $matches)) {
+            $this->embedId = $matches['type'] . '/' . $matches['id'];
         }
 
         return $feed;
@@ -89,7 +95,11 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         } else {
             $pathinfo = '.jpg';
         }
+
         if (preg_match(static::$idPattern, $this->embedId, $matches) === 1) {
+            return $matches['type'] . '_' . $matches['id'] . $pathinfo;
+        }
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches) === 1) {
             return $matches['type'] . '_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($this->embedId, static::$platform);
@@ -107,19 +117,11 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         parent::getSource($options);
 
         $queryString = [
-            'type' => 'tracks',
-            'format' => 'classic',
             'id' => $this->embedId
         ];
 
         if (key_exists('autoplay', $queryString)) {
             $queryString['autoplay'] = ((bool) $options['autoplay']) ? ('true') : ('false');
-        }
-        if (key_exists('playlist', $queryString)) {
-            $queryString['playlist'] = ((bool) $options['playlist']) ? ('true') : ('false');
-        }
-        if (null !== $options['color']) {
-            $queryString['color'] = $options['color'];
         }
         if ($options['width']) {
             $queryString['width'] = (int) $options['width'];
@@ -137,6 +139,14 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         $queryString['enablejsapi'] = (int) $options['enablejsapi'];
         $queryString['mute'] = (int) $options['muted'];
 
-        return 'https://www.deezer.com/plugins/player?' . http_build_query($queryString);
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
+            $baseUri = 'https://widget.deezer.com/widget/auto/' . $this->embedId;
+        }
+        if (preg_match(static::$idPattern, $this->embedId, $matches)) {
+            $baseUri = 'https://widget.deezer.com/widget/auto/' . $matches['type'] . '/' . $matches['id'];
+        }
+
+        // https://widget.deezer.com/widget/dark/playlist/9313425622
+        return $baseUri . '?' . http_build_query($queryString);
     }
 }
