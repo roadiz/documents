@@ -76,6 +76,7 @@ class SvgDocumentViewer
 
     /**
      * @return string
+     * @throws \Exception
      */
     protected function getInlineSvg(): string
     {
