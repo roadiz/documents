@@ -10,6 +10,7 @@ use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use Psr\Log\LoggerInterface;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Core\Models\FileHashInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -126,15 +127,34 @@ class DownscaleImageManager
     }
 
     /**
+     * @param DocumentInterface $document
+     * @param string $documentPath
+     * @return void
+     */
+    protected function updateDocumentFileHash(DocumentInterface $document, string $documentPath): void
+    {
+        /*
+         * We need to re-hash file after being downscaled
+         */
+        if (
+            $document instanceof FileHashInterface &&
+            null !== $document->getFileHashAlgorithm() &&
+            false !== $fileHash = hash_file($document->getFileHashAlgorithm(), $documentPath)
+        ) {
+            $document->setFileHash($fileHash);
+        }
+    }
+
+    /**
      * @param  DocumentInterface $originalDocument
      * @param  Image|null        $processImage
-     * @param  boolean           $keepExistingRaw
+     * @param  bool          $keepExistingRaw
      * @return DocumentInterface|bool Return new Document or FALSE
      */
     protected function createDocumentFromImage(
         DocumentInterface $originalDocument,
         Image $processImage = null,
-        $keepExistingRaw = false
+        bool $keepExistingRaw = false
     ) {
         $fs = new Filesystem();
 
@@ -188,8 +208,13 @@ class DownscaleImageManager
                      * Then save downscaled image as original document path.
                      */
                     $processImage->save($originalDocumentPath, 100);
-
                     $originalDocument->setRawDocument($rawDocument);
+
+                    /*
+                     * We need to re-hash file after being downscaled
+                     */
+                    $this->updateDocumentFileHash($originalDocument, $originalDocumentPath);
+
                     $rawDocument->setRaw(true);
 
                     $this->em->persist($rawDocument);
@@ -205,7 +230,7 @@ class DownscaleImageManager
         } elseif (null !== $processImage) {
             /*
              * New downscale document has been generated, we keep existing RAW document
-             * but we override downscaled file we the new one.
+             * but we override downscaled file with the new one.
              */
             $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
             /*
@@ -216,6 +241,11 @@ class DownscaleImageManager
              * Then save downscaled image as original document path.
              */
             $processImage->save($originalDocumentPath, 100);
+            /*
+             * We need to re-hash file after being downscaled
+             */
+            $this->updateDocumentFileHash($originalDocument, $originalDocumentPath);
+
             $this->em->flush();
 
             return $originalDocument;
@@ -239,6 +269,10 @@ class DownscaleImageManager
                  * Remove Raw document
                  */
                 $originalDocument->setRawDocument(null);
+                /*
+                 * We need to re-hash file after being downscaled
+                 */
+                $this->updateDocumentFileHash($originalDocument, $originalDocumentPath);
                 /*
                  * Make sure to disconnect raw document before removing it
                  * not to trigger Cascade deleting.
