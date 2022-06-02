@@ -52,5 +52,10 @@
         "psr-4": {
             "RZ\\": "src/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     }
 }

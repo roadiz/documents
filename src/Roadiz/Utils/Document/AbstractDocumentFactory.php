@@ -10,6 +10,7 @@ use RZ\Roadiz\Core\Events\DocumentFileUploadedEvent;
 use RZ\Roadiz\Core\Events\DocumentImageUploadedEvent;
 use RZ\Roadiz\Core\Events\DocumentSvgUploadedEvent;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Core\Models\FileHashInterface;
 use RZ\Roadiz\Core\Models\FolderInterface;
 use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Asset\Packages;
@@ -118,6 +119,11 @@ abstract class AbstractDocumentFactory
      */
     abstract protected function persistDocument(DocumentInterface $document): void;
 
+    protected function getHashAlgorithm(): string
+    {
+        return 'sha256';
+    }
+
     /**
      * Create a document from UploadedFile, Be careful, this method does not flush, only
      * persists current Document.
@@ -148,6 +154,15 @@ abstract class AbstractDocumentFactory
                 $document->setMimeType($file->getMimeType() ?? '');
             }
             $this->parseSvgMimeType($document);
+
+            if (
+                $document instanceof FileHashInterface &&
+                false !== $fileHash = hash_file($this->getHashAlgorithm(), $file->getPathname())
+            ) {
+                $document->setFileHash($fileHash);
+                $document->setFileHashAlgorithm($this->getHashAlgorithm());
+            }
+
             if ($document->getFilename() !== '') {
                 $file->move(
                     $this->packages->getDocumentFolderPath($document),
