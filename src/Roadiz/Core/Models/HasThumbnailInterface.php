@@ -14,11 +14,11 @@ interface HasThumbnailInterface
     public function getOriginal(): ?HasThumbnailInterface;
 
     /**
-     * @param HasThumbnailInterface $hasThumbnail
+     * @param HasThumbnailInterface $original
      *
      * @return self
      */
-    public function setOriginal(HasThumbnailInterface $hasThumbnail);
+    public function setOriginal(?HasThumbnailInterface $original);
 
     /**
      * @return Collection
