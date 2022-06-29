@@ -23,8 +23,12 @@ class ImageRenderer extends AbstractImageRenderer
         /*
          * Override image by its first thumbnail if existing
          */
-        if (!$options['no_thumbnail'] && $document instanceof HasThumbnailInterface && $document->hasThumbnails()) {
-            $document = $document->getThumbnails()->first();
+        if (
+            !$options['no_thumbnail'] &&
+            $document instanceof HasThumbnailInterface &&
+            false !== $thumbnail = $document->getThumbnails()->first()
+        ) {
+            $document = $thumbnail;
         }
 
         $assignation = array_merge(

@@ -252,6 +252,6 @@ class SimpleDocument extends AbstractDocument
 
     public function __toString()
     {
-        return $this->getFilename() ?? '';
+        return $this->getFilename();
     }
 }

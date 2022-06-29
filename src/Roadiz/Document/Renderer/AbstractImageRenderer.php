@@ -116,7 +116,11 @@ abstract class AbstractImageRenderer extends AbstractRenderer
      */
     protected function createTransparentDataURI(string $hexColor, int $width = 1, int $height = 1): string
     {
-        [$r, $g, $b] = \sscanf($hexColor, "#%02x%02x%02x");
+        $hexColorArray = \sscanf($hexColor, "#%02x%02x%02x");
+        if (null === $hexColorArray) {
+            throw new \RuntimeException('Color is not a valid hexadecimal RGB format');
+        }
+        [$r, $g, $b] = $hexColorArray;
         $im = \imageCreateTrueColor($width, $height);
         if ($im) {
             \imageFill($im, 0, 0, \imageColorAllocate($im, $r, $g, $b) ?: 0);

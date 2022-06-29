@@ -104,11 +104,11 @@ class SvgDocumentViewer
     }
 
     /**
-     * @param  string $svg
+     * @param string $svg
      * @return string
      * @throws \Exception
      */
-    protected function injectAttributes($svg): string
+    protected function injectAttributes(string $svg): string
     {
         $attributes = $this->getAllowedAttributes();
         if (count($attributes) > 0) {

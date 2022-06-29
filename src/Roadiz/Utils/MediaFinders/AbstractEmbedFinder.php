@@ -111,7 +111,12 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
                 $rawFeed = $rawFeed->getContents();
             }
             if (null !== $rawFeed) {
-                $this->feed = json_decode($rawFeed, true) ?? null;
+                $feed = json_decode($rawFeed, true);
+                if (is_array($feed)) {
+                    $this->feed = $feed;
+                } else {
+                    $this->feed = null;
+                }
             }
         }
         return $this->feed;

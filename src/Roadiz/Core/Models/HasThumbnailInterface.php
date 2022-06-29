@@ -15,18 +15,17 @@ interface HasThumbnailInterface
 
     /**
      * @param HasThumbnailInterface $original
-     *
      * @return self
      */
     public function setOriginal(?HasThumbnailInterface $original);
 
     /**
-     * @return Collection
+     * @return Collection<int,DocumentInterface>
      */
     public function getThumbnails(): Collection;
 
     /**
-     * @param Collection $thumbnails
+     * @param Collection<int,DocumentInterface> $thumbnails
      *
      * @return self
      */

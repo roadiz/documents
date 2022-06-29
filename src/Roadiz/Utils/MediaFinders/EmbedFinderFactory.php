@@ -17,12 +17,12 @@ class EmbedFinderFactory
      *    vimeo => VimeoEmbedFinder::class
      * ]
      *
-     * @var array
+     * @var array<string, class-string<EmbedFinderInterface>>
      */
     private array $embedPlatforms;
 
     /**
-     * @param array $embedPlatforms
+     * @param array<string, class-string<EmbedFinderInterface>> $embedPlatforms
      */
     public function __construct(array $embedPlatforms = [])
     {

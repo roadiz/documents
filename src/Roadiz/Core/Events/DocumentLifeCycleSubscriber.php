@@ -50,7 +50,8 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
         if (
             $document instanceof DocumentInterface
             && $args->hasChangedField('filename')
-            && $args->getOldValue('filename') !== null
+            && is_string($args->getOldValue('filename'))
+            && is_string($args->getNewValue('filename'))
             && $args->getOldValue('filename') !== ''
         ) {
             $fs = new Filesystem();

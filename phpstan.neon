@@ -2,7 +2,7 @@ parameters:
     level: max
     paths:
         - src
-    excludes_analyse:
+    excludePaths:
         - */node_modules/*
         - */bower_components/*
         - */static/*
@@ -18,3 +18,7 @@ parameters:
     reportUnmatchedIgnoredErrors: false
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
+
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-doctrine/rules.neon

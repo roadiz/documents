@@ -149,7 +149,7 @@ abstract class AbstractDocumentFactory
             }
             $document->setFilename($this->getFileName());
             if ($file instanceof UploadedFile) {
-                $document->setMimeType($file->getClientMimeType() ?? '');
+                $document->setMimeType($file->getClientMimeType());
             } else {
                 $document->setMimeType($file->getMimeType() ?? '');
             }
@@ -251,7 +251,7 @@ abstract class AbstractDocumentFactory
 
         $document->setFilename($this->getFileName());
         if ($file instanceof UploadedFile) {
-            $document->setMimeType($file->getClientMimeType() ?? '');
+            $document->setMimeType($file->getClientMimeType());
         } else {
             $document->setMimeType($file->getMimeType() ?? '');
         }

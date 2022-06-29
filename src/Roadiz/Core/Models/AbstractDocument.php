@@ -144,8 +144,8 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      */
     public function getShortMimeType(): string
     {
-        if (null !== $this->getMimeType()) {
-            $mime = explode('/', $this->getMimeType() ?? '');
+        if (!empty($this->getMimeType())) {
+            $mime = explode('/', $this->getMimeType());
             return $mime[count($mime) - 1];
         }
         return 'unknown';
