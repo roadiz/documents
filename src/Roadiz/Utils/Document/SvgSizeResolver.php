@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\Document;
@@ -37,7 +38,8 @@ final class SvgSizeResolver
             return 0;
         }
 
-        if (null !== $width
+        if (
+            null !== $width
             && $width->textContent !== ""
             && false === strpos($width->textContent, '%')
         ) {
@@ -65,7 +67,8 @@ final class SvgSizeResolver
             return 0;
         }
 
-        if (null !== $height
+        if (
+            null !== $height
             && $height->textContent !== ""
             && false === strpos($height->textContent, '%')
         ) {

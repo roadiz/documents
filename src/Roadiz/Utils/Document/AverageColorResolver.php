@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\Document;
@@ -25,6 +26,8 @@ class AverageColorResolver
     public function getAverageColorAsArray(Image $image): array
     {
         $image->resize(1, 1);
-        return $image->pickColor(0, 0);
+        /** @var array $array */
+        $array = $image->pickColor(0, 0);
+        return $array;
     }
 }

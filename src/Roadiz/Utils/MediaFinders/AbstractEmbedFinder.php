@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -110,7 +111,12 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
                 $rawFeed = $rawFeed->getContents();
             }
             if (null !== $rawFeed) {
-                $this->feed = json_decode($rawFeed, true) ?? null;
+                $feed = json_decode($rawFeed, true);
+                if (is_array($feed)) {
+                    $this->feed = $feed;
+                } else {
+                    $this->feed = null;
+                }
             }
         }
         return $this->feed;
@@ -188,7 +194,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
              * Default height is defined to 16:10
              */
             if ($options['height'] === 0) {
-                $attributes['height'] = (int)(($options['width']*10)/16);
+                $attributes['height'] = (int)(($options['width'] * 10) / 16);
             }
         }
 
@@ -222,11 +228,11 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
             if ($value == '' || $value === true) {
                 $htmlAttrs[] = $key;
             } else {
-                $htmlAttrs[] = $key.'="'.addslashes((string) $value).'"';
+                $htmlAttrs[] = $key . '="' . addslashes((string) $value) . '"';
             }
         }
 
-        return '<iframe '.implode(' ', $htmlAttrs).'></iframe>';
+        return '<iframe ' . implode(' ', $htmlAttrs) . '></iframe>';
     }
 
     /**
@@ -396,7 +402,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      */
     public function getThumbnailName(string $pathinfo): string
     {
-        return $this->embedId.'_'.$pathinfo;
+        return $this->embedId . '_' . $pathinfo;
     }
 
     /**

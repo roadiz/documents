@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Document\EventSubscriber;
@@ -28,7 +29,7 @@ abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterfac
         $this->logger = $logger ?? new NullLogger();
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             DocumentImageUploadedEvent::class => ['onImageUploaded', 101], // read EXIF before processing Raw documents
@@ -92,7 +93,7 @@ abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterfac
      * @param  array $exif
      * @return string|null
      */
-    protected function getCopyright(array $exif)
+    protected function getCopyright(array $exif): ?string
     {
         foreach ($exif as $key => $section) {
             if (is_array($section)) {
@@ -111,7 +112,7 @@ abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterfac
      * @param  array $exif
      * @return string|null
      */
-    protected function getDescription(array $exif)
+    protected function getDescription(array $exif): ?string
     {
         foreach ($exif as $key => $section) {
             if (is_string($section) && strtolower($key) == 'imagedescription') {

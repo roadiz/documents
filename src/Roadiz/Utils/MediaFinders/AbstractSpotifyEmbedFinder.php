@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -8,7 +9,11 @@ use RZ\Roadiz\Core\Exceptions\InvalidEmbedId;
 abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
 {
     protected static string $platform = 'spotify';
+    // https://open.spotify.com/track/6U67bz1ggGoOUllUOvfKFF
+    // https://open.spotify.com/embed/track/6U67bz1ggGoOUllUOvfKFF
     protected static string $idPattern = '#^https\:\/\/open\.spotify\.com\/(?<type>track|playlist|artist|album|show|episode)\/(?<id>[a-zA-Z0-9]+)#';
+    protected static string $realIdPattern = '#^(?<type>track|playlist|artist|album|show|episode)\/(?<id>[a-zA-Z0-9]+)$#';
+    protected ?string $embedUrl;
 
     /**
      * @inheritDoc
@@ -16,6 +21,9 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
     protected function validateEmbedId(string $embedId = ""): string
     {
         if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
+            return $embedId;
+        }
+        if (preg_match(static::$realIdPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
@@ -26,13 +34,35 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaFeed($search = null)
     {
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
+            $url = 'https://open.spotify.com/' . $this->embedId;
+        } else {
+            $url = $this->embedId;
+        }
         $endpoint = "https://embed.spotify.com/oembed";
         $query = [
-            'url' => $this->embedId,
+            'url' => $url,
             'format' => 'json',
         ];
 
         return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFeed()
+    {
+        $feed = parent::getFeed();
+        /*
+         * We need to extract REAL embedId from oEmbed response, from the HTML field.
+         */
+        $this->embedUrl = $this->embedId;
+        if (preg_match(static::$idPattern, $this->embedId, $matches)) {
+            $this->embedId = $matches['type'] . '/' . $matches['id'];
+        }
+
+        return $feed;
     }
 
     /**
@@ -59,7 +89,7 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
     public function getMediaCopyright(): string
     {
         $feed = $this->getFeed();
-        return is_array($feed) ? $feed['provider_name'] . ' (' . $feed['provider_url']. ')' : '';
+        return is_array($feed) ? $feed['provider_name'] . ' (' . $feed['provider_url'] . ')' : '';
     }
 
     /**
@@ -83,6 +113,9 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
         if (preg_match(static::$idPattern, $this->embedId, $matches) === 1) {
             return $matches['type'] . '_' . $matches['id'] . $pathinfo;
         }
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches) === 1) {
+            return $matches['type'] . '_' . $matches['id'] . $pathinfo;
+        }
         throw new InvalidEmbedId($this->embedId, static::$platform);
     }
 
@@ -97,6 +130,9 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
     {
         parent::getSource($options);
 
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
+            return 'https://open.spotify.com/embed/' . $this->embedId;
+        }
         if (preg_match(static::$idPattern, $this->embedId, $matches)) {
             return 'https://open.spotify.com/embed/' . $matches['type'] . '/' . $matches['id'];
         }

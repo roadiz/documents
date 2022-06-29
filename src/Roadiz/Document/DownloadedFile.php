@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Document;
@@ -69,7 +70,7 @@ class DownloadedFile extends File
             $local->close();
 
             $file = new static($tmpFile);
-            if (null !== $originalName && !empty($originalName)) {
+            if (!empty($originalName)) {
                 $file->setOriginalFilename($originalName);
             } else {
                 $file->setOriginalFilename($baseName);
@@ -78,7 +79,7 @@ class DownloadedFile extends File
              * Some OEmbed providers won't add any extension in original filename.
              */
             if ($file->getExtension() === '' && null !== $guessedExtension = $file->guessExtension()) {
-                $file->setOriginalFilename($file->getOriginalFilename().'.'.$guessedExtension);
+                $file->setOriginalFilename($file->getOriginalFilename() . '.' . $guessedExtension);
             }
 
             if ($file->isReadable() && filesize($file->getPathname()) > 0) {

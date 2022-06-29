@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Document\Renderer;
@@ -21,7 +22,8 @@ class EmbedRenderer implements RendererInterface
 
     public function supports(DocumentInterface $document, array $options): bool
     {
-        if ($document->isEmbed()
+        if (
+            $document->isEmbed()
             && $this->embedFinderFactory->supports($document->getEmbedPlatform())
             && isset($options['embed'])
             && $options['embed'] === true
@@ -44,7 +46,7 @@ class EmbedRenderer implements RendererInterface
             }
             return '';
         } catch (InvalidEmbedId $exception) {
-            return '<p>'.$exception->getMessage().'</p>';
+            return '<p>' . $exception->getMessage() . '</p>';
         }
     }
 }

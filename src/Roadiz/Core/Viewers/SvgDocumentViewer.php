@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Core\Viewers;
@@ -75,6 +76,7 @@ class SvgDocumentViewer
 
     /**
      * @return string
+     * @throws \Exception
      */
     protected function getInlineSvg(): string
     {
@@ -102,11 +104,11 @@ class SvgDocumentViewer
     }
 
     /**
-     * @param  string $svg
+     * @param string $svg
      * @return string
      * @throws \Exception
      */
-    protected function injectAttributes($svg): string
+    protected function injectAttributes(string $svg): string
     {
         $attributes = $this->getAllowedAttributes();
         if (count($attributes) > 0) {

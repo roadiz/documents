@@ -1,15 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\Document;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RZ\Roadiz\Core\Events\DocumentFileUploadedEvent;
 use RZ\Roadiz\Core\Events\DocumentImageUploadedEvent;
 use RZ\Roadiz\Core\Events\DocumentSvgUploadedEvent;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Core\Models\FileHashInterface;
 use RZ\Roadiz\Core\Models\FolderInterface;
 use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Asset\Packages;
@@ -96,7 +97,8 @@ abstract class AbstractDocumentFactory
      */
     protected function parseSvgMimeType(DocumentInterface $document): void
     {
-        if (($document->getMimeType() == "text/plain"
+        if (
+            ($document->getMimeType() == "text/plain"
             || $document->getMimeType() == 'text/html')
             && preg_match('#\.svg$#', $document->getFilename())
         ) {
@@ -116,6 +118,11 @@ abstract class AbstractDocumentFactory
      * @param DocumentInterface $document
      */
     abstract protected function persistDocument(DocumentInterface $document): void;
+
+    protected function getHashAlgorithm(): string
+    {
+        return 'sha256';
+    }
 
     /**
      * Create a document from UploadedFile, Be careful, this method does not flush, only
@@ -142,11 +149,20 @@ abstract class AbstractDocumentFactory
             }
             $document->setFilename($this->getFileName());
             if ($file instanceof UploadedFile) {
-                $document->setMimeType($file->getClientMimeType() ?? '');
+                $document->setMimeType($file->getClientMimeType());
             } else {
                 $document->setMimeType($file->getMimeType() ?? '');
             }
             $this->parseSvgMimeType($document);
+
+            if (
+                $document instanceof FileHashInterface &&
+                false !== $fileHash = hash_file($this->getHashAlgorithm(), $file->getPathname())
+            ) {
+                $document->setFileHash($fileHash);
+                $document->setFileHashAlgorithm($this->getHashAlgorithm());
+            }
+
             if ($document->getFilename() !== '') {
                 $file->move(
                     $this->packages->getDocumentFolderPath($document),
@@ -200,7 +216,8 @@ abstract class AbstractDocumentFactory
         $file = $this->getFile();
         $fs = new Filesystem();
 
-        if ($file instanceof UploadedFile
+        if (
+            $file instanceof UploadedFile
             && !$file->isValid()
         ) {
             return $document;
@@ -234,7 +251,7 @@ abstract class AbstractDocumentFactory
 
         $document->setFilename($this->getFileName());
         if ($file instanceof UploadedFile) {
-            $document->setMimeType($file->getClientMimeType() ?? '');
+            $document->setMimeType($file->getClientMimeType());
         } else {
             $document->setMimeType($file->getMimeType() ?? '');
         }
@@ -259,7 +276,8 @@ abstract class AbstractDocumentFactory
 
         if ($file instanceof UploadedFile) {
             $fileName = $file->getClientOriginalName();
-        } elseif ($file instanceof DownloadedFile
+        } elseif (
+            $file instanceof DownloadedFile
             && $file->getOriginalFilename() !== null
             && $file->getOriginalFilename() !== ''
         ) {
@@ -282,7 +300,7 @@ abstract class AbstractDocumentFactory
     {
         @trigger_error(
             'AbstractDocumentFactory::downloadFileFromUrl method is deprecated.' .
-                ' Use '.DownloadedFile::class.'::fromUrl($url)',
+                ' Use ' . DownloadedFile::class . '::fromUrl($url)',
             E_USER_DEPRECATED
         );
         return DownloadedFile::fromUrl($url, $thumbnailName);

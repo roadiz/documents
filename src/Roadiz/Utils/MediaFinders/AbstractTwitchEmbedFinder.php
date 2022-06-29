@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -46,7 +47,7 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
 
     public function getMediaCopyright(): string
     {
-        return ($this->getFeed()['author_name'] ?? '') . ' - ' . ($this->getFeed()['provider_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? ''). ')';
+        return ($this->getFeed()['author_name'] ?? '') . ' - ' . ($this->getFeed()['provider_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? '') . ')';
     }
 
     public function getThumbnailURL(): string
@@ -89,7 +90,7 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
                 $queryString['playsinline'] = (int) $options['autoplay'];
             }
 
-            return 'https://player.twitch.tv/?'.http_build_query($queryString);
+            return 'https://player.twitch.tv/?' . http_build_query($queryString);
         }
 
         return $this->embedId;

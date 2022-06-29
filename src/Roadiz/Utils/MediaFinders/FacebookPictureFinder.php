@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -23,14 +25,18 @@ class FacebookPictureFinder
     }
 
     /**
-     * @return string Facebook profile image URL or FALSE
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return string|null Facebook profile image URL
+     * @throws GuzzleException
      */
-    public function getPictureUrl(): string
+    public function getPictureUrl(): ?string
     {
         $client = new Client();
-        $this->response = $client->get('http://graph.facebook.com/'.$this->facebookUserAlias.'/picture?redirect=false&width=200&height=200');
+        $this->response = $client->get('http://graph.facebook.com/' . $this->facebookUserAlias . '/picture?redirect=false&width=200&height=200');
         $json = json_decode($this->response->getBody()->getContents(), true);
-        return $json['data']['url'];
+
+        if (is_array($json) && isset($json['data']) && !empty($json['data']['url'])) {
+            return $json['data']['url'];
+        }
+        return null;
     }
 }

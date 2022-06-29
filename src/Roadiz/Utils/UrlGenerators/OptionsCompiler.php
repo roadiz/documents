@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\UrlGenerators;
@@ -84,7 +85,8 @@ class OptionsCompiler
             'br' => 'bottom-right',
         ];
         $availablePositionShort = array_flip($availablePosition);
-        if (null !== $this->options['align']
+        if (
+            null !== $this->options['align']
             && isset($availablePositionShort[$this->options['align']])
         ) {
             $shortOptions['a'] = 'a' . $availablePositionShort[$this->options['align']];

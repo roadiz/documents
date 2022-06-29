@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Utils\MediaFinders;
@@ -128,6 +129,6 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
             $queryString['light'] = 1;
         }
 
-        return 'https://www.mixcloud.com/widget/iframe/?'.http_build_query($queryString);
+        return 'https://www.mixcloud.com/widget/iframe/?' . http_build_query($queryString);
     }
 }

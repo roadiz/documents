@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Document\Renderer;
@@ -22,8 +23,12 @@ class ImageRenderer extends AbstractImageRenderer
         /*
          * Override image by its first thumbnail if existing
          */
-        if (!$options['no_thumbnail'] && $document instanceof HasThumbnailInterface && $document->hasThumbnails()) {
-            $document = $document->getThumbnails()->first();
+        if (
+            !$options['no_thumbnail'] &&
+            $document instanceof HasThumbnailInterface &&
+            false !== $thumbnail = $document->getThumbnails()->first()
+        ) {
+            $document = $thumbnail;
         }
 
         $assignation = array_merge(
@@ -38,7 +43,8 @@ class ImageRenderer extends AbstractImageRenderer
         $assignation['sizes'] = $this->parseSizes($options);
         $assignation['srcset'] = $this->parseSrcSet($document, $options);
 
-        if (null === $assignation['sizes']
+        if (
+            null === $assignation['sizes']
             && $document instanceof AdvancedDocumentInterface
             && $document->getImageWidth() > 0
             && $document->getImageHeight() > 0

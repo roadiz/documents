@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace RZ\Roadiz\TwigExtension;
@@ -47,7 +48,7 @@ final class DocumentExtension extends AbstractExtension
     /**
      * @return array
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('display', [$this, 'display'], ['is_safe' => ['html']]),
@@ -66,7 +67,7 @@ final class DocumentExtension extends AbstractExtension
      * @param  int        $precision
      * @return string
      */
-    public function formatBytes($bytes, int $precision = 2)
+    public function formatBytes($bytes, int $precision = 2): string
     {
         $size = ['B','kB','MB','GB','TB','PB','EB','ZB','YB'];
         $factor = floor((strlen((string) $bytes) - 1) / 3);
@@ -89,7 +90,8 @@ final class DocumentExtension extends AbstractExtension
         }
 
         try {
-            if (null !== $document->getEmbedPlatform()
+            if (
+                null !== $document->getEmbedPlatform()
                 && $this->embedFinderFactory->supports($document->getEmbedPlatform())
             ) {
                 return $this->embedFinderFactory->createForPlatform(
@@ -115,7 +117,7 @@ final class DocumentExtension extends AbstractExtension
      * @return string
      * @throws RuntimeError
      */
-    public function display(DocumentInterface $document = null, ?array $options = [])
+    public function display(DocumentInterface $document = null, ?array $options = []): string
     {
         if (null === $document) {
             if ($this->throwExceptions) {
@@ -133,7 +135,7 @@ final class DocumentExtension extends AbstractExtension
             if ($this->throwExceptions) {
                 throw new RuntimeError($embedException->getMessage());
             } else {
-                return '<p>'.$embedException->getMessage().'</p>';
+                return '<p>' . $embedException->getMessage() . '</p>';
             }
         } catch (InvalidArgumentException $e) {
             throw new RuntimeError($e->getMessage(), -1, null, $e);
@@ -151,7 +153,7 @@ final class DocumentExtension extends AbstractExtension
      * @return null|string
      * @throws RuntimeError
      */
-    public function getImageOrientation(SizeableInterface $document = null)
+    public function getImageOrientation(SizeableInterface $document = null): ?string
     {
         if (null === $document) {
             if ($this->throwExceptions) {
@@ -166,10 +168,10 @@ final class DocumentExtension extends AbstractExtension
 
     /**
      * @param  SizeableInterface |null $document
-     * @return array
+     * @return array<string, int>
      * @throws RuntimeError
      */
-    public function getImageSize(SizeableInterface $document = null)
+    public function getImageSize(SizeableInterface $document = null): array
     {
         if (null === $document) {
             if ($this->throwExceptions) {
@@ -192,7 +194,7 @@ final class DocumentExtension extends AbstractExtension
      * @return float
      * @throws RuntimeError
      */
-    public function getImageRatio(SizeableInterface $document = null)
+    public function getImageRatio(SizeableInterface $document = null): float
     {
         if (null === $document) {
             if ($this->throwExceptions) {
@@ -213,7 +215,7 @@ final class DocumentExtension extends AbstractExtension
      * @param  DocumentInterface|null $document
      * @return null|string
      */
-    public function getPath(DocumentInterface $document = null)
+    public function getPath(DocumentInterface $document = null): ?string
     {
         if (null !== $document && $document->isLocal()) {
             return $this->assetPackages->getDocumentFilePath($document);
@@ -226,7 +228,7 @@ final class DocumentExtension extends AbstractExtension
      * @param  DocumentInterface|null $document
      * @return bool
      */
-    public function exists(DocumentInterface $document = null)
+    public function exists(DocumentInterface $document = null): bool
     {
         if (null !== $document && $document->isLocal()) {
             $fs = new Filesystem();
