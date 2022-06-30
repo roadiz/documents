@@ -8,6 +8,7 @@ use RZ\Roadiz\Core\Exceptions\DocumentWithoutFileException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\FileAwareInterface;
 use Symfony\Component\Asset\Context\RequestStackContext;
+use Symfony\Component\Asset\PackageInterface;
 use Symfony\Component\Asset\Packages as BasePackages;
 use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\UrlPackage;
@@ -118,7 +119,7 @@ class Packages extends BasePackages
     /**
      * @inheritDoc
      */
-    public function getPackage($name = null)
+    public function getPackage($name = null): PackageInterface
     {
         if (false === $this->ready) {
             $this->initializePackages();
@@ -130,7 +131,7 @@ class Packages extends BasePackages
     /**
      * @return bool
      */
-    public function useStaticDomain()
+    public function useStaticDomain(): bool
     {
         return $this->staticDomain != "";
     }
@@ -138,7 +139,7 @@ class Packages extends BasePackages
     /**
      * @return string
      */
-    protected function getStaticDomainAndPort()
+    protected function getStaticDomainAndPort(): string
     {
         /*
          * Add non-default port to static domain.
@@ -169,7 +170,7 @@ class Packages extends BasePackages
     /**
      * @return PathPackage|UrlPackage
      */
-    protected function getDefaultPackage()
+    protected function getDefaultPackage(): PackageInterface
     {
         if ($this->useStaticDomain()) {
             return new UrlPackage(
@@ -188,7 +189,7 @@ class Packages extends BasePackages
     /**
      * @return PathPackage|UrlPackage
      */
-    protected function getAbsoluteDefaultPackage()
+    protected function getAbsoluteDefaultPackage(): PackageInterface
     {
         if ($this->useStaticDomain()) {
             return $this->getDefaultPackage();
@@ -206,7 +207,7 @@ class Packages extends BasePackages
     /**
      * @return PathPackage|UrlPackage
      */
-    protected function getDocumentPackage()
+    protected function getDocumentPackage(): PackageInterface
     {
         if ($this->useStaticDomain()) {
             return new UrlPackage(
@@ -225,7 +226,7 @@ class Packages extends BasePackages
     /**
      * @return PathPackage|UrlPackage
      */
-    protected function getAbsoluteDocumentPackage()
+    protected function getAbsoluteDocumentPackage(): PackageInterface
     {
         if ($this->useStaticDomain()) {
             return $this->getDocumentPackage();
@@ -243,7 +244,7 @@ class Packages extends BasePackages
     /**
      * @return PathPackage
      */
-    protected function getPublicPathPackage()
+    protected function getPublicPathPackage(): PathPackage
     {
         return new PathPackage(
             $this->fileAware->getPublicFilesPath(),
@@ -254,7 +255,7 @@ class Packages extends BasePackages
     /**
      * @return PathPackage
      */
-    protected function getPrivatePathPackage()
+    protected function getPrivatePathPackage(): PathPackage
     {
         return new PathPackage(
             $this->fileAware->getPrivateFilesPath(),
@@ -265,7 +266,7 @@ class Packages extends BasePackages
     /**
      * @return PathPackage
      */
-    protected function getFontsPathPackage()
+    protected function getFontsPathPackage(): PathPackage
     {
         return new PathPackage(
             $this->fileAware->getFontsFilesPath(),
@@ -279,7 +280,7 @@ class Packages extends BasePackages
      * @param  string $relativePath
      * @return string
      */
-    public function getFontsPath($relativePath)
+    public function getFontsPath(string $relativePath): string
     {
         return $this->getUrl($relativePath, static::FONTS_PATH);
     }
@@ -290,7 +291,7 @@ class Packages extends BasePackages
      * @param  string $relativePath
      * @return string
      */
-    public function getPublicFilesPath($relativePath)
+    public function getPublicFilesPath(string $relativePath): string
     {
         return $this->getUrl($relativePath, static::PUBLIC_PATH);
     }
@@ -301,7 +302,7 @@ class Packages extends BasePackages
      * @param  string $relativePath
      * @return string
      */
-    public function getPrivateFilesPath($relativePath)
+    public function getPrivateFilesPath(string $relativePath): string
     {
         return $this->getUrl($relativePath, static::PRIVATE_PATH);
     }
@@ -311,7 +312,7 @@ class Packages extends BasePackages
      * @return string Document file absolute path according if document is private or not.
      * @throws DocumentWithoutFileException
      */
-    public function getDocumentFilePath(DocumentInterface $document)
+    public function getDocumentFilePath(DocumentInterface $document): string
     {
         if (!$document->isLocal()) {
             throw new DocumentWithoutFileException($document);
@@ -327,7 +328,7 @@ class Packages extends BasePackages
      * @return string Document folder absolute path according if document is private or not.
      * @throws DocumentWithoutFileException
      */
-    public function getDocumentFolderPath(DocumentInterface $document)
+    public function getDocumentFolderPath(DocumentInterface $document): string
     {
         if (!$document->isLocal()) {
             throw new DocumentWithoutFileException($document);
@@ -341,7 +342,7 @@ class Packages extends BasePackages
     /**
      * @return string
      */
-    public function getStaticDomain()
+    public function getStaticDomain(): string
     {
         return $this->staticDomain;
     }
@@ -350,7 +351,7 @@ class Packages extends BasePackages
      * @param  string $staticDomain
      * @return Packages
      */
-    public function setStaticDomain($staticDomain)
+    public function setStaticDomain(string $staticDomain): Packages
     {
         $this->staticDomain = $staticDomain;
         return $this;
@@ -359,7 +360,7 @@ class Packages extends BasePackages
     /**
      * @return null|Request
      */
-    protected function getRequest()
+    protected function getRequest(): ?Request
     {
         return $this->requestStack->getMainRequest();
     }
