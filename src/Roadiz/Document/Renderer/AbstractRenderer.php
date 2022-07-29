@@ -6,6 +6,7 @@ namespace RZ\Roadiz\Document\Renderer;
 
 use RZ\Roadiz\Core\Exceptions\DocumentWithoutFileException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
+use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\UrlOptionsResolver;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
 use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
@@ -13,6 +14,7 @@ use Twig\Environment;
 
 abstract class AbstractRenderer implements RendererInterface
 {
+    protected Packages $packages;
     protected Environment $templating;
     protected DocumentUrlGeneratorInterface $documentUrlGenerator;
     protected string $templateBasePath;
@@ -20,15 +22,18 @@ abstract class AbstractRenderer implements RendererInterface
     protected ViewOptionsResolver $viewOptionsResolver;
 
     /**
-     * @param Environment                   $templating
+     * @param Packages $packages
+     * @param Environment $templating
      * @param DocumentUrlGeneratorInterface $documentUrlGenerator
-     * @param string                        $templateBasePath
+     * @param string $templateBasePath
      */
     public function __construct(
+        Packages $packages,
         Environment $templating,
         DocumentUrlGeneratorInterface $documentUrlGenerator,
         string $templateBasePath = 'documents'
     ) {
+        $this->packages = $packages;
         $this->templating = $templating;
         $this->documentUrlGenerator = $documentUrlGenerator;
         $this->templateBasePath = $templateBasePath;
@@ -64,5 +69,36 @@ abstract class AbstractRenderer implements RendererInterface
     protected function renderHtmlElement(string $template, array $assignation): string
     {
         return $this->templating->render($this->templateBasePath . '/' . $template, $assignation);
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @param iterable<DocumentInterface> $sourcesDocs
+     * @return array
+     */
+    protected function getSourcesFilesArray(DocumentInterface $document, iterable $sourcesDocs): array
+    {
+        $sources = [];
+
+        /**
+         * @var DocumentInterface $source
+         */
+        foreach ($sourcesDocs as $source) {
+            $sources[$source->getMimeType()] = [
+                'mime' => $source->getMimeType(),
+                'url' => $this->packages->getUrl($source->getRelativePath() ?? '', Packages::DOCUMENTS),
+            ];
+        }
+        krsort($sources);
+
+        if (count($sources) === 0) {
+            // If exotic extension, fallbacks using original file
+            $sources[$document->getMimeType()] = [
+                'mime' => $document->getMimeType(),
+                'url' => $this->packages->getUrl($document->getRelativePath() ?? '', Packages::DOCUMENTS),
+            ];
+        }
+
+        return $sources;
     }
 }

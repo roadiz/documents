@@ -30,6 +30,7 @@ class PdfRenderer extends atoum
 
         $this
             ->given($renderer = $this->newTestedInstance(
+                $this->getPackages(),
                 $this->getEnvironment(),
                 $this->getUrlGenerator()
             ))
@@ -56,6 +57,7 @@ class PdfRenderer extends atoum
 
         $this
             ->given($renderer = $this->newTestedInstance(
+                $this->getPackages(),
                 $this->getEnvironment(),
                 $this->getUrlGenerator()
             ))

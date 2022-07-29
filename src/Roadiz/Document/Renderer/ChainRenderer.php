@@ -34,7 +34,7 @@ class ChainRenderer implements RendererInterface
      *
      * @return $this
      */
-    public function addRenderer(RendererInterface $renderer)
+    public function addRenderer(RendererInterface $renderer): ChainRenderer
     {
         $this->renderers[] = $renderer;
         return $this;

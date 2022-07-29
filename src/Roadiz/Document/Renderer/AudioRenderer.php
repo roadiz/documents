@@ -12,7 +12,6 @@ use Twig\Environment;
 
 class AudioRenderer extends AbstractRenderer
 {
-    protected Packages $packages;
     protected DocumentFinderInterface $documentFinder;
 
     /**
@@ -29,8 +28,7 @@ class AudioRenderer extends AbstractRenderer
         DocumentUrlGeneratorInterface $documentUrlGenerator,
         string $templateBasePath = 'documents'
     ) {
-        parent::__construct($templating, $documentUrlGenerator, $templateBasePath);
-        $this->packages = $packages;
+        parent::__construct($packages, $templating, $documentUrlGenerator, $templateBasePath);
         $this->documentFinder = $documentFinder;
     }
 
@@ -41,9 +39,12 @@ class AudioRenderer extends AbstractRenderer
 
     /**
      * @param DocumentInterface $document
-     * @param array             $options
+     * @param array $options
      *
      * @return string
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function render(DocumentInterface $document, array $options): string
     {
@@ -69,38 +70,10 @@ class AudioRenderer extends AbstractRenderer
         if (!$document->isLocal()) {
             return [];
         }
-        $basename = pathinfo($document->getFilename());
-        $basename = $basename['filename'];
 
-        $sources = [];
-        $sourcesDocsName = [
-            $basename . '.mp3',
-            $basename . '.ogg',
-            $basename . '.wav',
-            $basename . '.m4a',
-            $basename . '.aac',
-        ];
-
-        $sourcesDocs = $this->documentFinder->findAllByFilenames($sourcesDocsName);
-        if (count($sourcesDocs) > 0) {
-            /**
-             * @var DocumentInterface $source
-             */
-            foreach ($sourcesDocs as $source) {
-                $sources[$source->getMimeType()] = [
-                    'mime' => $source->getMimeType(),
-                    'url' => $this->packages->getUrl($source->getRelativePath() ?? '', Packages::DOCUMENTS),
-                ];
-            }
-            krsort($sources);
-        } else {
-            // If exotic extension, fallbacks using original file
-            $sources[$document->getMimeType()] = [
-                'mime' => $document->getMimeType(),
-                'url' => $this->packages->getUrl($document->getRelativePath() ?? '', Packages::DOCUMENTS),
-            ];
-        }
-
-        return $sources;
+        return $this->getSourcesFilesArray(
+            $document,
+            $this->documentFinder->findAudiosWithFilename($document->getFilename())
+        );
     }
 }
