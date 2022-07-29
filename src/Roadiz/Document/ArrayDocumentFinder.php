@@ -13,7 +13,7 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
  *
  * @package RZ\Roadiz\Document
  */
-final class ArrayDocumentFinder implements DocumentFinderInterface
+final class ArrayDocumentFinder extends AbstractDocumentFinder
 {
     /**
      * @var Collection<int,DocumentInterface>

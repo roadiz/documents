@@ -12,9 +12,30 @@ interface DocumentFinderInterface
     /**
      * @param array<string> $fileNames
      *
-     * @return array<DocumentInterface>|Collection<DocumentInterface>
+     * @return iterable<DocumentInterface>
      */
-    public function findAllByFilenames(array $fileNames);
+    public function findAllByFilenames(array $fileNames): iterable;
+
+    /**
+     * @param string $fileName
+     *
+     * @return iterable<DocumentInterface>
+     */
+    public function findVideosWithFilename(string $fileName): iterable;
+
+    /**
+     * @param string $fileName
+     *
+     * @return iterable<DocumentInterface>
+     */
+    public function findAudiosWithFilename(string $fileName): iterable;
+
+    /**
+     * @param string $fileName
+     *
+     * @return iterable<DocumentInterface>
+     */
+    public function findPicturesWithFilename(string $fileName): iterable;
 
     /**
      * @param array<string> $fileNames

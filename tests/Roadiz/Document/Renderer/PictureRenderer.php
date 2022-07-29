@@ -40,6 +40,7 @@ class PictureRenderer extends atoum
 
         $this
             ->given($renderer = $this->newTestedInstance(
+                $this->getPackages(),
                 $this->getEmbedFinderFactory(),
                 $this->getEnvironment(),
                 $this->getUrlGenerator()
@@ -79,6 +80,7 @@ class PictureRenderer extends atoum
 
         $this
             ->given($renderer = $this->newTestedInstance(
+                $this->getPackages(),
                 $this->getEmbedFinderFactory(),
                 $this->getEnvironment(),
                 $this->getUrlGenerator()
@@ -123,6 +125,7 @@ class PictureRenderer extends atoum
 
         $this
             ->given($renderer = $this->newTestedInstance(
+                $this->getPackages(),
                 $this->getEmbedFinderFactory(),
                 $this->getEnvironment(),
                 $this->getUrlGenerator()

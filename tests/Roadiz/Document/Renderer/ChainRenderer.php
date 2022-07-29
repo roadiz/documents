@@ -48,9 +48,9 @@ class ChainRenderer extends atoum
         $renderers = [
             new Renderer\InlineSvgRenderer($this->getPackages()),
             new Renderer\SvgRenderer($this->getPackages()),
-            new Renderer\PdfRenderer($this->getEnvironment(), $this->getUrlGenerator()),
-            new Renderer\ImageRenderer($this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
-            new Renderer\PictureRenderer($this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\PdfRenderer($this->getPackages(), $this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\ImageRenderer($this->getPackages(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\PictureRenderer($this->getPackages(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
             new Renderer\EmbedRenderer($this->getEmbedFinderFactory()),
         ];
 

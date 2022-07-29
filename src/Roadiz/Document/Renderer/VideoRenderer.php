@@ -13,7 +13,6 @@ use Twig\Environment;
 
 class VideoRenderer extends AbstractRenderer
 {
-    protected Packages $packages;
     protected DocumentFinderInterface $documentFinder;
 
     /**
@@ -30,8 +29,7 @@ class VideoRenderer extends AbstractRenderer
         DocumentUrlGeneratorInterface $documentUrlGenerator,
         string $templateBasePath = 'documents'
     ) {
-        parent::__construct($templating, $documentUrlGenerator, $templateBasePath);
-        $this->packages = $packages;
+        parent::__construct($packages, $templating, $documentUrlGenerator, $templateBasePath);
         $this->documentFinder = $documentFinder;
     }
 
@@ -40,6 +38,11 @@ class VideoRenderer extends AbstractRenderer
         return $document->isVideo();
     }
 
+    /**
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     * @throws \Twig\Error\LoaderError
+     */
     public function render(DocumentInterface $document, array $options): string
     {
         $options = $this->viewOptionsResolver->resolve($options);
@@ -90,20 +93,10 @@ class VideoRenderer extends AbstractRenderer
         if (!$document->isLocal()) {
             return null;
         }
-        $basename = pathinfo($document->getFilename());
-        $basename = $basename['filename'];
 
-        $sourcesDocsName = [
-            $basename . '.jpg',
-            $basename . '.gif',
-            $basename . '.png',
-            $basename . '.jpeg',
-            $basename . '.webp',
-        ];
+        $sourcesDocs = $this->documentFinder->findPicturesWithFilename($document->getFilename());
 
-        $sourcesDoc = $this->documentFinder->findOneByFilenames($sourcesDocsName);
-
-        if (null !== $sourcesDoc) {
+        foreach ($sourcesDocs as $sourcesDoc) {
             $this->documentUrlGenerator->setOptions($options);
             $this->documentUrlGenerator->setDocument($sourcesDoc);
             return $this->documentUrlGenerator->getUrl($absolute);
@@ -127,39 +120,10 @@ class VideoRenderer extends AbstractRenderer
         if (!$document->isLocal()) {
             return [];
         }
-        $basename = pathinfo($document->getFilename());
-        $basename = $basename['filename'];
 
-        $sources = [];
-        $sourcesDocsName = [
-            $basename . '.ogg',
-            $basename . '.ogv',
-            $basename . '.mp4',
-            $basename . '.mov',
-            $basename . '.webm',
-            $basename . '.mkv',
-        ];
-
-        $sourcesDocs = $this->documentFinder->findAllByFilenames($sourcesDocsName);
-        if (count($sourcesDocs) > 0) {
-            /**
-             * @var DocumentInterface $source
-             */
-            foreach ($sourcesDocs as $source) {
-                $sources[$source->getMimeType()] = [
-                    'mime' => $source->getMimeType(),
-                    'url' => $this->packages->getUrl($source->getRelativePath() ?? '', Packages::DOCUMENTS),
-                ];
-            }
-            krsort($sources);
-        } else {
-            // If exotic extension, fallbacks using original file
-            $sources[$document->getMimeType()] = [
-                'mime' => $document->getMimeType(),
-                'url' => $this->packages->getUrl($document->getRelativePath() ?? '', Packages::DOCUMENTS),
-            ];
-        }
-
-        return $sources;
+        return $this->getSourcesFilesArray(
+            $document,
+            $this->documentFinder->findVideosWithFilename($document->getFilename())
+        );
     }
 }
