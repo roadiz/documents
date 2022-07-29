@@ -1,3 +1,9 @@
+## 2.0.2 (2022-07-29)
+
+### Features
+
+* Added AbstractDocumentFinder to hold video, audio and picture document finding logic ([9f7d1bd](https://github.com/roadiz/documents/commit/9f7d1bdb68ea6c8e33ff6228652683d1673c58a2))
+
 ## 2.0.1 (2022-06-30)
 
 ## 2.0.0 (2022-06-29)
