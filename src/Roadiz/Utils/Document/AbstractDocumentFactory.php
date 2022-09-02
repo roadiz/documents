@@ -81,7 +81,7 @@ abstract class AbstractDocumentFactory
     }
 
     /**
-     * @param  FolderInterface|null $folder
+     * @param FolderInterface|null $folder
      * @return AbstractDocumentFactory
      */
     public function setFolder(?FolderInterface $folder = null)
@@ -98,13 +98,10 @@ abstract class AbstractDocumentFactory
     protected function parseSvgMimeType(DocumentInterface $document): void
     {
         if (
-            ($document->getMimeType() == "text/plain"
-            || $document->getMimeType() == 'text/html')
-            && preg_match('#\.svg$#', $document->getFilename())
+            ($document->getMimeType() === 'text/plain' || $document->getMimeType() === 'text/html') &&
+            preg_match('#\.svg$#', $document->getFilename())
         ) {
-            if (null !== $this->logger) {
-                $this->logger->debug('Uploaded a SVG without xml declaration. Presuming it’s a valid SVG file.');
-            }
+            $this->logger->debug('Uploaded a SVG without xml declaration. Presuming it’s a valid SVG file.');
             $document->setMimeType('image/svg+xml');
         }
     }

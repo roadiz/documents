@@ -125,7 +125,12 @@ abstract class AbstractImageRenderer extends AbstractRenderer
         [$r, $g, $b] = $hexColorArray;
         $im = \imageCreateTrueColor($width, $height);
         if ($im) {
-            \imageFill($im, 0, 0, \imageColorAllocate($im, $r, $g, $b) ?: 0);
+            \imageFill(
+                $im,
+                0,
+                0,
+                \imageColorAllocate($im, $r ?? 0, $g ?? 0, $b ?? 0) ?: 0
+            );
             \ob_start();
             \imagejpeg($im, null, 30);
             $img = \ob_get_contents();
