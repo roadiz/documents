@@ -21,21 +21,21 @@ class DownscaleImageManager
     protected ?LoggerInterface $logger;
     protected int $maxPixelSize = 0;
     protected string $rawImageSuffix = ".raw";
-    protected ImageManager $manager;
+    protected ImageManager $imageManager;
 
     /**
      * @param EntityManagerInterface $em
-     * @param Packages               $packages
-     * @param LoggerInterface|null   $logger
-     * @param string                 $imageDriver
-     * @param int                    $maxPixelSize
-     * @param string                 $rawImageSuffix
+     * @param Packages $packages
+     * @param ImageManager $imageManager
+     * @param LoggerInterface|null $logger
+     * @param int $maxPixelSize
+     * @param string $rawImageSuffix
      */
     public function __construct(
         EntityManagerInterface $em,
         Packages $packages,
+        ImageManager $imageManager,
         ?LoggerInterface $logger = null,
-        string $imageDriver = 'gd',
         int $maxPixelSize = 0,
         string $rawImageSuffix = ".raw"
     ) {
@@ -43,7 +43,7 @@ class DownscaleImageManager
         $this->rawImageSuffix = $rawImageSuffix;
         $this->em = $em;
         $this->logger = $logger;
-        $this->manager = new ImageManager(['driver' => $imageDriver]);
+        $this->imageManager = $imageManager;
         $this->packages = $packages;
     }
 
@@ -56,7 +56,7 @@ class DownscaleImageManager
     {
         if (null !== $document && $document->isLocal() && $this->maxPixelSize > 0) {
             $rawDocumentFilePath = $this->packages->getDocumentFilePath($document);
-            $processImage = $this->getDownscaledImage($this->manager->make($rawDocumentFilePath));
+            $processImage = $this->getDownscaledImage($this->imageManager->make($rawDocumentFilePath));
             if (false !== $processImage) {
                 if (
                     false !== $this->createDocumentFromImage($document, $processImage)
@@ -87,7 +87,7 @@ class DownscaleImageManager
                 $rawDocumentFile = $this->packages->getDocumentFilePath($document);
             }
 
-            if (false !== $processImage = $this->getDownscaledImage($this->manager->make($rawDocumentFile))) {
+            if (false !== $processImage = $this->getDownscaledImage($this->imageManager->make($rawDocumentFile))) {
                 if (
                     false !== $this->createDocumentFromImage($document, $processImage, true)
                     && null !== $this->logger
