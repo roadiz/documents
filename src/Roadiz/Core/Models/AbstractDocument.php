@@ -28,11 +28,11 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
      * - powerpoint
      * - font
      *
-     * @var array
+     * @var array<string, string>
      * @internal
      * @SymfonySerializer\Ignore()
      */
-    protected static $mimeToIcon = [
+    protected static array $mimeToIcon = [
         'text/html' => 'code',
         'application/javascript' => 'code',
         'text/css' => 'code',
@@ -44,6 +44,8 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
         'image/tiff' => 'image',
         'image/webp' => 'image',
         'image/avif' => 'image',
+        'image/heic' => 'image',
+        'image/heif' => 'image',
         'image/vnd.microsoft.icon' => 'image',
         'image/x-icon' => 'image',
         'application/pdf' => 'pdf',
@@ -108,17 +110,19 @@ abstract class AbstractDocument extends AbstractDateTimed implements DocumentInt
     ];
 
     /**
-     * @var array Processable file mime type by GD or Imagick.
+     * @var string[] Processable file mime type by GD or Imagick.
      * @internal
      * @SymfonySerializer\Ignore()
      */
-    protected static $processableMimeTypes = [
+    protected static array $processableMimeTypes = [
         'image/png',
         'image/jpeg',
         'image/gif',
         'image/tiff',
         'image/webp',
         'image/avif',
+        'image/heic',
+        'image/heif',
     ];
 
     /**

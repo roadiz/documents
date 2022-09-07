@@ -1,3 +1,9 @@
+## 2.0.3 (2022-09-07)
+
+### Features
+
+* Added `image/heic` and `image/heif` mime type to image, deprecated document event subscribers ([d58b08a](https://github.com/roadiz/documents/commit/d58b08a4f73d5f3986881863729c9a9b9321dfa5))
+
 ## 2.0.2 (2022-07-29)
 
 ### Features

@@ -16,6 +16,9 @@ use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\AverageColorResolver;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @deprecated Document processing subscribers are deprecated in favor of async messaging
+ */
 final class ImageColorDocumentSubscriber implements EventSubscriberInterface
 {
     private Packages $packages;

@@ -11,6 +11,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Create a raw image and downscale it to a new image file for a better web usage.
+ * @deprecated Document processing subscribers are deprecated in favor of async messaging
  */
 final class RawDocumentsSubscriber implements EventSubscriberInterface
 {
