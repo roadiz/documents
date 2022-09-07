@@ -1,3 +1,9 @@
+## 2.0.5 (2022-09-07)
+
+### Bug Fixes
+
+* Missing image file extensions in DownscaleImageManager ([7572026](https://github.com/roadiz/documents/commit/75720264bff67bbf6932d0cac04db46eadd91406))
+
 ## 2.0.4 (2022-09-07)
 
 ### ⚠ BREAKING CHANGES

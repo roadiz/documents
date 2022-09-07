@@ -65,7 +65,7 @@ class DownscaleImageManager
                     $this->logger->info(
                         'Document has been downscaled.',
                         [
-                        'path' => $rawDocumentFilePath
+                            'path' => $rawDocumentFilePath
                         ]
                     );
                 }
@@ -184,7 +184,7 @@ class DownscaleImageManager
             if (null !== $processImage) {
                 $rawDocument = clone $originalDocument;
                 $rawDocumentName = preg_replace(
-                    '#\.(jpe?g|gif|tiff?|png|psd|webp)$#',
+                    '#\.(jpe?g|gif|tiff?|png|psd|webp|avif|heic|heif)$#',
                     $this->rawImageSuffix . '.$1',
                     $originalDocument->getFilename()
                 );
