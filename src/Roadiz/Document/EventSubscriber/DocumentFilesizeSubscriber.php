@@ -14,6 +14,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
 
+/**
+ * @deprecated Document processing subscribers are deprecated in favor of async messaging
+ */
 final class DocumentFilesizeSubscriber implements EventSubscriberInterface
 {
     private Packages $packages;

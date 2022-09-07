@@ -12,6 +12,9 @@ use RZ\Roadiz\Core\Events\FilterDocumentEvent;
 use RZ\Roadiz\Utils\Asset\Packages;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @deprecated Document processing subscribers are deprecated in favor of async messaging
+ */
 final class SvgDocumentSubscriber implements EventSubscriberInterface
 {
     private Packages $packages;

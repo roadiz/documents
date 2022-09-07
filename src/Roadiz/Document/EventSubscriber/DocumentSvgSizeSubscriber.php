@@ -14,6 +14,9 @@ use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\SvgSizeResolver;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @deprecated Document processing subscribers are deprecated in favor of async messaging
+ */
 final class DocumentSvgSizeSubscriber implements EventSubscriberInterface
 {
     private Packages $packages;

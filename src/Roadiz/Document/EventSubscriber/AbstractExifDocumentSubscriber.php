@@ -12,6 +12,9 @@ use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @deprecated Document processing subscribers are deprecated in favor of async messaging
+ */
 abstract class AbstractExifDocumentSubscriber implements EventSubscriberInterface
 {
     private Packages $packages;
