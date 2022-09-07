@@ -1,3 +1,13 @@
+## 2.0.4 (2022-09-07)
+
+### ⚠ BREAKING CHANGES
+
+* `DownscaleImageManager` constructor signature changed and requires a `ImageManager` object
+
+### Bug Fixes
+
+* Do not instanciate new ImageManager, just pass it as constructor arg ([11bffec](https://github.com/roadiz/documents/commit/11bffec3a19dc91f16a544265d4288fe3602cbcf))
+
 ## 2.0.3 (2022-09-07)
 
 ### Features
