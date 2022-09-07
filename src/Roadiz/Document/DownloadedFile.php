@@ -26,7 +26,7 @@ class DownloadedFile extends File
      *
      * @return DownloadedFile
      */
-    public function setOriginalFilename(?string $originalFilename)
+    public function setOriginalFilename(?string $originalFilename): DownloadedFile
     {
         $this->originalFilename = $originalFilename;
 
