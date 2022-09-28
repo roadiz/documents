@@ -1,3 +1,9 @@
+## 2.0.6 (2022-09-28)
+
+### Features
+
+* **Events:** Deprecated all documents upload events which are dispatched before DB flush. ([7f929c9](https://github.com/roadiz/documents/commit/7f929c96d2d97353b191a0a26ab27c1a8cd14f74))
+
 ## 2.0.5 (2022-09-07)
 
 ### Bug Fixes
