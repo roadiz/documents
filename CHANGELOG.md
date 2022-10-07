@@ -1,3 +1,9 @@
+## 2.0.7 (2022-10-07)
+
+### Bug Fixes
+
+* Allow roadiz/models to dev-develop ([f826244](https://github.com/roadiz/documents/commit/f826244ab56492bb307ce9a1584801e1953cf06b))
+
 ## 2.0.6 (2022-09-28)
 
 ### Features
