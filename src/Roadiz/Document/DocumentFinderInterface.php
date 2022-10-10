@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Document;
 
-use Doctrine\Common\Collections\Collection;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 
 interface DocumentFinderInterface

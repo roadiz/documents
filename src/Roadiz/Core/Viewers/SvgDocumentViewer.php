@@ -46,6 +46,7 @@ class SvgDocumentViewer
      * Get SVG string to be used inside HTML content.
      *
      * @return string
+     * @throws \Exception
      */
     public function getContent(): string
     {

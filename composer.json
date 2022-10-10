@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "ext-json": "*",
         "ext-gd": "*",
         "ext-dom": "*",
@@ -31,7 +31,7 @@
         "intervention/image": "^2.5",
         "jms/serializer": "^2.3.0 || ^3.9.0",
         "monolog/monolog": "^1.24.0 || ^2.1.1",
-        "roadiz/models": "~2.0.0 || dev-develop",
+        "roadiz/models": "~2.1.0 || dev-develop",
         "symfony/asset": "^5.0.7",
         "symfony/event-dispatcher": "^5.0.7",
         "symfony/filesystem": "^5.0.7",

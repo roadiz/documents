@@ -91,12 +91,6 @@ interface DocumentInterface
      */
     public function setFolder(string $folder);
 
-    /**
-     * @deprecated Use getRelativePath instead, naming is better.
-     * @return     string|null
-     */
-    public function getRelativeUrl(): ?string;
-
     public function getRelativePath(): ?string;
 
     public function getEmbedId(): ?string;
