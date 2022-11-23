@@ -18,14 +18,14 @@ interface DocumentUrlGeneratorInterface
     /**
      * @param DocumentInterface $document
      *
-     * @return mixed
+     * @return $this
      */
-    public function setDocument(DocumentInterface $document);
+    public function setDocument(DocumentInterface $document): static;
 
     /**
      * @param array $options
      *
-     * @return mixed
+     * @return $this
      */
-    public function setOptions(array $options = []);
+    public function setOptions(array $options = []): static;
 }

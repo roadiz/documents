@@ -47,13 +47,13 @@ class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
         return '/assets/' . $compiledOptions . '/' . $this->document->getRelativePath();
     }
 
-    public function setDocument(DocumentInterface $document)
+    public function setDocument(DocumentInterface $document): static
     {
         $this->document = $document;
         return $this;
     }
 
-    public function setOptions(array $options = [])
+    public function setOptions(array $options = []): static
     {
         $this->options = $options;
         return $this;

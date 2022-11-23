@@ -31,7 +31,7 @@ class FacebookPictureFinder
     public function getPictureUrl(): ?string
     {
         $client = new Client();
-        $this->response = $client->get('http://graph.facebook.com/' . $this->facebookUserAlias . '/picture?redirect=false&width=200&height=200');
+        $this->response = $client->get('https://graph.facebook.com/' . $this->facebookUserAlias . '/picture?redirect=false&width=200&height=200');
         $json = json_decode($this->response->getBody()->getContents(), true);
 
         if (is_array($json) && isset($json['data']) && !empty($json['data']['url'])) {

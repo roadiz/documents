@@ -46,10 +46,10 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
 
     /**
      * @param array $options
-     * @return AbstractDocumentUrlGenerator
+     * @return $this
      * @throws InvalidArgumentException
      */
-    public function setOptions(array $options = [])
+    public function setOptions(array $options = []): static
     {
         $optionsCacheItem = $this->optionsCacheAdapter->getItem(md5(json_encode($options) ?: ''));
         if (!$optionsCacheItem->isHit()) {
@@ -75,9 +75,9 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
     /**
      * @param DocumentInterface $document
      *
-     * @return AbstractDocumentUrlGenerator
+     * @return $this
      */
-    public function setDocument(DocumentInterface $document)
+    public function setDocument(DocumentInterface $document): static
     {
         $this->document = $document;
         return $this;
