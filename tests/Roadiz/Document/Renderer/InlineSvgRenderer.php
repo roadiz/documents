@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace RZ\Roadiz\Document\Renderer\tests\units;
+namespace RZ\Roadiz\Documents\Renderer\tests\units;
 
 use atoum;
-use RZ\Roadiz\Core\Models\DocumentInterface;
-use RZ\Roadiz\Core\Models\SimpleFileAware;
-use RZ\Roadiz\Utils\Asset\Packages;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
+use RZ\Roadiz\Documents\Models\SimpleFileAware;
+use RZ\Roadiz\Documents\Packages;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -16,9 +16,9 @@ class InlineSvgRenderer extends atoum
     public function testSupports()
     {
         /** @var DocumentInterface $mockValidDocument */
-        $mockValidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockValidDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         /** @var DocumentInterface $mockInvalidDocument */
-        $mockInvalidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockInvalidDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockPackages = $this->getPackages();
 
         $mockValidDocument->setFilename('file.svg');
@@ -45,7 +45,7 @@ class InlineSvgRenderer extends atoum
     public function testRender()
     {
         /** @var DocumentInterface $mockDocument */
-        $mockDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockPackages = $this->getPackages();
 
         $mockDocument->setFilename('file.svg');

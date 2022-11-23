@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace RZ\Roadiz\Document\Renderer\tests\units;
+namespace RZ\Roadiz\Documents\Renderer\tests\units;
 
 use atoum;
-use RZ\Roadiz\Core\Models\DocumentInterface;
-use RZ\Roadiz\Core\Models\SimpleFileAware;
-use RZ\Roadiz\Utils\Asset\Packages;
-use RZ\Roadiz\Utils\MediaFinders\EmbedFinderFactory;
-use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
+use RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
+use RZ\Roadiz\Documents\Models\SimpleFileAware;
+use RZ\Roadiz\Documents\Packages;
+use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -19,22 +19,22 @@ class PictureRenderer extends atoum
 {
     public function testIsEmbeddable()
     {
-        /** @var DocumentInterface $mockExternalValidDocument */
-        $mockExternalValidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        /** @var \RZ\Roadiz\Documents\Models\DocumentInterface $mockExternalValidDocument */
+        $mockExternalValidDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockExternalValidDocument->setFilename('file.jpg');
         $mockExternalValidDocument->setMimeType('image/jpeg');
         $mockExternalValidDocument->setEmbedId('xxxxx');
         $mockExternalValidDocument->setEmbedPlatform('getty');
 
         /** @var DocumentInterface $mockYoutubeDocument */
-        $mockYoutubeDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockYoutubeDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockYoutubeDocument->setFilename('file.jpg');
         $mockYoutubeDocument->setMimeType('image/jpeg');
         $mockYoutubeDocument->setEmbedId('xxxxx');
         $mockYoutubeDocument->setEmbedPlatform('youtube');
 
         /** @var DocumentInterface $mockValidDocument */
-        $mockValidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockValidDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockValidDocument->setFilename('file.jpg');
         $mockValidDocument->setMimeType('image/jpeg');
 
@@ -62,17 +62,17 @@ class PictureRenderer extends atoum
     public function testSupports()
     {
         /** @var DocumentInterface $mockValidDocument */
-        $mockValidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockValidDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockValidDocument->setFilename('file.jpg');
         $mockValidDocument->setMimeType('image/jpeg');
 
         /** @var DocumentInterface $mockInvalidDocument */
-        $mockInvalidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockInvalidDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockInvalidDocument->setFilename('file.psd');
         $mockInvalidDocument->setMimeType('image/vnd.adobe.photoshop');
 
         /** @var DocumentInterface $mockExternalValidDocument */
-        $mockExternalValidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockExternalValidDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockExternalValidDocument->setFilename('file.jpg');
         $mockExternalValidDocument->setMimeType('image/jpeg');
         $mockExternalValidDocument->setEmbedId('xxxxx');
@@ -112,13 +112,13 @@ class PictureRenderer extends atoum
     public function testRender()
     {
         /** @var DocumentInterface $mockDocument */
-        $mockDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockDocument->setFilename('file.jpg');
         $mockDocument->setFolder('folder');
         $mockDocument->setMimeType('image/jpeg');
 
         /** @var DocumentInterface $mockWebpDocument */
-        $mockWebpDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockWebpDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockWebpDocument->setFilename('file.webp');
         $mockWebpDocument->setFolder('folder');
         $mockWebpDocument->setMimeType('image/webp');
@@ -851,11 +851,11 @@ EOT
     }
 
     /**
-     * @return DocumentUrlGeneratorInterface
+     * @return \RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface
      */
     private function getUrlGenerator(): DocumentUrlGeneratorInterface
     {
-        return new \mock\RZ\Roadiz\Utils\UrlGenerators\DummyDocumentUrlGenerator($this->getPackages());
+        return new \mock\RZ\Roadiz\Documents\UrlGenerators\DummyDocumentUrlGenerator($this->getPackages());
     }
 
     private function getPackages(): Packages
@@ -885,7 +885,7 @@ EOT
     private function getEnvironment(): Environment
     {
         $loader = new FilesystemLoader([
-            dirname(__DIR__) . '/../../../src/Roadiz/Resources/views'
+            dirname(__DIR__) . '/../../../src/Resources/views'
         ]);
         return new Environment($loader, [
             'autoescape' => false,
@@ -894,15 +894,15 @@ EOT
     }
 
     /**
-     * @return EmbedFinderFactory
+     * @return \RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory
      */
     private function getEmbedFinderFactory(): EmbedFinderFactory
     {
         return new EmbedFinderFactory([
-            'youtube' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractYoutubeEmbedFinder::class,
-            'vimeo' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractVimeoEmbedFinder::class,
-            'dailymotion' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractDailymotionEmbedFinder::class,
-            'soundcloud' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractSoundcloudEmbedFinder::class,
+            'youtube' => \mock\RZ\Roadiz\Documents\MediaFinders\AbstractYoutubeEmbedFinder::class,
+            'vimeo' => \mock\RZ\Roadiz\Documents\MediaFinders\AbstractVimeoEmbedFinder::class,
+            'dailymotion' => \mock\RZ\Roadiz\Documents\MediaFinders\AbstractDailymotionEmbedFinder::class,
+            'soundcloud' => \mock\RZ\Roadiz\Documents\MediaFinders\AbstractSoundcloudEmbedFinder::class,
         ]);
     }
 }

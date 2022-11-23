@@ -1,0 +1,104 @@
+<?php
+
+declare(strict_types=1);
+
+namespace RZ\Roadiz\Documents\Renderer;
+
+use RZ\Roadiz\Documents\Exceptions\DocumentWithoutFileException;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
+use RZ\Roadiz\Documents\OptionsResolver\UrlOptionsResolver;
+use RZ\Roadiz\Documents\OptionsResolver\ViewOptionsResolver;
+use RZ\Roadiz\Documents\Packages;
+use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
+use Twig\Environment;
+
+abstract class AbstractRenderer implements RendererInterface
+{
+    protected Packages $packages;
+    protected Environment $templating;
+    protected DocumentUrlGeneratorInterface $documentUrlGenerator;
+    protected string $templateBasePath;
+    protected UrlOptionsResolver $urlOptionsResolver;
+    protected ViewOptionsResolver $viewOptionsResolver;
+
+    /**
+     * @param Packages $packages
+     * @param Environment $templating
+     * @param DocumentUrlGeneratorInterface $documentUrlGenerator
+     * @param string $templateBasePath
+     */
+    public function __construct(
+        Packages $packages,
+        Environment $templating,
+        DocumentUrlGeneratorInterface $documentUrlGenerator,
+        string $templateBasePath = 'documents'
+    ) {
+        $this->packages = $packages;
+        $this->templating = $templating;
+        $this->documentUrlGenerator = $documentUrlGenerator;
+        $this->templateBasePath = $templateBasePath;
+        $this->urlOptionsResolver = new UrlOptionsResolver();
+        $this->viewOptionsResolver = new ViewOptionsResolver();
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @param array             $options
+     *
+     * @return string
+     */
+    protected function getSource(DocumentInterface $document, array $options): string
+    {
+        if (empty($document->getRelativePath())) {
+            throw new DocumentWithoutFileException($document);
+        }
+        $this->documentUrlGenerator->setOptions($options);
+        $this->documentUrlGenerator->setDocument($document);
+        return $this->documentUrlGenerator->getUrl($options['absolute']);
+    }
+
+    /**
+     * @param string $template
+     * @param array $assignation
+     *
+     * @return string
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    protected function renderHtmlElement(string $template, array $assignation): string
+    {
+        return $this->templating->render($this->templateBasePath . '/' . $template, $assignation);
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @param iterable<DocumentInterface> $sourcesDocs
+     * @return array
+     */
+    protected function getSourcesFilesArray(DocumentInterface $document, iterable $sourcesDocs): array
+    {
+        $sources = [];
+
+        /**
+         * @var DocumentInterface $source
+         */
+        foreach ($sourcesDocs as $source) {
+            $sources[$source->getMimeType()] = [
+                'mime' => $source->getMimeType(),
+                'url' => $this->packages->getUrl($source->getRelativePath() ?? '', Packages::DOCUMENTS),
+            ];
+        }
+        krsort($sources);
+
+        if (count($sources) === 0) {
+            // If exotic extension, fallbacks using original file
+            $sources[$document->getMimeType()] = [
+                'mime' => $document->getMimeType(),
+                'url' => $this->packages->getUrl($document->getRelativePath() ?? '', Packages::DOCUMENTS),
+            ];
+        }
+
+        return $sources;
+    }
+}
