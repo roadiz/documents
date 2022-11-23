@@ -25,28 +25,58 @@ final class SvgSizeResolver
     }
 
     /**
+     * @return array|null [$x, $y, $width, $height]
+     */
+    protected function getViewBoxAttributes(): ?array
+    {
+        try {
+            $viewBox = $this->getSvgNodeAttributes()->getNamedItem('viewBox');
+            if (null !== $viewBox && $viewBox->textContent !== "") {
+                return explode(' ', $viewBox->textContent);
+            }
+        } catch (\RuntimeException $exception) {
+            return null;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     * @return int|null
+     */
+    protected function getIntegerAttribute(string $name): ?int
+    {
+        try {
+            $attribute = $this->getSvgNodeAttributes()->getNamedItem($name);
+            if (
+                null !== $attribute
+                && $attribute->textContent !== ""
+                && !str_contains($attribute->textContent, '%')
+            ) {
+                return (int) $attribute->textContent;
+            }
+        } catch (\RuntimeException $exception) {
+            return null;
+        }
+        return null;
+    }
+
+    /**
      * First, find width attr, then resolve width from viewBox.
      *
      * @return int
      */
     public function getWidth(): int
     {
-        try {
-            $width = $this->getSvgNodeAttributes()->getNamedItem('width');
-            $viewBox = $this->getSvgNodeAttributes()->getNamedItem('viewBox');
-        } catch (\RuntimeException $exception) {
-            return 0;
+        $widthAttr = $this->getIntegerAttribute('width');
+        if (null !== $widthAttr) {
+            return $widthAttr;
         }
 
-        if (
-            null !== $width
-            && $width->textContent !== ""
-            && false === strpos($width->textContent, '%')
-        ) {
-            return (int) $width->textContent;
-        }
-        if (null !== $viewBox && $viewBox->textContent !== "") {
-            [$x, $y, $width, $height] = explode(' ', $viewBox->textContent);
+        $viewBoxAttr = $this->getViewBoxAttributes();
+        if (null !== $viewBoxAttr) {
+            [$x, $y, $width, $height] = $viewBoxAttr;
             return (int) $width;
         }
 
@@ -60,22 +90,13 @@ final class SvgSizeResolver
      */
     public function getHeight(): int
     {
-        try {
-            $height = $this->getSvgNodeAttributes()->getNamedItem('height');
-            $viewBox = $this->getSvgNodeAttributes()->getNamedItem('viewBox');
-        } catch (\RuntimeException $exception) {
-            return 0;
+        $heightAttr = $this->getIntegerAttribute('height');
+        if (null !== $heightAttr) {
+            return $heightAttr;
         }
-
-        if (
-            null !== $height
-            && $height->textContent !== ""
-            && false === strpos($height->textContent, '%')
-        ) {
-            return (int) $height->textContent;
-        }
-        if (null !== $viewBox && $viewBox->textContent !== "") {
-            [$x, $y, $width, $height] = explode(' ', $viewBox->textContent);
+        $viewBoxAttr = $this->getViewBoxAttributes();
+        if (null !== $viewBoxAttr) {
+            [$x, $y, $width, $height] = $viewBoxAttr;
             return (int) $height;
         }
 

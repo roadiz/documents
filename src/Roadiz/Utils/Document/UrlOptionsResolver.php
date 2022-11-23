@@ -76,7 +76,7 @@ class UrlOptionsResolver extends OptionsResolver
                 /** @var \ArrayAccess<string, string|null> $options */
                 $compositing = $options['crop'] ?? $options['fit'] ?? '';
                 if (1 === preg_match('#(?<width>[0-9]+)[x:\.](?<height>[0-9]+)#', $compositing, $matches)) {
-                    return (float) $matches['width'] / $matches['height'];
+                    return ((float) $matches['width']) / ((float) $matches['height']);
                 }
                 return null;
             }
