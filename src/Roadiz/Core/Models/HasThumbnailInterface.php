@@ -14,8 +14,8 @@ interface HasThumbnailInterface
     public function getOriginal(): ?HasThumbnailInterface;
 
     /**
-     * @param HasThumbnailInterface $original
-     * @return self
+     * @param HasThumbnailInterface|null $original
+     * @return static
      */
     public function setOriginal(?HasThumbnailInterface $original);
 

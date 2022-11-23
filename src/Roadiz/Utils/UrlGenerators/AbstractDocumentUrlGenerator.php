@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Utils\UrlGenerators;
 
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\Document\ViewOptionsResolver;
@@ -26,6 +27,7 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
      * @param CacheItemPoolInterface $optionsCacheAdapter
      * @param DocumentInterface|null $document
      * @param array $options
+     * @throws InvalidArgumentException
      */
     public function __construct(
         Packages $packages,
@@ -45,6 +47,7 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
     /**
      * @param array $options
      * @return AbstractDocumentUrlGenerator
+     * @throws InvalidArgumentException
      */
     public function setOptions(array $options = [])
     {

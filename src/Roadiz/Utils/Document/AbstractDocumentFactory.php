@@ -6,16 +6,12 @@ namespace RZ\Roadiz\Utils\Document;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use RZ\Roadiz\Core\Events\DocumentFileUploadedEvent;
-use RZ\Roadiz\Core\Events\DocumentImageUploadedEvent;
-use RZ\Roadiz\Core\Events\DocumentSvgUploadedEvent;
 use RZ\Roadiz\Core\Models\DocumentInterface;
 use RZ\Roadiz\Core\Models\FileHashInterface;
 use RZ\Roadiz\Core\Models\FolderInterface;
 use RZ\Roadiz\Document\DownloadedFile;
 use RZ\Roadiz\Utils\Asset\Packages;
 use RZ\Roadiz\Utils\StringHandler;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\File;
@@ -30,23 +26,15 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 abstract class AbstractDocumentFactory
 {
-    private EventDispatcherInterface $dispatcher;
     private Packages $packages;
     private LoggerInterface $logger;
     private ?File $file = null;
     private ?FolderInterface $folder = null;
 
-    /**
-     * @param EventDispatcherInterface $dispatcher
-     * @param Packages                 $packages
-     * @param LoggerInterface|null     $logger
-     */
     public function __construct(
-        EventDispatcherInterface $dispatcher,
         Packages $packages,
         ?LoggerInterface $logger = null
     ) {
-        $this->dispatcher = $dispatcher;
         $this->packages = $packages;
         $this->logger = $logger ?? new NullLogger();
     }
@@ -175,31 +163,7 @@ abstract class AbstractDocumentFactory
             $this->folder->addDocument($document);
         }
 
-        $this->dispatchEvents($document);
-
         return $document;
-    }
-
-    /**
-     * @param DocumentInterface $document
-     */
-    protected function dispatchEvents(DocumentInterface $document): void
-    {
-        if ($document->isImage()) {
-            $this->dispatcher->dispatch(
-                new DocumentImageUploadedEvent($document)
-            );
-        }
-
-        if ($document->getMimeType() == 'image/svg+xml') {
-            $this->dispatcher->dispatch(
-                new DocumentSvgUploadedEvent($document)
-            );
-        }
-
-        $this->dispatcher->dispatch(
-            new DocumentFileUploadedEvent($document)
-        );
     }
 
     /**
@@ -259,8 +223,6 @@ abstract class AbstractDocumentFactory
             $document->getFilename()
         );
 
-        $this->dispatchEvents($document);
-
         return $document;
     }
 
@@ -284,23 +246,6 @@ abstract class AbstractDocumentFactory
         }
 
         return $fileName;
-    }
-
-    /**
-     * @param string $url
-     * @param string $thumbnailName
-     *
-     * @return     DownloadedFile
-     * @deprecated Use DownloadedFile::fromUrl($url);
-     */
-    public function downloadFileFromUrl(string $url, string $thumbnailName): ?DownloadedFile
-    {
-        @trigger_error(
-            'AbstractDocumentFactory::downloadFileFromUrl method is deprecated.' .
-                ' Use ' . DownloadedFile::class . '::fromUrl($url)',
-            E_USER_DEPRECATED
-        );
-        return DownloadedFile::fromUrl($url, $thumbnailName);
     }
 
     /**

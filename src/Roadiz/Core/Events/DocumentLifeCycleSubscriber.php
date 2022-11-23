@@ -14,7 +14,7 @@ use RZ\Roadiz\Core\Models\FileAwareInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Handle file management on documents lifecycle events.
+ * Handle file management on document lifecycle events.
  *
  * @package Roadiz\Core\Events
  */
