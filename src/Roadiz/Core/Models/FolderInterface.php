@@ -5,42 +5,41 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Core\Models;
 
 use Doctrine\Common\Collections\Collection;
-use RZ\Roadiz\Core\AbstractEntities\LeafInterface;
 
-interface FolderInterface extends LeafInterface
+interface FolderInterface
 {
     /**
      * @return Collection<DocumentInterface>
      */
-    public function getDocuments();
+    public function getDocuments(): Collection;
 
     /**
-     * @param  DocumentInterface $document
-     * @return FolderInterface
+     * @param DocumentInterface $document
+     * @return $this
      */
-    public function addDocument(DocumentInterface $document);
+    public function addDocument(DocumentInterface $document): static;
 
     /**
-     * @param  DocumentInterface $document
-     * @return FolderInterface
+     * @param DocumentInterface $document
+     * @return $this
      */
-    public function removeDocument(DocumentInterface $document);
+    public function removeDocument(DocumentInterface $document): static;
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function getVisible();
+    public function getVisible(): bool;
 
     /**
-     * @param  boolean $visible
-     * @return FolderInterface
+     * @param bool $visible
+     * @return $this
      */
-    public function setVisible($visible);
+    public function setVisible(bool $visible): static;
 
     /**
      * @return string
      */
-    public function getFolderName();
+    public function getFolderName(): string;
 
     /**
      * @return string|null
@@ -48,19 +47,19 @@ interface FolderInterface extends LeafInterface
     public function getName(): ?string;
 
     /**
-     * @param  string $folderName
-     * @return FolderInterface
+     * @param string $folderName
+     * @return $this
      */
-    public function setFolderName($folderName);
+    public function setFolderName(string $folderName): static;
 
     /**
      * @return string
      */
-    public function getDirtyFolderName();
+    public function getDirtyFolderName(): string;
 
     /**
      * @param  string $dirtyFolderName
-     * @return FolderInterface
+     * @return $this
      */
-    public function setDirtyFolderName($dirtyFolderName);
+    public function setDirtyFolderName(string $dirtyFolderName): static;
 }

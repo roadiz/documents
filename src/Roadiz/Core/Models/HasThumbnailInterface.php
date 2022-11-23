@@ -15,21 +15,20 @@ interface HasThumbnailInterface
 
     /**
      * @param HasThumbnailInterface|null $original
-     * @return static
+     * @return $this
      */
-    public function setOriginal(?HasThumbnailInterface $original);
+    public function setOriginal(?HasThumbnailInterface $original): static;
 
     /**
-     * @return Collection<int,DocumentInterface>
+     * @return Collection<static>
      */
     public function getThumbnails(): Collection;
 
     /**
-     * @param Collection<int,DocumentInterface> $thumbnails
-     *
-     * @return self
+     * @param Collection<static> $thumbnails
+     * @return $this
      */
-    public function setThumbnails(Collection $thumbnails);
+    public function setThumbnails(Collection $thumbnails): static;
 
     /**
      * @return bool

@@ -39,31 +39,18 @@ class SimpleDocument extends AbstractDocument
         return $this->filename;
     }
 
-    /**
-     * @param string $filename
-     *
-     * @return DocumentInterface
-     */
-    public function setFilename(string $filename)
+    public function setFilename(string $filename): static
     {
         $this->filename = $filename;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMimeType(): ?string
     {
         return $this->mimeType;
     }
 
-    /**
-     * @param string|null $mimeType
-     *
-     * @return SimpleDocument
-     */
-    public function setMimeType(?string $mimeType): SimpleDocument
+    public function setMimeType(?string $mimeType): static
     {
         $this->mimeType = $mimeType;
         return $this;
@@ -77,12 +64,7 @@ class SimpleDocument extends AbstractDocument
         return $this->folder;
     }
 
-    /**
-     * @param string $folder
-     *
-     * @return SimpleDocument
-     */
-    public function setFolder(string $folder): SimpleDocument
+    public function setFolder(string $folder): static
     {
         $this->folder = $folder;
 
@@ -97,12 +79,7 @@ class SimpleDocument extends AbstractDocument
         return $this->embedId;
     }
 
-    /**
-     * @param string|null $embedId
-     *
-     * @return SimpleDocument
-     */
-    public function setEmbedId(?string $embedId): SimpleDocument
+    public function setEmbedId(?string $embedId): static
     {
         $this->embedId = $embedId;
 
@@ -117,12 +94,7 @@ class SimpleDocument extends AbstractDocument
         return $this->embedPlatform;
     }
 
-    /**
-     * @param string|null $embedPlatform
-     *
-     * @return SimpleDocument
-     */
-    public function setEmbedPlatform(?string $embedPlatform): SimpleDocument
+    public function setEmbedPlatform(?string $embedPlatform): static
     {
         $this->embedPlatform = $embedPlatform;
 
@@ -137,12 +109,7 @@ class SimpleDocument extends AbstractDocument
         return $this->private;
     }
 
-    /**
-     * @param bool $private
-     *
-     * @return SimpleDocument
-     */
-    public function setPrivate(bool $private): SimpleDocument
+    public function setPrivate(bool $private): static
     {
         $this->private = $private;
 
@@ -157,12 +124,7 @@ class SimpleDocument extends AbstractDocument
         return $this->rawDocument;
     }
 
-    /**
-     * @param DocumentInterface|null $rawDocument
-     *
-     * @return SimpleDocument
-     */
-    public function setRawDocument(?DocumentInterface $rawDocument = null): SimpleDocument
+    public function setRawDocument(?DocumentInterface $rawDocument = null): static
     {
         $this->rawDocument = $rawDocument;
 
@@ -177,32 +139,19 @@ class SimpleDocument extends AbstractDocument
         return $this->raw;
     }
 
-    /**
-     * @param bool $raw
-     *
-     * @return SimpleDocument
-     */
-    public function setRaw(bool $raw): SimpleDocument
+    public function setRaw(bool $raw): static
     {
         $this->raw = $raw;
 
         return $this;
     }
 
-    /**
-     * @return DocumentInterface|null
-     */
     public function getDownscaledDocument(): ?DocumentInterface
     {
         return $this->downscaledDocument;
     }
 
-    /**
-     * @param DocumentInterface|null $downscaledDocument
-     *
-     * @return SimpleDocument
-     */
-    public function setDownscaledDocument(?DocumentInterface $downscaledDocument): SimpleDocument
+    public function setDownscaledDocument(?DocumentInterface $downscaledDocument): static
     {
         $this->downscaledDocument = $downscaledDocument;
 
@@ -217,40 +166,25 @@ class SimpleDocument extends AbstractDocument
         return $this->folders;
     }
 
-    /**
-     * @param Collection $folders
-     *
-     * @return SimpleDocument
-     */
-    public function setFolders(Collection $folders): SimpleDocument
+    public function setFolders(Collection $folders): static
     {
         $this->folders = $folders;
         return $this;
     }
 
-    /**
-     * @param FolderInterface $folder
-     *
-     * @return $this|DocumentInterface
-     */
-    public function addFolder(FolderInterface $folder)
+    public function addFolder(FolderInterface $folder): static
     {
         $this->folders->add($folder);
         return $this;
     }
 
-    /**
-     * @param FolderInterface $folder
-     *
-     * @return $this|DocumentInterface
-     */
-    public function removeFolder(FolderInterface $folder)
+    public function removeFolder(FolderInterface $folder): static
     {
         $this->folders->removeElement($folder);
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getFilename();
     }

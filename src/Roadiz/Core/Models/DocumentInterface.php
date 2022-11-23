@@ -11,10 +11,10 @@ interface DocumentInterface
     public function getFilename(): string;
 
     /**
-     * @param  string $filename
-     * @return DocumentInterface
+     * @param string $filename
+     * @return $this
      */
-    public function setFilename(string $filename);
+    public function setFilename(string $filename): static;
 
     /**
      * @return string|null
@@ -22,10 +22,10 @@ interface DocumentInterface
     public function getMimeType(): ?string;
 
     /**
-     * @param  string|null $mimeType
-     * @return DocumentInterface
+     * @param string|null $mimeType
+     * @return $this
      */
-    public function setMimeType(?string $mimeType);
+    public function setMimeType(?string $mimeType): static;
 
     /**
      * Get short type name for current document Mime type.
@@ -86,28 +86,28 @@ interface DocumentInterface
     public function getFolder(): string;
 
     /**
-     * @param  string $folder
-     * @return DocumentInterface
+     * @param string $folder
+     * @return $this
      */
-    public function setFolder(string $folder);
+    public function setFolder(string $folder): static;
 
     public function getRelativePath(): ?string;
 
     public function getEmbedId(): ?string;
 
     /**
-     * @param  string|null $embedId
-     * @return DocumentInterface
+     * @param string|null $embedId
+     * @return $this
      */
-    public function setEmbedId(?string $embedId);
+    public function setEmbedId(?string $embedId): static;
 
     public function getEmbedPlatform(): ?string;
 
     /**
-     * @param  string|null $embedPlatform
-     * @return DocumentInterface
+     * @param string|null $embedPlatform
+     * @return $this
      */
-    public function setEmbedPlatform(?string $embedPlatform);
+    public function setEmbedPlatform(?string $embedPlatform): static;
 
     /**
      * Tells if current document has embed media information.
@@ -122,18 +122,18 @@ interface DocumentInterface
     public function isPrivate(): bool;
 
     /**
-     * @param  bool $private
-     * @return DocumentInterface
+     * @param bool $private
+     * @return $this
      */
-    public function setPrivate(bool $private);
+    public function setPrivate(bool $private): static;
 
     public function getRawDocument(): ?DocumentInterface;
 
     /**
-     * @param  DocumentInterface|null $rawDocument the raw document
-     * @return DocumentInterface
+     * @param DocumentInterface|null $rawDocument the raw document
+     * @return $this
      */
-    public function setRawDocument(?DocumentInterface $rawDocument = null);
+    public function setRawDocument(?DocumentInterface $rawDocument = null): static;
 
     /**
      * Is document a raw one.
@@ -143,10 +143,10 @@ interface DocumentInterface
     public function isRaw(): bool;
 
     /**
-     * @param  boolean $raw the raw
-     * @return DocumentInterface
+     * @param boolean $raw the raw
+     * @return $this
      */
-    public function setRaw(bool $raw);
+    public function setRaw(bool $raw): static;
 
     /**
      * Gets the downscaledDocument.
@@ -161,16 +161,16 @@ interface DocumentInterface
     public function getFolders(): Collection;
 
     /**
-     * @param  FolderInterface $folder
-     * @return DocumentInterface
+     * @param FolderInterface $folder
+     * @return $this
      */
-    public function addFolder(FolderInterface $folder);
+    public function addFolder(FolderInterface $folder): static;
 
     /**
-     * @param  FolderInterface $folder
-     * @return DocumentInterface
+     * @param FolderInterface $folder
+     * @return $this
      */
-    public function removeFolder(FolderInterface $folder);
+    public function removeFolder(FolderInterface $folder): static;
 
     /**
      * Return false if no local file is linked to document. i.e no filename, no folder
@@ -187,5 +187,5 @@ interface DocumentInterface
 
     public function getAlternativeText(): string;
 
-    public function __toString();
+    public function __toString(): string;
 }

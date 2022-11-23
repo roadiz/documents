@@ -12,10 +12,10 @@ interface SizeableInterface
     public function getImageWidth(): int;
 
     /**
-     * @param  int $imageWidth
-     * @return static
+     * @param int $imageWidth
+     * @return $this
      */
-    public function setImageWidth(int $imageWidth);
+    public function setImageWidth(int $imageWidth): static;
 
     /**
      * @return int
@@ -23,10 +23,10 @@ interface SizeableInterface
     public function getImageHeight(): int;
 
     /**
-     * @param  int $imageHeight
-     * @return static
+     * @param int $imageHeight
+     * @return $this
      */
-    public function setImageHeight(int $imageHeight);
+    public function setImageHeight(int $imageHeight): static;
 
     /**
      * @return float|null
