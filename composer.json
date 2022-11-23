@@ -29,7 +29,6 @@
         "guzzlehttp/guzzle": "^6.3 || ^7.2.0",
         "guzzlehttp/psr7": "^2.0",
         "intervention/image": "^2.5",
-        "jms/serializer": "^2.3.0 || ^3.9.0",
         "monolog/monolog": "^1.24.0 || ^2.1.1",
         "symfony/asset": "^5.0.7",
         "symfony/event-dispatcher": "^5.0.7",

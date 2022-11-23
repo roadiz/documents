@@ -6,12 +6,10 @@ namespace RZ\Roadiz\Documents\Models;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Simple document implementation for tests purposes.
  */
-#[Serializer\ExclusionPolicy("all")]
 class SimpleDocument implements DocumentInterface
 {
     use DocumentTrait;

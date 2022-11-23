@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Models;
 
-use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation as SymfonySerializer;
 
 trait DocumentTrait
@@ -215,11 +214,7 @@ trait DocumentTrait
     }
 
     #[
-        Serializer\Groups(["document", "document_display", "nodes_sources", "tag", "attribute"]),
         SymfonySerializer\Groups(["document", "document_display", "nodes_sources", "tag", "attribute"]),
-        Serializer\Type("string"),
-        Serializer\VirtualProperty,
-        Serializer\SerializedName("relativePath"),
         SymfonySerializer\SerializedName("relativePath"),
     ]
     public function getRelativePath(): ?string
@@ -250,10 +245,6 @@ trait DocumentTrait
     #[
         SymfonySerializer\Groups(["document", "document_display", "nodes_sources", "tag", "attribute"]),
         SymfonySerializer\SerializedName("processable"),
-        Serializer\Groups(["document", "document_display", "nodes_sources", "tag", "attribute"]),
-        Serializer\Type("bool"),
-        Serializer\VirtualProperty,
-        Serializer\SerializedName("processable"),
     ]
     public function isProcessable(): bool
     {
@@ -265,10 +256,6 @@ trait DocumentTrait
     }
 
     #[
-        Serializer\Groups(["document", "document_display", "nodes_sources", "tag", "attribute"]),
-        Serializer\Type("string"),
-        Serializer\VirtualProperty,
-        Serializer\SerializedName("alt"),
         SymfonySerializer\Groups(["document", "document_display", "nodes_sources", "tag", "attribute"]),
         SymfonySerializer\SerializedName("alt"),
     ]

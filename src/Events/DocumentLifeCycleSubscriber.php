@@ -20,9 +20,6 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
 {
     private FileAwareInterface $fileAware;
 
-    /**
-     * @param FileAwareInterface $fileAware
-     */
     public function __construct(FileAwareInterface $fileAware)
     {
         $this->fileAware = $fileAware;

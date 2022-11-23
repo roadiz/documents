@@ -64,14 +64,6 @@ class Packages extends BasePackages
     private RequestStackContext $requestStackContext;
     private bool $ready;
 
-    /**
-     * Build a new asset packages for Roadiz root and documents.
-     *
-     * @param VersionStrategyInterface $versionStrategy
-     * @param RequestStack             $requestStack
-     * @param FileAwareInterface       $fileAware
-     * @param string                   $staticDomain
-     */
     public function __construct(
         VersionStrategyInterface $versionStrategy,
         RequestStack $requestStack,
