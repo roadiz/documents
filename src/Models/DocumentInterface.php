@@ -91,7 +91,15 @@ interface DocumentInterface
      */
     public function setFolder(string $folder): static;
 
+    /**
+     * @return string|null Get document relative path : {folder}/{filename}
+     */
     public function getRelativePath(): ?string;
+
+    /**
+     * @return string|null Get document relative path prefixed with mount information public:// or private://
+     */
+    public function getMountPath(): ?string;
 
     public function getEmbedId(): ?string;
 

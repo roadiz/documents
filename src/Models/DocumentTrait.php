@@ -226,6 +226,22 @@ trait DocumentTrait
         }
     }
 
+    #[
+        SymfonySerializer\Groups(["document_mount"]),
+        SymfonySerializer\SerializedName("mountPath"),
+    ]
+    public function getMountPath(): ?string
+    {
+        if (null === $relativePath = $this->getRelativePath()) {
+            return null;
+        }
+        if ($this->isPrivate()) {
+            return 'private://' . $relativePath;
+        } else {
+            return 'public://' . $relativePath;
+        }
+    }
+
     /**
      * Tells if current document has embed media information.
      *

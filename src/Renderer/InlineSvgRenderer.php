@@ -42,6 +42,8 @@ class InlineSvgRenderer implements RendererInterface
             return trim($this->htmlTidy($viewer->getContent()));
         } catch (FileNotFoundException $e) {
             return '<p>SVG file was not found</p>';
+        } catch (\Exception $e) {
+            return '<p>' . $e->getMessage() . '</p>';
         }
     }
 
