@@ -242,6 +242,19 @@ trait DocumentTrait
         }
     }
 
+    public function getMountFolderPath(): ?string
+    {
+        $folder = $this->getFolder();
+        if (empty($folder)) {
+            return null;
+        }
+        if ($this->isPrivate()) {
+            return 'private://' . $folder;
+        } else {
+            return 'public://' . $folder;
+        }
+    }
+
     /**
      * Tells if current document has embed media information.
      *

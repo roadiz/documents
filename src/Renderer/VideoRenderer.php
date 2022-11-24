@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Renderer;
 
+use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\DocumentFinderInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\HasThumbnailInterface;
-use RZ\Roadiz\Documents\Packages;
 use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
 
@@ -15,21 +15,14 @@ class VideoRenderer extends AbstractRenderer
 {
     protected DocumentFinderInterface $documentFinder;
 
-    /**
-     * @param Packages                      $packages
-     * @param DocumentFinderInterface       $documentFinder
-     * @param Environment                   $templating
-     * @param DocumentUrlGeneratorInterface $documentUrlGenerator
-     * @param string                        $templateBasePath
-     */
     public function __construct(
-        Packages $packages,
+        FilesystemOperator $documentsStorage,
         DocumentFinderInterface $documentFinder,
         Environment $templating,
         DocumentUrlGeneratorInterface $documentUrlGenerator,
         string $templateBasePath = 'documents'
     ) {
-        parent::__construct($packages, $templating, $documentUrlGenerator, $templateBasePath);
+        parent::__construct($documentsStorage, $templating, $documentUrlGenerator, $templateBasePath);
         $this->documentFinder = $documentFinder;
     }
 

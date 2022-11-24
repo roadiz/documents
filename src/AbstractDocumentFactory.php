@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents;
 
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\FileHashInterface;
 use RZ\Roadiz\Documents\Models\FolderInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -21,16 +22,16 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 abstract class AbstractDocumentFactory
 {
-    private Packages $packages;
     private LoggerInterface $logger;
     private ?File $file = null;
     private ?FolderInterface $folder = null;
+    private FilesystemOperator $documentsStorage;
 
     public function __construct(
-        Packages $packages,
+        FilesystemOperator $documentsStorage,
         ?LoggerInterface $logger = null
     ) {
-        $this->packages = $packages;
+        $this->documentsStorage = $documentsStorage;
         $this->logger = $logger ?? new NullLogger();
     }
 
@@ -111,6 +112,7 @@ abstract class AbstractDocumentFactory
      * @param bool $allowEmpty
      *
      * @return null|DocumentInterface
+     * @throws FilesystemException
      */
     public function getDocument(bool $allowEmpty = false): ?DocumentInterface
     {
@@ -143,12 +145,7 @@ abstract class AbstractDocumentFactory
                 $document->setFileHashAlgorithm($this->getHashAlgorithm());
             }
 
-            if ($document->getFilename() !== '') {
-                $file->move(
-                    $this->packages->getDocumentFolderPath($document),
-                    $document->getFilename()
-                );
-            }
+            $this->moveFile($file, $document);
         }
 
         $this->persistDocument($document);
@@ -164,8 +161,9 @@ abstract class AbstractDocumentFactory
     /**
      * Updates a document from UploadedFile, Be careful, this method does not flush.
      *
-     * @param  DocumentInterface $document
+     * @param DocumentInterface $document
      * @return DocumentInterface
+     * @throws FilesystemException
      */
     public function updateDocument(DocumentInterface $document): DocumentInterface
     {
@@ -180,25 +178,22 @@ abstract class AbstractDocumentFactory
         }
 
         if ($document->isLocal()) {
-            $documentPath = $this->packages->getDocumentFilePath($document);
-
             /*
              * In case file already exists
              */
-            if ($fs->exists($documentPath)) {
-                $fs->remove($documentPath);
+            if ($this->documentsStorage->fileExists($document->getMountPath())) {
+                $this->documentsStorage->delete($document->getMountPath());
             }
         }
 
         if (DownloadedFile::sanitizeFilename($this->getFileName()) == $document->getFilename()) {
-            $finder = new Finder();
-            $previousFolder = $this->packages->getDocumentFolderPath($document);
+            $previousFolder = $document->getMountFolderPath();
 
-            if ($fs->exists($previousFolder)) {
-                $finder->files()->in($previousFolder);
+            if ($this->documentsStorage->directoryExists($previousFolder)) {
+                $hasFiles = \count($this->documentsStorage->listContents($previousFolder)->toArray()) > 0;
                 // Remove previous folder if it's empty
-                if ($finder->count() == 0) {
-                    $fs->remove($previousFolder);
+                if (!$hasFiles) {
+                    $this->documentsStorage->deleteDirectory($previousFolder);
                 }
             }
 
@@ -212,13 +207,30 @@ abstract class AbstractDocumentFactory
             $document->setMimeType($file->getMimeType() ?? '');
         }
         $this->parseSvgMimeType($document);
-
-        $file->move(
-            $this->packages->getDocumentFolderPath($document),
-            $document->getFilename()
-        );
+        $this->moveFile($file, $document);
 
         return $document;
+    }
+
+    /**
+     * @param File $localFile
+     * @param DocumentInterface $document
+     * @return void
+     * @throws FilesystemException
+     */
+    public function moveFile(File $localFile, DocumentInterface $document): void
+    {
+        if (null !== $document->getMountPath()) {
+            $stream = fopen($localFile->getPathname(), 'r');
+            $this->documentsStorage->writeStream(
+                $document->getMountPath(),
+                $stream
+            );
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+            (new Filesystem())->remove($localFile);
+        }
     }
 
     /**
@@ -249,6 +261,7 @@ abstract class AbstractDocumentFactory
      * @param string $downloadUrl
      *
      * @return DocumentInterface|null
+     * @throws FilesystemException
      */
     public function getDocumentFromUrl(string $downloadUrl): ?DocumentInterface
     {

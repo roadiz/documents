@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents;
 
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 
 final class SvgSizeResolver
 {
     private DocumentInterface $document;
-    private Packages $packages;
     private ?\DOMDocument $xmlDocument = null;
     private ?\DOMNode $svgNode = null;
+    private FilesystemOperator $documentsStorage;
 
-    /**
-     * @param DocumentInterface $document
-     * @param Packages $packages
-     */
-    public function __construct(DocumentInterface $document, Packages $packages)
+    public function __construct(DocumentInterface $document, FilesystemOperator $documentsStorage)
     {
         $this->document = $document;
-        $this->packages = $packages;
+        $this->documentsStorage = $documentsStorage;
     }
 
     /**
@@ -124,13 +122,16 @@ final class SvgSizeResolver
         return $this->getSvgNode()->attributes;
     }
 
+    /**
+     * @throws FilesystemException
+     */
     private function getDOMDocument(): \DOMDocument
     {
         if (null === $this->xmlDocument) {
             $this->xmlDocument = new \DOMDocument();
-            $documentPath = $this->packages->getDocumentFilePath($this->document);
-            if (false === $this->xmlDocument->load($documentPath)) {
-                throw new \RuntimeException(sprintf('SVG (%s) could not be loaded.', $documentPath));
+            $svgSource = $this->documentsStorage->read($this->document->getMountPath());
+            if (false === $this->xmlDocument->loadXML($svgSource)) {
+                throw new \RuntimeException(sprintf('SVG (%s) could not be loaded.', $this->document->getMountPath()));
             }
         }
         return $this->xmlDocument;

@@ -42,9 +42,8 @@ class DocumentSizeCommand extends AbstractDocumentCommand
             return;
         }
         if ($document->isImage()) {
-            $documentPath = $this->packages->getDocumentFilePath($document);
             try {
-                $imageProcess = $this->imageManager->make($documentPath);
+                $imageProcess = $this->imageManager->make($this->documentsStorage->readStream($document->getMountPath()));
                 $document->setImageWidth($imageProcess->width());
                 $document->setImageHeight($imageProcess->height());
             } catch (NotReadableException $exception) {
@@ -52,11 +51,11 @@ class DocumentSizeCommand extends AbstractDocumentCommand
                  * Do nothing
                  * just return 0 width and height
                  */
-                $this->io->error($documentPath . ' is not a readable image.');
+                $this->io->error($document->getMountPath() . ' is not a readable image.');
             }
         } elseif ($document->isSvg()) {
             try {
-                $svgSizeResolver = new SvgSizeResolver($document, $this->packages);
+                $svgSizeResolver = new SvgSizeResolver($document, $this->documentsStorage);
                 $document->setImageWidth($svgSizeResolver->getWidth());
                 $document->setImageHeight($svgSizeResolver->getHeight());
             } catch (\RuntimeException $exception) {

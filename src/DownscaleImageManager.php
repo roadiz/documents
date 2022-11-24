@@ -8,31 +8,24 @@ use Doctrine\ORM\EntityManagerInterface;
 use Intervention\Image\Constraint;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\FileHashInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
-class DownscaleImageManager
+final class DownscaleImageManager
 {
     protected EntityManagerInterface $em;
-    protected Packages $packages;
     protected ?LoggerInterface $logger;
     protected int $maxPixelSize = 0;
     protected string $rawImageSuffix = ".raw";
     protected ImageManager $imageManager;
+    private FilesystemOperator $documentsStorage;
 
-    /**
-     * @param EntityManagerInterface $em
-     * @param Packages $packages
-     * @param ImageManager $imageManager
-     * @param LoggerInterface|null $logger
-     * @param int $maxPixelSize
-     * @param string $rawImageSuffix
-     */
     public function __construct(
         EntityManagerInterface $em,
-        Packages $packages,
+        FilesystemOperator $documentsStorage,
         ImageManager $imageManager,
         ?LoggerInterface $logger = null,
         int $maxPixelSize = 0,
@@ -43,28 +36,30 @@ class DownscaleImageManager
         $this->em = $em;
         $this->logger = $logger;
         $this->imageManager = $imageManager;
-        $this->packages = $packages;
+        $this->documentsStorage = $documentsStorage;
     }
 
     /**
      * Downscale document if needed, overriding raw document.
      *
      * @param DocumentInterface|null $document
+     * @throws FilesystemException
      */
     public function processAndOverrideDocument(?DocumentInterface $document = null): void
     {
         if (null !== $document && $document->isLocal() && $this->maxPixelSize > 0) {
-            $rawDocumentFilePath = $this->packages->getDocumentFilePath($document);
-            $processImage = $this->getDownscaledImage($this->imageManager->make($rawDocumentFilePath));
+            $processImage = $this->getDownscaledImage($this->imageManager->make(
+                $this->documentsStorage->readStream($document->getMountPath())
+            ));
             if (false !== $processImage) {
                 if (
-                    false !== $this->createDocumentFromImage($document, $processImage)
+                    null !== $this->createDocumentFromImage($document, $processImage)
                     && null !== $this->logger
                 ) {
                     $this->logger->info(
                         'Document has been downscaled.',
                         [
-                            'path' => $rawDocumentFilePath
+                            'path' => $document->getMountPath()
                         ]
                     );
                 }
@@ -76,22 +71,25 @@ class DownscaleImageManager
      * Downscale document if needed, keeping existing raw document.
      *
      * @param DocumentInterface|null $document
+     * @throws FilesystemException
      */
     public function processDocumentFromExistingRaw(?DocumentInterface $document = null): void
     {
         if (null !== $document && $document->isLocal() && $this->maxPixelSize > 0) {
             if (null !== $document->getRawDocument() && $document->getRawDocument()->isLocal()) {
-                $rawDocumentFile = $this->packages->getDocumentFilePath($document->getRawDocument());
+                $documentPath = $document->getRawDocument()->getMountPath();
             } else {
-                $rawDocumentFile = $this->packages->getDocumentFilePath($document);
+                $documentPath = $document->getMountPath();
             }
 
-            if (false !== $processImage = $this->getDownscaledImage($this->imageManager->make($rawDocumentFile))) {
+            $documentStream = $this->documentsStorage->readStream($documentPath);
+
+            if (false !== $processImage = $this->getDownscaledImage($this->imageManager->make($documentStream))) {
                 if (
-                    false !== $this->createDocumentFromImage($document, $processImage, true)
+                    null !== $this->createDocumentFromImage($document, $processImage, true)
                     && null !== $this->logger
                 ) {
-                    $this->logger->info('Document has been downscaled.', ['path' => $rawDocumentFile]);
+                    $this->logger->info('Document has been downscaled.', ['path' => $documentPath]);
                 }
             }
         }
@@ -107,7 +105,7 @@ class DownscaleImageManager
     protected function getDownscaledImage(Image $processImage): ?Image
     {
         if (
-            $processImage->mime() != 'image/gif'
+            $processImage->mime() !== 'image/gif'
             && ($processImage->width() > $this->maxPixelSize || $processImage->height() > $this->maxPixelSize)
         ) {
             // prevent possible upsizing
@@ -120,44 +118,46 @@ class DownscaleImageManager
                 }
             );
             return $processImage;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
      * @param DocumentInterface $document
-     * @param string $documentPath
      * @return void
      */
-    protected function updateDocumentFileHash(DocumentInterface $document, string $documentPath): void
+    protected function updateDocumentFileHash(DocumentInterface $document): void
     {
         /*
          * We need to re-hash file after being downscaled
          */
         if (
             $document instanceof FileHashInterface &&
-            null !== $document->getFileHashAlgorithm() &&
-            false !== $fileHash = hash_file($document->getFileHashAlgorithm(), $documentPath)
+            null !== $document->getFileHashAlgorithm()
         ) {
-            $document->setFileHash($fileHash);
+            $document->setFileHash($this->documentsStorage->checksum(
+                $document->getMountPath(),
+                ['checksum_algo' => $document->getFileHashAlgorithm()]
+            ));
         }
     }
 
     /**
-     * @param  DocumentInterface $originalDocument
-     * @param  Image|null        $processImage
-     * @param  bool          $keepExistingRaw
-     * @return DocumentInterface|bool Return new Document or FALSE
+     * @param DocumentInterface $originalDocument
+     * @param Image|null $processImage
+     * @param bool $keepExistingRaw
+     * @return DocumentInterface|null
+     * @throws FilesystemException
      */
     protected function createDocumentFromImage(
         DocumentInterface $originalDocument,
         Image $processImage = null,
         bool $keepExistingRaw = false
-    ) {
-        $fs = new Filesystem();
-
-        if (false === $keepExistingRaw && null !== $formerRawDoc = $originalDocument->getRawDocument()) {
+    ): ?DocumentInterface {
+        if (
+            false === $keepExistingRaw &&
+            null !== $formerRawDoc = $originalDocument->getRawDocument()
+        ) {
             /*
              * When document already exists with a raw doc reference.
              * We have to delete former raw document before creating a new one.
@@ -174,77 +174,78 @@ class DownscaleImageManager
         }
 
         if (null === $originalDocument->getRawDocument() || $keepExistingRaw === false) {
+            if (null === $processImage) {
+                return $originalDocument;
+            }
             /*
              * We clone it to host raw document.
              * Keeping the same document to preserve existing relationships!!
              *
              * Get every data from raw document.
              */
-            if (null !== $processImage) {
-                $rawDocument = clone $originalDocument;
-                $rawDocumentName = preg_replace(
-                    '#\.(jpe?g|gif|tiff?|png|psd|webp|avif|heic|heif)$#',
-                    $this->rawImageSuffix . '.$1',
-                    $originalDocument->getFilename()
+            $rawDocument = clone $originalDocument;
+            $rawDocumentName = preg_replace(
+                '#\.(jpe?g|gif|tiff?|png|psd|webp|avif|heic|heif)$#',
+                $this->rawImageSuffix . '.$1',
+                $originalDocument->getFilename()
+            );
+            if (null === $rawDocumentName) {
+                throw new \InvalidArgumentException('Raw document filename cannot be null');
+            }
+            $rawDocument->setFilename($rawDocumentName);
+            $originalDocumentPath = $originalDocument->getMountPath();
+            $rawDocumentPath = $rawDocument->getMountPath();
+
+            if (
+                $this->documentsStorage->fileExists($originalDocumentPath)
+                && !$this->documentsStorage->fileExists($rawDocumentPath)
+            ) {
+                /*
+                 * Original document path becomes raw document path. Rename it.
+                 */
+                $this->documentsStorage->move($originalDocumentPath, $rawDocumentPath);
+                /*
+                 * Then save downscaled image as original document path.
+                 */
+                $this->documentsStorage->write(
+                    $originalDocumentPath,
+                    $processImage->encode(null, 100)->getEncoded()
                 );
-                if (null === $rawDocumentName) {
-                    throw new \InvalidArgumentException('Raw document filename cannot be null');
-                }
-                $rawDocument->setFilename($rawDocumentName);
+                $originalDocument->setRawDocument($rawDocument);
 
-                $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
-                $rawDocumentPath = $this->packages->getDocumentFilePath($rawDocument);
+                /*
+                 * We need to re-hash file after being downscaled
+                 */
+                $this->updateDocumentFileHash($originalDocument);
+                $rawDocument->setRaw(true);
 
-                if (
-                    $fs->exists($originalDocumentPath)
-                    && !$fs->exists($rawDocumentPath)
-                ) {
-                    /*
-                     * Original document path becomes raw document path. Rename it.
-                     */
-                    $fs->rename($originalDocumentPath, $rawDocumentPath);
-                    /*
-                     * Then save downscaled image as original document path.
-                     */
-                    $processImage->save($originalDocumentPath, 100);
-                    $originalDocument->setRawDocument($rawDocument);
+                $this->em->persist($rawDocument);
+                $this->em->flush();
 
-                    /*
-                     * We need to re-hash file after being downscaled
-                     */
-                    $this->updateDocumentFileHash($originalDocument, $originalDocumentPath);
-
-                    $rawDocument->setRaw(true);
-
-                    $this->em->persist($rawDocument);
-                    $this->em->flush();
-
-                    return $originalDocument;
-                } else {
-                    return false;
-                }
-            } else {
                 return $originalDocument;
             }
+            return null;
         } elseif (null !== $processImage) {
             /*
              * New downscale document has been generated, we keep existing RAW document
              * but we override downscaled file with the new one.
              */
-            $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
+            $originalDocumentPath = $originalDocument->getMountPath();
             /*
              * Remove existing downscaled document.
              */
-            $fs->remove($originalDocumentPath);
+            $this->documentsStorage->delete($originalDocumentPath);
             /*
              * Then save downscaled image as original document path.
              */
-            $processImage->save($originalDocumentPath, 100);
+            $this->documentsStorage->write(
+                $originalDocumentPath,
+                $processImage->encode(null, 100)->getEncoded()
+            );
             /*
              * We need to re-hash file after being downscaled
              */
-            $this->updateDocumentFileHash($originalDocument, $originalDocumentPath);
-
+            $this->updateDocumentFileHash($originalDocument);
             $this->em->flush();
 
             return $originalDocument;
@@ -255,14 +256,17 @@ class DownscaleImageManager
              */
             $rawDocument = $originalDocument->getRawDocument();
             if (null !== $rawDocument) {
-                $originalDocumentPath = $this->packages->getDocumentFilePath($originalDocument);
-                $rawDocumentPath = $this->packages->getDocumentFilePath($rawDocument);
+                $originalDocumentPath = $originalDocument->getMountPath();
+                $rawDocumentPath = $rawDocument->getMountPath();
 
                 /*
                  * Remove existing downscaled document.
                  */
-                $fs->remove($originalDocumentPath);
-                $fs->copy($rawDocumentPath, $originalDocumentPath, true);
+                $this->documentsStorage->delete($originalDocumentPath);
+                $this->documentsStorage->move(
+                    $rawDocumentPath,
+                    $originalDocumentPath
+                );
 
                 /*
                  * Remove Raw document
@@ -271,7 +275,7 @@ class DownscaleImageManager
                 /*
                  * We need to re-hash file after being downscaled
                  */
-                $this->updateDocumentFileHash($originalDocument, $originalDocumentPath);
+                $this->updateDocumentFileHash($originalDocument);
                 /*
                  * Make sure to disconnect raw document before removing it
                  * not to trigger Cascade deleting.

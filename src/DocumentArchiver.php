@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents;
 
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,14 +16,11 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
  */
 final class DocumentArchiver
 {
-    private Packages $packages;
+    private FilesystemOperator $documentsStorage;
 
-    /**
-     * @param Packages $packages
-     */
-    public function __construct(Packages $packages)
+    public function __construct(FilesystemOperator $documentsStorage)
     {
-        $this->packages = $packages;
+        $this->documentsStorage = $documentsStorage;
     }
 
     /**
@@ -29,6 +28,7 @@ final class DocumentArchiver
      * @param string $name
      * @param bool $keepFolders
      * @return string Zip file path
+     * @throws FilesystemException
      */
     public function archive(array $documents, string $name, bool $keepFolders = true): string
     {
@@ -49,17 +49,13 @@ final class DocumentArchiver
                 $document = $rawDocument;
             }
             if ($document->isLocal()) {
-                $documentPath = $this->packages->getDocumentFilePath($document);
-                if ($fs->exists($documentPath)) {
+                if ($this->documentsStorage->fileExists($document->getMountPath())) {
                     if ($keepFolders) {
                         $zipPathname = $document->getFolder() . DIRECTORY_SEPARATOR . $document->getFilename();
                     } else {
                         $zipPathname = $document->getFilename();
                     }
-                    $zip->addFile(
-                        $documentPath,
-                        $zipPathname
-                    );
+                    $zip->addFromString($zipPathname, $this->documentsStorage->read($document->getMountPath()));
                 }
             }
         }

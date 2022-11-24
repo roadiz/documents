@@ -4,23 +4,20 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Renderer;
 
+use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\OptionsResolver\ViewOptionsResolver;
-use RZ\Roadiz\Documents\Packages;
 use RZ\Roadiz\Documents\Viewers\SvgDocumentViewer;
 
 class SvgRenderer implements RendererInterface
 {
-    protected Packages $packages;
     protected ViewOptionsResolver $viewOptionsResolver;
+    protected FilesystemOperator $documentsStorage;
 
-    /**
-     * @param Packages $packages
-     */
-    public function __construct(Packages $packages)
+    public function __construct(FilesystemOperator $documentsStorage)
     {
-        $this->packages = $packages;
         $this->viewOptionsResolver = new ViewOptionsResolver();
+        $this->documentsStorage = $documentsStorage;
     }
 
     public function supports(DocumentInterface $document, array $options): bool
@@ -33,10 +30,7 @@ class SvgRenderer implements RendererInterface
         $options = $this->viewOptionsResolver->resolve($options);
         $assignation = array_filter($options);
         $attributes = $this->getAttributes($assignation);
-        $attributes['src'] = $this->packages->getUrl(
-            $document->getRelativePath() ?? '',
-            Packages::DOCUMENTS
-        );
+        $attributes['src'] = $this->documentsStorage->publicUrl($document->getMountPath());
 
         $attrs = [];
         foreach ($attributes as $key => $value) {

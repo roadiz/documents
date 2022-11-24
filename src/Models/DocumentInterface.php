@@ -101,6 +101,11 @@ interface DocumentInterface
      */
     public function getMountPath(): ?string;
 
+    /**
+     * @return string|null Get document's folder relative path prefixed with mount information public:// or private://
+     */
+    public function getMountFolderPath(): ?string;
+
     public function getEmbedId(): ?string;
 
     /**

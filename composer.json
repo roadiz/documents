@@ -29,6 +29,7 @@
         "guzzlehttp/guzzle": "^6.3 || ^7.2.0",
         "guzzlehttp/psr7": "^2.0",
         "intervention/image": "^2.5",
+        "league/flysystem": "^3.0",
         "monolog/monolog": "^1.24.0 || ^2.1.1",
         "symfony/asset": "5.4.*",
         "symfony/console": "5.4.*",

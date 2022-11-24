@@ -4,41 +4,46 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\UrlGenerators;
 
+use League\Flysystem\FilesystemOperator;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\OptionsResolver\ViewOptionsResolver;
-use RZ\Roadiz\Documents\Packages;
+use Symfony\Component\HttpFoundation\UrlHelper;
 
 abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInterface
 {
-    protected Packages $packages;
     protected ?DocumentInterface $document;
     protected array $options;
     protected CacheItemPoolInterface $optionsCacheAdapter;
     protected ViewOptionsResolver $viewOptionsResolver;
     protected OptionsCompiler $optionCompiler;
+    protected FilesystemOperator $documentsStorage;
+    private UrlHelper $urlHelper;
 
     /**
-     * @param Packages $packages
+     * @param FilesystemOperator $documentsStorage
+     * @param UrlHelper $urlHelper
      * @param CacheItemPoolInterface $optionsCacheAdapter
      * @param DocumentInterface|null $document
      * @param array $options
      * @throws InvalidArgumentException
      */
     public function __construct(
-        Packages $packages,
+        FilesystemOperator $documentsStorage,
+        UrlHelper $urlHelper,
         CacheItemPoolInterface $optionsCacheAdapter,
         DocumentInterface $document = null,
         array $options = []
     ) {
         $this->document = $document;
-        $this->packages = $packages;
         $this->viewOptionsResolver = new ViewOptionsResolver();
         $this->optionCompiler = new OptionsCompiler();
         $this->optionsCacheAdapter = $optionsCacheAdapter;
 
         $this->setOptions($options);
+        $this->documentsStorage = $documentsStorage;
+        $this->urlHelper = $urlHelper;
     }
 
     /**
@@ -92,11 +97,12 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
         }
 
         if ($this->options['noProcess'] === true || !$this->document->isProcessable()) {
-            $documentPackageName = $absolute ? Packages::ABSOLUTE_DOCUMENTS : Packages::DOCUMENTS;
-            return $this->packages->getUrl(
-                ltrim($this->document->getRelativePath() ?? '', '/'),
-                $documentPackageName
-            );
+            $publicUrl = $this->documentsStorage->publicUrl($this->document->getMountPath());
+            if ($absolute && \str_starts_with($publicUrl, '/')) {
+                return $this->urlHelper->getAbsoluteUrl($publicUrl);
+            } else {
+                return $this->documentsStorage->publicUrl($this->document->getMountPath());
+            }
         }
 
         return $this->getProcessedDocumentUrlByArray($absolute);

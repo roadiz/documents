@@ -37,16 +37,17 @@ class DocumentAverageColorCommand extends AbstractDocumentCommand
     private function updateDocumentColor(DocumentInterface $document)
     {
         if ($document->isImage() && $document instanceof AdvancedDocumentInterface) {
-            $documentPath = $this->packages->getDocumentFilePath($document);
             try {
-                $mediumColor = (new AverageColorResolver())->getAverageColor($this->imageManager->make($documentPath));
+                $mediumColor = (new AverageColorResolver())->getAverageColor($this->imageManager->make(
+                    $this->documentsStorage->readStream($document->getMountPath())
+                ));
                 $document->setImageAverageColor($mediumColor);
             } catch (NotReadableException $exception) {
                 /*
                  * Do nothing
                  * just return 0 width and height
                  */
-                $this->io->error($documentPath . ' is not a readable image.');
+                $this->io->error($document->getMountPath() . ' is not a readable image.');
             }
         }
     }

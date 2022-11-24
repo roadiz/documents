@@ -16,6 +16,9 @@ use Symfony\Component\Asset\VersionStrategy\VersionStrategyInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * @deprecated Use FilesystemOperator $documentsStorage instead to support external filesystems.
+ */
 class Packages extends BasePackages
 {
     /**
@@ -268,6 +271,7 @@ class Packages extends BasePackages
      *
      * @param  string $relativePath
      * @return string
+     * @deprecated Use FilesystemOperator font.storage instead to support external filesystems.
      */
     public function getFontsPath(string $relativePath): string
     {
@@ -279,6 +283,7 @@ class Packages extends BasePackages
      *
      * @param  string $relativePath
      * @return string
+     * @deprecated Use FilesystemOperator documents.storage instead to support external filesystems.
      */
     public function getPublicFilesPath(string $relativePath): string
     {
@@ -290,6 +295,7 @@ class Packages extends BasePackages
      *
      * @param  string $relativePath
      * @return string
+     * @deprecated Use FilesystemOperator documents.storage instead to support external filesystems.
      */
     public function getPrivateFilesPath(string $relativePath): string
     {
@@ -300,6 +306,7 @@ class Packages extends BasePackages
      * @param DocumentInterface $document
      * @return string Document file absolute path according if document is private or not.
      * @throws DocumentWithoutFileException
+     * @deprecated Use FilesystemOperator documents.storage instead to support external filesystems.
      */
     public function getDocumentFilePath(DocumentInterface $document): string
     {
@@ -316,6 +323,7 @@ class Packages extends BasePackages
      * @param DocumentInterface $document
      * @return string Document folder absolute path according if document is private or not.
      * @throws DocumentWithoutFileException
+     * @deprecated Use FilesystemOperator documents.storage instead to support external filesystems.
      */
     public function getDocumentFolderPath(DocumentInterface $document): string
     {
@@ -330,6 +338,7 @@ class Packages extends BasePackages
 
     /**
      * @return string
+     * @deprecated Use FilesystemOperator documents.storage instead to support external filesystems.
      */
     public function getStaticDomain(): string
     {
@@ -339,6 +348,7 @@ class Packages extends BasePackages
     /**
      * @param  string $staticDomain
      * @return Packages
+     * @deprecated Use FilesystemOperator documents.storage instead to support external filesystems.
      */
     public function setStaticDomain(string $staticDomain): Packages
     {

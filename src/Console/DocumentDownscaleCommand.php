@@ -7,6 +7,7 @@ namespace RZ\Roadiz\Documents\Console;
 use Doctrine\Persistence\ManagerRegistry;
 use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\ImageManager;
+use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\DownscaleImageManager;
 use RZ\Roadiz\Documents\Events\CachePurgeAssetsRequestEvent;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
@@ -30,11 +31,12 @@ class DocumentDownscaleCommand extends AbstractDocumentCommand
         ManagerRegistry $managerRegistry,
         Packages $packages,
         ImageManager $imageManager,
+        FilesystemOperator $documentsStorage,
         ?int $maxPixelSize,
         DownscaleImageManager $downscaler,
         EventDispatcherInterface $dispatcher
     ) {
-        parent::__construct($managerRegistry, $packages, $imageManager);
+        parent::__construct($managerRegistry, $packages, $imageManager, $documentsStorage);
         $this->maxPixelSize = $maxPixelSize;
         $this->downscaler = $downscaler;
         $this->dispatcher = $dispatcher;

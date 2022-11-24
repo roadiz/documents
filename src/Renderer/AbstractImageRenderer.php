@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Renderer;
 
+use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory;
 use RZ\Roadiz\Documents\Models\AdvancedDocumentInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
-use RZ\Roadiz\Documents\Packages;
 use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
 
@@ -16,13 +16,13 @@ abstract class AbstractImageRenderer extends AbstractRenderer
     protected EmbedFinderFactory $embedFinderFactory;
 
     public function __construct(
-        Packages $packages,
+        FilesystemOperator $documentsStorage,
         EmbedFinderFactory $embedFinderFactory,
         Environment $templating,
         DocumentUrlGeneratorInterface $documentUrlGenerator,
         string $templateBasePath = 'documents'
     ) {
-        parent::__construct($packages, $templating, $documentUrlGenerator, $templateBasePath);
+        parent::__construct($documentsStorage, $templating, $documentUrlGenerator, $templateBasePath);
         $this->embedFinderFactory = $embedFinderFactory;
     }
 

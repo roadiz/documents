@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\TwigExtension;
 
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory;
 use RZ\Roadiz\Documents\MediaFinders\EmbedFinderInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\SizeableInterface;
-use RZ\Roadiz\Documents\Packages;
 use RZ\Roadiz\Documents\Renderer\RendererInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\OptionsResolver\Exception\InvalidArgumentException;
 use Twig\Error\RuntimeError;
 use Twig\Extension\AbstractExtension;
@@ -25,24 +25,24 @@ final class DocumentExtension extends AbstractExtension
     private bool $throwExceptions;
     private RendererInterface $renderer;
     private EmbedFinderFactory $embedFinderFactory;
-    private Packages $assetPackages;
+    private FilesystemOperator $documentsStorage;
 
     /**
-     * @param RendererInterface  $renderer
+     * @param RendererInterface $renderer
      * @param EmbedFinderFactory $embedFinderFactory
-     * @param Packages           $assetPackages
-     * @param bool               $throwExceptions    Trigger exception if using filter on NULL values (default: false)
+     * @param FilesystemOperator $documentsStorage
+     * @param bool $throwExceptions Trigger exception if using filter on NULL values (default: false)
      */
     public function __construct(
         RendererInterface $renderer,
         EmbedFinderFactory $embedFinderFactory,
-        Packages $assetPackages,
+        FilesystemOperator $documentsStorage,
         bool $throwExceptions = false
     ) {
         $this->throwExceptions = $throwExceptions;
         $this->renderer = $renderer;
         $this->embedFinderFactory = $embedFinderFactory;
-        $this->assetPackages = $assetPackages;
+        $this->documentsStorage = $documentsStorage;
     }
 
     /**
@@ -218,7 +218,7 @@ final class DocumentExtension extends AbstractExtension
     public function getPath(DocumentInterface $document = null): ?string
     {
         if (null !== $document && $document->isLocal()) {
-            return $this->assetPackages->getDocumentFilePath($document);
+            return $this->documentsStorage->publicUrl($document->getMountPath());
         }
 
         return null;
@@ -227,12 +227,12 @@ final class DocumentExtension extends AbstractExtension
     /**
      * @param DocumentInterface|null $document
      * @return bool
+     * @throws FilesystemException
      */
     public function exists(DocumentInterface $document = null): bool
     {
         if (null !== $document && $document->isLocal()) {
-            $fs = new Filesystem();
-            return $fs->exists($this->assetPackages->getDocumentFilePath($document));
+            return $this->documentsStorage->fileExists($document->getMountPath());
         }
 
         return false;

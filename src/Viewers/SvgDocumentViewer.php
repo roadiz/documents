@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Documents\Viewers;
 
 use enshrined\svgSanitize\Sanitizer;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class SvgDocumentViewer
 {
-    protected string $imagePath;
     protected array $attributes;
     protected bool $asObject = false;
     protected string $imageUrl;
+    protected FilesystemOperator $documentsStorage;
+    protected DocumentInterface $document;
 
     /**
      * @var string[]
@@ -25,28 +29,31 @@ class SvgDocumentViewer
     ];
 
     /**
-     * @param string  $imagePath
-     * @param array   $attributes
-     * @param boolean $asObject   Default false
-     * @param string  $imageUrl   Only needed if you set $asObject to true.
+     * @param FilesystemOperator $documentsStorage
+     * @param DocumentInterface $document
+     * @param array $attributes
+     * @param boolean $asObject Default false
+     * @param string $imageUrl Only needed if you set $asObject to true.
      */
     public function __construct(
-        string $imagePath,
+        FilesystemOperator $documentsStorage,
+        DocumentInterface $document,
         array $attributes = [],
         bool $asObject = false,
         string $imageUrl = ""
     ) {
-        $this->imagePath = $imagePath;
         $this->imageUrl = $imageUrl;
         $this->attributes = $attributes;
         $this->asObject = $asObject;
+        $this->documentsStorage = $documentsStorage;
+        $this->document = $document;
     }
 
     /**
      * Get SVG string to be used inside HTML content.
      *
      * @return string
-     * @throws \Exception
+     * @throws FilesystemException
      */
     public function getContent(): string
     {
@@ -77,22 +84,19 @@ class SvgDocumentViewer
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws FilesystemException
      */
     protected function getInlineSvg(): string
     {
-        if (!file_exists($this->imagePath)) {
-            throw new FileNotFoundException('SVG file does not exist: ' . $this->imagePath);
+        if (!$this->documentsStorage->fileExists($this->document->getMountPath())) {
+            throw new FileNotFoundException('SVG file does not exist: ' . $this->document->getMountPath());
         }
         // Create a new sanitizer instance
         $sanitizer = new Sanitizer();
         $sanitizer->minify(true);
 
         // Load the dirty svg
-        $dirtySVG = file_get_contents($this->imagePath);
-        if (false === $dirtySVG) {
-            throw new \RuntimeException($this->imagePath . ' file is not readable.');
-        }
+        $dirtySVG = $this->documentsStorage->read($this->document->getMountPath());
         /**
          * @var string|false $cleanSVG
          */
@@ -145,14 +149,14 @@ class SvgDocumentViewer
     }
 
     /**
-     * @return     string
+     * @return string
      * @deprecated Use SvgRenderer to render HTML object.
      */
     protected function getObjectSvg(): string
     {
         $attributes = $this->getAllowedAttributes();
         $attributes['type'] = 'image/svg+xml';
-        $attributes['data'] = $this->imageUrl;
+        $attributes['data'] = $this->documentsStorage->publicUrl($this->document->getMountPath());
 
         if (isset($attributes['alt'])) {
             unset($attributes['alt']);

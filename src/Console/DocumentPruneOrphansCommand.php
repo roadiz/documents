@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Console;
 
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectManager;
+use League\Flysystem\FilesystemException;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 
 final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
 {
@@ -25,18 +24,9 @@ final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
         ;
     }
 
-    /**
-     * @return QueryBuilder
-     */
-    protected function getDocumentQueryBuilder(): QueryBuilder
-    {
-        return $this->getDocumentRepository()->createQueryBuilder('d');
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $em = $this->getManager();
-        $filesystem = new Filesystem();
         $this->io = new SymfonyStyle($input, $output);
         $dryRun = $input->getOption('dry-run');
         if ($dryRun) {
@@ -44,8 +34,8 @@ final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
         }
         $deleteCount = 0;
 
-        $this->onEachDocument(function (DocumentInterface $document) use ($filesystem, $em, $deleteCount, $dryRun) {
-            $this->checkDocumentFilesystem($document, $filesystem, $em, $deleteCount, $dryRun);
+        $this->onEachDocument(function (DocumentInterface $document) use ($em, $deleteCount, $dryRun) {
+            $this->checkDocumentFilesystem($document, $em, $deleteCount, $dryRun);
         }, new SymfonyStyle($input, $output));
 
         $this->io->success(sprintf('%d documents were deleted.', $deleteCount));
@@ -54,14 +44,13 @@ final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
 
     /**
      * @param DocumentInterface $document
-     * @param Filesystem $filesystem
      * @param ObjectManager $entityManager
      * @param int $deleteCount
      * @param bool $dryRun
+     * @throws FilesystemException
      */
     private function checkDocumentFilesystem(
         DocumentInterface $document,
-        Filesystem $filesystem,
         ObjectManager $entityManager,
         int &$deleteCount,
         bool $dryRun = false
@@ -70,12 +59,11 @@ final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
          * Do not prune embed documents which may not have any file
          */
         if (!$document->isEmbed()) {
-            $documentPath = $this->packages->getDocumentFilePath($document);
-            if (!$filesystem->exists($documentPath)) {
+            if (!$this->documentsStorage->fileExists($document->getMountPath())) {
                 if ($this->io->isDebug() && !$this->io->isQuiet()) {
                     $this->io->writeln(sprintf(
                         '%s file does not exist, pruning document %s',
-                        $document->getRelativePath(),
+                        $document->getMountPath(),
                         (string) $document
                     ));
                 }

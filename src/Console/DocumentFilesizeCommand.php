@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Console;
 
+use League\Flysystem\FilesystemException;
 use RZ\Roadiz\Documents\Models\AdvancedDocumentInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
-use Symfony\Component\HttpFoundation\File\File;
 
 class DocumentFilesizeCommand extends AbstractDocumentCommand
 {
@@ -38,17 +37,11 @@ class DocumentFilesizeCommand extends AbstractDocumentCommand
 
     private function updateDocumentFilesize(AdvancedDocumentInterface $document)
     {
-        if (null !== $document->getRelativePath()) {
-            $documentPath = $this->packages->getDocumentFilePath($document);
+        if (null !== $document->getMountPath()) {
             try {
-                $file = new File($documentPath);
-                $document->setFilesize($file->getSize());
-            } catch (FileNotFoundException $exception) {
-                /*
-                 * Do nothing
-                 * just return 0 width and height
-                 */
-                $this->io->error($documentPath . ' file not found.');
+                $document->setFilesize($this->documentsStorage->fileSize($document->getMountPath()));
+            } catch (FilesystemException $exception) {
+                $this->io->error($exception->getMessage());
             }
         }
     }

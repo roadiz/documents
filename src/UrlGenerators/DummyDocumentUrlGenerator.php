@@ -5,21 +5,11 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Documents\UrlGenerators;
 
 use RZ\Roadiz\Documents\Models\DocumentInterface;
-use RZ\Roadiz\Documents\Packages;
 
 class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
 {
     private ?DocumentInterface $document = null;
     private array $options = [];
-    private Packages $packages;
-
-    /**
-     * @param Packages $packages
-     */
-    public function __construct(Packages $packages)
-    {
-        $this->packages = $packages;
-    }
 
     public function getUrl(bool $absolute = false): string
     {
@@ -31,11 +21,7 @@ class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
         }
 
         if ($this->options['noProcess'] === true || !$this->document->isProcessable()) {
-            $documentPackageName = $absolute ? Packages::ABSOLUTE_DOCUMENTS : Packages::DOCUMENTS;
-            return $this->packages->getUrl(
-                ltrim($this->document->getRelativePath() ?? '', '/'),
-                $documentPackageName
-            );
+            return '/files/' . $this->document->getRelativePath();
         }
 
         $compiler = new OptionsCompiler();

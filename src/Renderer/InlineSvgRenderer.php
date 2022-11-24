@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Renderer;
 
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\OptionsResolver\ViewOptionsResolver;
-use RZ\Roadiz\Documents\Packages;
 use RZ\Roadiz\Documents\Viewers\SvgDocumentViewer;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class InlineSvgRenderer implements RendererInterface
 {
-    protected Packages $packages;
     protected ViewOptionsResolver $viewOptionsResolver;
+    protected FilesystemOperator $documentsStorage;
 
-    /**
-     * @param Packages $packages
-     */
-    public function __construct(Packages $packages)
+    public function __construct(FilesystemOperator $documentsStorage)
     {
-        $this->packages = $packages;
         $this->viewOptionsResolver = new ViewOptionsResolver();
+        $this->documentsStorage = $documentsStorage;
     }
 
     public function supports(DocumentInterface $document, array $options): bool
@@ -29,6 +27,12 @@ class InlineSvgRenderer implements RendererInterface
         return $document->isLocal() && $document->isSvg() && (isset($options['inline']) && $options['inline'] === true);
     }
 
+    /**
+     * @param DocumentInterface $document
+     * @param array $options
+     * @return string
+     * @throws FilesystemException
+     */
     public function render(DocumentInterface $document, array $options): string
     {
         $options = $this->viewOptionsResolver->resolve($options);
@@ -36,7 +40,8 @@ class InlineSvgRenderer implements RendererInterface
 
         try {
             $viewer = new SvgDocumentViewer(
-                $this->packages->getDocumentFilePath($document),
+                $this->documentsStorage,
+                $document,
                 $assignation
             );
             return trim($this->htmlTidy($viewer->getContent()));

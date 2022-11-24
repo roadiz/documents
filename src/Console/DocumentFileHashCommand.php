@@ -56,13 +56,13 @@ class DocumentFileHashCommand extends AbstractDocumentCommand
         /** @var DocumentInterface $document */
         foreach ($documents as $document) {
             if ($document instanceof FileHashInterface) {
-                $documentPath = $this->packages->getDocumentFilePath($document);
                 $algorithm = $document->getFileHashAlgorithm() ?? $defaultAlgorithm;
-                if (\file_exists($documentPath)) {
-                    if (false !== $fileHash = \hash_file($algorithm, $documentPath)) {
-                        $document->setFileHash($fileHash);
-                        $document->setFileHashAlgorithm($algorithm);
-                    }
+                # https://flysystem.thephpleague.com/docs/usage/checksums/
+                $this->documentsStorage->checksum($document->getMountPath(), ['checksum_algo' => $algorithm]);
+                if ($this->documentsStorage->fileExists($document->getMountPath())) {
+                    $fileHash = $this->documentsStorage->checksum($document->getMountPath(), ['checksum_algo' => $algorithm]);
+                    $document->setFileHash($fileHash);
+                    $document->setFileHashAlgorithm($algorithm);
                 }
 
                 if (($i % $batchSize) === 0) {

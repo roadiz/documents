@@ -4,36 +4,30 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Renderer;
 
+use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Exceptions\DocumentWithoutFileException;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\OptionsResolver\UrlOptionsResolver;
 use RZ\Roadiz\Documents\OptionsResolver\ViewOptionsResolver;
-use RZ\Roadiz\Documents\Packages;
 use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
 
 abstract class AbstractRenderer implements RendererInterface
 {
-    protected Packages $packages;
     protected Environment $templating;
     protected DocumentUrlGeneratorInterface $documentUrlGenerator;
     protected string $templateBasePath;
     protected UrlOptionsResolver $urlOptionsResolver;
     protected ViewOptionsResolver $viewOptionsResolver;
+    protected FilesystemOperator $documentsStorage;
 
-    /**
-     * @param Packages $packages
-     * @param Environment $templating
-     * @param DocumentUrlGeneratorInterface $documentUrlGenerator
-     * @param string $templateBasePath
-     */
     public function __construct(
-        Packages $packages,
+        FilesystemOperator $documentsStorage,
         Environment $templating,
         DocumentUrlGeneratorInterface $documentUrlGenerator,
         string $templateBasePath = 'documents'
     ) {
-        $this->packages = $packages;
+        $this->documentsStorage = $documentsStorage;
         $this->templating = $templating;
         $this->documentUrlGenerator = $documentUrlGenerator;
         $this->templateBasePath = $templateBasePath;
@@ -43,7 +37,7 @@ abstract class AbstractRenderer implements RendererInterface
 
     /**
      * @param DocumentInterface $document
-     * @param array             $options
+     * @param array $options
      *
      * @return string
      */
@@ -86,7 +80,7 @@ abstract class AbstractRenderer implements RendererInterface
         foreach ($sourcesDocs as $source) {
             $sources[$source->getMimeType()] = [
                 'mime' => $source->getMimeType(),
-                'url' => $this->packages->getUrl($source->getRelativePath() ?? '', Packages::DOCUMENTS),
+                'url' => $this->documentsStorage->publicUrl($source->getMountPath()),
             ];
         }
         krsort($sources);
@@ -95,7 +89,7 @@ abstract class AbstractRenderer implements RendererInterface
             // If exotic extension, fallbacks using original file
             $sources[$document->getMimeType()] = [
                 'mime' => $document->getMimeType(),
-                'url' => $this->packages->getUrl($document->getRelativePath() ?? '', Packages::DOCUMENTS),
+                'url' => $this->documentsStorage->publicUrl($document->getMountPath()),
             ];
         }
 
