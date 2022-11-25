@@ -168,7 +168,6 @@ abstract class AbstractDocumentFactory
     public function updateDocument(DocumentInterface $document): DocumentInterface
     {
         $file = $this->getFile();
-        $fs = new Filesystem();
 
         if (
             $file instanceof UploadedFile

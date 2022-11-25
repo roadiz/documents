@@ -8,21 +8,22 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\Visibility;
 use RZ\Roadiz\Documents\Exceptions\DocumentWithoutFileException;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
-use RZ\Roadiz\Documents\Models\FileAwareInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Handle file management on document's lifecycle events.
  */
 class DocumentLifeCycleSubscriber implements EventSubscriber
 {
-    private FileAwareInterface $fileAware;
+    private FilesystemOperator $documentsStorage;
 
-    public function __construct(FileAwareInterface $fileAware)
+    public function __construct(FilesystemOperator $documentsStorage)
     {
-        $this->fileAware = $fileAware;
+        $this->documentsStorage = $documentsStorage;
     }
 
     /**
@@ -38,6 +39,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
 
     /**
      * @param PreUpdateEventArgs $args
+     * @throws FilesystemException
      */
     public function preUpdate(PreUpdateEventArgs $args): void
     {
@@ -49,16 +51,15 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
             && is_string($args->getNewValue('filename'))
             && $args->getOldValue('filename') !== ''
         ) {
-            $fs = new Filesystem();
-            $oldPath = $this->getDocumentPathForFilename($document, $args->getOldValue('filename'));
-            $newPath = $this->getDocumentPathForFilename($document, $args->getNewValue('filename'));
+            $oldPath = $this->getDocumentMountPathForFilename($document, $args->getOldValue('filename'));
+            $newPath = $this->getDocumentMountPathForFilename($document, $args->getNewValue('filename'));
 
             if ($oldPath !== $newPath) {
-                if ($fs->exists($oldPath) && is_file($oldPath) && !$fs->exists($newPath)) {
+                if ($this->documentsStorage->fileExists($oldPath) && !$this->documentsStorage->fileExists($newPath)) {
                     /*
                      * Only perform IO rename if old file exists and new path is free.
                      */
-                    $fs->rename($oldPath, $newPath);
+                    $this->documentsStorage->move($oldPath, $newPath);
                 }
             }
         }
@@ -72,8 +73,9 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DocumentInterface  $document
+     * @param DocumentInterface $document
      * @param PreUpdateEventArgs $args
+     * @throws FilesystemException
      */
     protected function makePublic(DocumentInterface $document, PreUpdateEventArgs $args): void
     {
@@ -81,27 +83,20 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
         $documentPublicPath = $this->getDocumentPublicPath($document);
         $documentPrivatePath = $this->getDocumentPrivatePath($document);
 
-        $fs = new Filesystem();
-
-        if ($fs->exists($documentPrivatePath)) {
-            /*
-             * Create destination folder if not exist
-             */
-            if (!$fs->exists(dirname($documentPublicPath))) {
-                $fs->mkdir(dirname($documentPublicPath));
-            }
-
-            $fs->rename(
+        if ($this->documentsStorage->fileExists($documentPrivatePath)) {
+            $this->documentsStorage->move(
                 $documentPrivatePath,
                 $documentPublicPath
             );
+            $this->documentsStorage->setVisibility($documentPublicPath, Visibility::PUBLIC);
             $this->cleanFileDirectory($this->getDocumentPrivateFolderPath($document));
         }
     }
 
     /**
-     * @param DocumentInterface  $document
+     * @param DocumentInterface $document
      * @param PreUpdateEventArgs $args
+     * @throws FilesystemException
      */
     protected function makePrivate(DocumentInterface $document, PreUpdateEventArgs $args): void
     {
@@ -109,18 +104,12 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
         $documentPublicPath = $this->getDocumentPublicPath($document);
         $documentPrivatePath = $this->getDocumentPrivatePath($document);
 
-        $fs = new Filesystem();
-        if ($fs->exists($documentPublicPath)) {
-            /*
-             * Create destination folder if not exist
-             */
-            if (!$fs->exists(dirname($documentPrivatePath))) {
-                $fs->mkdir(dirname($documentPrivatePath));
-            }
-            $fs->rename(
+        if ($this->documentsStorage->fileExists($documentPublicPath)) {
+            $this->documentsStorage->move(
                 $documentPublicPath,
                 $documentPrivatePath
             );
+            $this->documentsStorage->setVisibility($documentPrivatePath, Visibility::PRIVATE);
             $this->cleanFileDirectory($this->getDocumentPublicFolderPath($document));
         }
     }
@@ -129,6 +118,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      * Unlink file after document has been deleted.
      *
      * @param LifecycleEventArgs $args
+     * @throws FilesystemException
      */
     public function postRemove(LifecycleEventArgs $args): void
     {
@@ -136,12 +126,11 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
         if ($document instanceof DocumentInterface) {
             try {
                 $this->validateDocument($document);
-                $fileSystem = new Filesystem();
                 $document->setRawDocument(null);
                 $documentPath = $this->getDocumentPath($document);
 
-                if ($fileSystem->exists($documentPath) && is_file($documentPath)) {
-                    $fileSystem->remove($documentPath);
+                if ($this->documentsStorage->fileExists($documentPath)) {
+                    $this->documentsStorage->delete($documentPath);
                 }
                 $this->cleanFileDirectory($this->getDocumentFolderPath($document));
             } catch (DocumentWithoutFileException $e) {
@@ -153,26 +142,23 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
     /**
      * Remove document directory if there is no other file in it.
      *
-     * @param  string $documentFolderPath
-     * @return bool
+     * @param string $documentFolderPath
+     * @return void
+     * @throws FilesystemException
      */
-    protected function cleanFileDirectory(string $documentFolderPath)
+    protected function cleanFileDirectory(string $documentFolderPath): void
     {
-        $fileSystem = new Filesystem();
-
-        if ($fileSystem->exists($documentFolderPath) && is_dir($documentFolderPath)) {
-            $isDirEmpty = !(new \FilesystemIterator($documentFolderPath))->valid();
+        if ($this->documentsStorage->directoryExists($documentFolderPath)) {
+            $isDirEmpty = \count($this->documentsStorage->listContents($documentFolderPath)->toArray()) <= 0;
             if ($isDirEmpty) {
-                $fileSystem->remove($documentFolderPath);
+                $this->documentsStorage->deleteDirectory($documentFolderPath);
             }
         }
-
-        return false;
     }
 
     /**
      * @param DocumentInterface $document
-     * @param string            $filename
+     * @param string $filename
      *
      * @return string
      */
@@ -189,16 +175,12 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      *
      * @return string
      */
-    protected function getDocumentPathForFilename(DocumentInterface $document, string $filename): string
+    protected function getDocumentMountPathForFilename(DocumentInterface $document, string $filename): string
     {
         if ($document->isPrivate()) {
-            return $this->fileAware->getPrivateFilesPath() .
-                DIRECTORY_SEPARATOR .
-                $this->getDocumentRelativePathForFilename($document, $filename);
+            return 'private://' . $this->getDocumentRelativePathForFilename($document, $filename);
         }
-        return $this->fileAware->getPublicFilesPath() .
-            DIRECTORY_SEPARATOR .
-            $this->getDocumentRelativePathForFilename($document, $filename);
+        return 'public://' . $this->getDocumentRelativePathForFilename($document, $filename);
     }
 
     /**
@@ -221,7 +203,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      */
     protected function getDocumentPublicPath(DocumentInterface $document): string
     {
-        return $this->fileAware->getPublicFilesPath() . DIRECTORY_SEPARATOR . $document->getRelativePath();
+        return 'public://' . $document->getRelativePath();
     }
 
     /**
@@ -230,7 +212,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      */
     protected function getDocumentPrivatePath(DocumentInterface $document): string
     {
-        return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getRelativePath();
+        return 'private://' . $document->getRelativePath();
     }
 
     /**
@@ -251,7 +233,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      */
     protected function getDocumentPublicFolderPath(DocumentInterface $document): string
     {
-        return $this->fileAware->getPublicFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
+        return 'public://' . $document->getFolder();
     }
 
     /**
@@ -260,7 +242,7 @@ class DocumentLifeCycleSubscriber implements EventSubscriber
      */
     protected function getDocumentPrivateFolderPath(DocumentInterface $document): string
     {
-        return $this->fileAware->getPrivateFilesPath() . DIRECTORY_SEPARATOR . $document->getFolder();
+        return 'private://' . $document->getFolder();
     }
 
     /**
