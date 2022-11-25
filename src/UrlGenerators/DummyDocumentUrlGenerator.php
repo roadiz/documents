@@ -21,7 +21,9 @@ class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
         }
 
         if ($this->options['noProcess'] === true || !$this->document->isProcessable()) {
-            return '/files/' . $this->document->getRelativePath();
+            $path = '/files/' . $this->document->getRelativePath();
+
+            return ($absolute) ? ('http://dummy.test' . $path) : ($path);
         }
 
         $compiler = new OptionsCompiler();

@@ -6,6 +6,7 @@ namespace RZ\Roadiz\Documents;
 
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\MountManager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
@@ -31,6 +32,9 @@ abstract class AbstractDocumentFactory
         FilesystemOperator $documentsStorage,
         ?LoggerInterface $logger = null
     ) {
+        if (!$documentsStorage instanceof MountManager) {
+            trigger_error('Document Storage must be a MountManager to address public and private files.', E_USER_WARNING);
+        }
         $this->documentsStorage = $documentsStorage;
         $this->logger = $logger ?? new NullLogger();
     }

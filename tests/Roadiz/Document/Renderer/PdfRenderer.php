@@ -4,11 +4,14 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Documents\Renderer\tests\units;
 
 use atoum;
+use League\Flysystem\Config;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\MountManager;
+use League\Flysystem\UrlGeneration\PublicUrlGenerator;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
-use RZ\Roadiz\Documents\Models\SimpleFileAware;
-use RZ\Roadiz\Documents\Packages;
 use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
-use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
@@ -30,7 +33,7 @@ class PdfRenderer extends atoum
 
         $this
             ->given($renderer = $this->newTestedInstance(
-                $this->getPackages(),
+                $this->getFilesystemOperator(),
                 $this->getEnvironment(),
                 $this->getUrlGenerator()
             ))
@@ -57,7 +60,7 @@ class PdfRenderer extends atoum
 
         $this
             ->given($renderer = $this->newTestedInstance(
-                $this->getPackages(),
+                $this->getFilesystemOperator(),
                 $this->getEnvironment(),
                 $this->getUrlGenerator()
             ))
@@ -77,23 +80,33 @@ class PdfRenderer extends atoum
      */
     private function getUrlGenerator(): DocumentUrlGeneratorInterface
     {
-        return new \mock\RZ\Roadiz\Documents\UrlGenerators\DummyDocumentUrlGenerator($this->getPackages());
+        return new \mock\RZ\Roadiz\Documents\UrlGenerators\DummyDocumentUrlGenerator();
     }
 
-    private function getPackages(): Packages
+    private function getFilesystemOperator(): FilesystemOperator
     {
-        return new Packages(
-            new EmptyVersionStrategy(),
-            $this->getDummyRequestStack(),
-            new SimpleFileAware(dirname(__DIR__) . '/../../../')
-        );
-    }
-
-    private function getDummyRequestStack(): RequestStack
-    {
-        $stack = new RequestStack();
-        $stack->push(Request::create('http://dummy.test'));
-        return $stack;
+        return new MountManager([
+            'public' => new Filesystem(
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../../files/'),
+                publicUrlGenerator: new class() implements PublicUrlGenerator
+                {
+                    public function publicUrl(string $path, Config $config): string
+                    {
+                        return '/files/' . $path;
+                    }
+                }
+            ),
+            'private' => new Filesystem(
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../../files/'),
+                publicUrlGenerator: new class() implements PublicUrlGenerator
+                {
+                    public function publicUrl(string $path, Config $config): string
+                    {
+                        return '/files/' . $path;
+                    }
+                }
+            )
+        ]);
     }
 
     private function getEnvironment(): Environment

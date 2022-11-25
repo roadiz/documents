@@ -4,13 +4,16 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Documents\Renderer\tests\units;
 
 use atoum;
+use League\Flysystem\Config;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\MountManager;
+use League\Flysystem\UrlGeneration\PublicUrlGenerator;
 use RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
-use RZ\Roadiz\Documents\Models\SimpleFileAware;
-use RZ\Roadiz\Documents\Packages;
 use RZ\Roadiz\Documents\Renderer;
 use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
-use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
@@ -46,11 +49,11 @@ class ChainRenderer extends atoum
         $mockPictureDocument->setMimeType('image/jpeg');
 
         $renderers = [
-            new Renderer\InlineSvgRenderer($this->getPackages()),
-            new Renderer\SvgRenderer($this->getPackages()),
-            new Renderer\PdfRenderer($this->getPackages(), $this->getEnvironment(), $this->getUrlGenerator()),
-            new Renderer\ImageRenderer($this->getPackages(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
-            new Renderer\PictureRenderer($this->getPackages(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\InlineSvgRenderer($this->getFilesystemOperator()),
+            new Renderer\SvgRenderer($this->getFilesystemOperator()),
+            new Renderer\PdfRenderer($this->getFilesystemOperator(), $this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\ImageRenderer($this->getFilesystemOperator(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\PictureRenderer($this->getFilesystemOperator(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
             new Renderer\EmbedRenderer($this->getEmbedFinderFactory()),
         ];
 
@@ -112,23 +115,33 @@ EOT
      */
     private function getUrlGenerator(): DocumentUrlGeneratorInterface
     {
-        return new \mock\RZ\Roadiz\Documents\UrlGenerators\DummyDocumentUrlGenerator($this->getPackages());
+        return new \mock\RZ\Roadiz\Documents\UrlGenerators\DummyDocumentUrlGenerator();
     }
 
-    private function getPackages(): Packages
+    private function getFilesystemOperator(): FilesystemOperator
     {
-        return new Packages(
-            new EmptyVersionStrategy(),
-            $this->getDummyRequestStack(),
-            new SimpleFileAware(dirname(__DIR__) . '/../../../')
-        );
-    }
-
-    private function getDummyRequestStack(): RequestStack
-    {
-        $stack = new RequestStack();
-        $stack->push(Request::create('http://dummy.test'));
-        return $stack;
+        return new MountManager([
+            'public' => new Filesystem(
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../../files/'),
+                publicUrlGenerator: new class() implements PublicUrlGenerator
+                {
+                    public function publicUrl(string $path, Config $config): string
+                    {
+                        return '/files/' . $path;
+                    }
+                }
+            ),
+            'private' => new Filesystem(
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../../files/'),
+                publicUrlGenerator: new class() implements PublicUrlGenerator
+                {
+                    public function publicUrl(string $path, Config $config): string
+                    {
+                        return '/files/' . $path;
+                    }
+                }
+            )
+        ]);
     }
 
     private function getEnvironment(): Environment

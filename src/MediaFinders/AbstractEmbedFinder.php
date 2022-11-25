@@ -319,7 +319,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @param  DocumentInterface $document
      * @return DocumentInterface
      */
-    abstract protected function injectMetaInDocument(ObjectManager $objectManager, DocumentInterface $document);
+    abstract protected function injectMetaInDocument(ObjectManager $objectManager, DocumentInterface $document): DocumentInterface;
 
     /**
      * Get media title from feed.
