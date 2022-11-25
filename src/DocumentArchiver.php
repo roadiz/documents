@@ -7,7 +7,7 @@ namespace RZ\Roadiz\Documents;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
-use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
@@ -32,13 +32,8 @@ final class DocumentArchiver
      */
     public function archive(array $documents, string $name, bool $keepFolders = true): string
     {
-        $fs = new Filesystem();
-        $filename = (new AsciiSlugger())->slug($name, '_') . '.zip';
-
-        $tmpFileName = tempnam(sys_get_temp_dir(), $filename);
-        if (false === $tmpFileName) {
-            throw new \RuntimeException('Can\'t create temporary file');
-        }
+        $filename = (new AsciiSlugger())->slug($name . ' ' . date('YmdHis'), '_') . '.zip';
+        $tmpFileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename;
 
         $zip = new \ZipArchive();
         $zip->open($tmpFileName, \ZipArchive::CREATE);
@@ -64,25 +59,21 @@ final class DocumentArchiver
         return $tmpFileName;
     }
 
-    public function archiveAndServe(array $documents, string $name, bool $keepFolders = true, bool $unlink = true): Response
-    {
+    public function archiveAndServe(
+        array $documents,
+        string $name,
+        bool $keepFolders = true,
+        bool $unlink = true
+    ): Response {
         $filename = $this->archive($documents, $name, $keepFolders);
-        $basename = (new AsciiSlugger())->slug($name, '_')->lower() . '.zip';
-        $response = new Response(
-            file_get_contents($filename),
+        $response = new BinaryFileResponse(
+            $filename,
             Response::HTTP_OK,
-            [
-                'cache-control' => 'private',
-                'content-type' => 'application/zip',
-                'content-length' => filesize($filename),
-                'content-disposition' => 'attachment; filename=' . $basename,
-            ]
+            [],
+            false,
+            'attachment'
         );
-
-        if ($unlink) {
-            unlink($filename);
-        }
-
+        $response->deleteFileAfterSend($unlink);
         return $response;
     }
 }
