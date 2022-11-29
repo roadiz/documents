@@ -15,7 +15,7 @@ class DocumentFilesizeCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('documents:file:size')
             ->setDescription('Fetch every document file size (in bytes) and write it in database.')

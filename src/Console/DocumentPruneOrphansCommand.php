@@ -16,7 +16,7 @@ final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('documents:prune:orphans')
             ->setDescription('Remove any document without existing file on filesystem, except embeds. <info>Danger zone</info>')

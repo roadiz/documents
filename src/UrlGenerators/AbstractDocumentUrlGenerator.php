@@ -96,8 +96,10 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
             throw new \InvalidArgumentException('Cannot get URL from a NULL document');
         }
 
-        if ($this->options['noProcess'] === true || !$this->document->isProcessable()) {
-            $publicUrl = $this->documentsStorage->publicUrl($this->document->getMountPath());
+        $mountPath = $this->document->getMountPath();
+
+        if (null !== $mountPath && ($this->options['noProcess'] === true || !$this->document->isProcessable())) {
+            $publicUrl = $this->documentsStorage->publicUrl($mountPath);
             if ($absolute && \str_starts_with($publicUrl, '/')) {
                 return $this->urlHelper->getAbsoluteUrl($publicUrl);
             } else {

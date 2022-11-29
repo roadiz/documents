@@ -31,9 +31,11 @@ class PictureRenderer extends AbstractImageRenderer
         if (
             !$options['no_thumbnail'] &&
             $document instanceof HasThumbnailInterface &&
-            false !== $thumbnail = $document->getThumbnails()->first()
+            $thumbnail = $document->getThumbnails()->first()
         ) {
-            $document = $thumbnail;
+            if ($thumbnail instanceof DocumentInterface) {
+                $document = $thumbnail;
+            }
         }
 
         $assignation = array_merge(

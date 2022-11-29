@@ -128,10 +128,14 @@ final class SvgSizeResolver
     private function getDOMDocument(): \DOMDocument
     {
         if (null === $this->xmlDocument) {
+            $mountPath = $this->document->getMountPath();
+            if (null === $mountPath) {
+                throw new \RuntimeException('SVG does not have file.');
+            }
             $this->xmlDocument = new \DOMDocument();
-            $svgSource = $this->documentsStorage->read($this->document->getMountPath());
+            $svgSource = $this->documentsStorage->read($mountPath);
             if (false === $this->xmlDocument->loadXML($svgSource)) {
-                throw new \RuntimeException(sprintf('SVG (%s) could not be loaded.', $this->document->getMountPath()));
+                throw new \RuntimeException(sprintf('SVG (%s) could not be loaded.', $mountPath));
             }
         }
         return $this->xmlDocument;

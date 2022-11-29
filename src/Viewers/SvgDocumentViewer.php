@@ -88,15 +88,21 @@ class SvgDocumentViewer
      */
     protected function getInlineSvg(): string
     {
-        if (!$this->documentsStorage->fileExists($this->document->getMountPath())) {
-            throw new FileNotFoundException('SVG file does not exist: ' . $this->document->getMountPath());
+        $mountPath = $this->document->getMountPath();
+
+        if (null === $mountPath) {
+            throw new FileNotFoundException('SVG document has no file');
+        }
+
+        if (!$this->documentsStorage->fileExists($mountPath)) {
+            throw new FileNotFoundException('SVG file does not exist: ' . $mountPath);
         }
         // Create a new sanitizer instance
         $sanitizer = new Sanitizer();
         $sanitizer->minify(true);
 
         // Load the dirty svg
-        $dirtySVG = $this->documentsStorage->read($this->document->getMountPath());
+        $dirtySVG = $this->documentsStorage->read($mountPath);
         /**
          * @var string|false $cleanSVG
          */
@@ -154,9 +160,15 @@ class SvgDocumentViewer
      */
     protected function getObjectSvg(): string
     {
+        $mountPath = $this->document->getMountPath();
+
+        if (null === $mountPath) {
+            throw new FileNotFoundException('SVG document has no file');
+        }
+
         $attributes = $this->getAllowedAttributes();
         $attributes['type'] = 'image/svg+xml';
-        $attributes['data'] = $this->documentsStorage->publicUrl($this->document->getMountPath());
+        $attributes['data'] = $this->documentsStorage->publicUrl($mountPath);
 
         if (isset($attributes['alt'])) {
             unset($attributes['alt']);

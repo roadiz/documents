@@ -78,19 +78,25 @@ abstract class AbstractRenderer implements RendererInterface
          * @var DocumentInterface $source
          */
         foreach ($sourcesDocs as $source) {
-            $sources[$source->getMimeType()] = [
-                'mime' => $source->getMimeType(),
-                'url' => $this->documentsStorage->publicUrl($source->getMountPath()),
-            ];
+            $sourceMountPath = $source->getMountPath();
+            if (null !== $sourceMountPath) {
+                $sources[$source->getMimeType()] = [
+                    'mime' => $source->getMimeType(),
+                    'url' => $this->documentsStorage->publicUrl($sourceMountPath),
+                ];
+            }
         }
         krsort($sources);
 
         if (count($sources) === 0) {
             // If exotic extension, fallbacks using original file
-            $sources[$document->getMimeType()] = [
-                'mime' => $document->getMimeType(),
-                'url' => $this->documentsStorage->publicUrl($document->getMountPath()),
-            ];
+            $documentMountPath = $document->getMountPath();
+            if (null !== $documentMountPath) {
+                $sources[$document->getMimeType()] = [
+                    'mime' => $document->getMimeType(),
+                    'url' => $this->documentsStorage->publicUrl($documentMountPath),
+                ];
+            }
         }
 
         return $sources;

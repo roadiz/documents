@@ -217,8 +217,8 @@ final class DocumentExtension extends AbstractExtension
      */
     public function getPath(DocumentInterface $document = null): ?string
     {
-        if (null !== $document && $document->isLocal()) {
-            return $this->documentsStorage->publicUrl($document->getMountPath());
+        if (null !== $document && $document->isLocal() && null !== $mountPath = $document->getMountPath()) {
+            return $this->documentsStorage->publicUrl($mountPath);
         }
 
         return null;
@@ -231,8 +231,8 @@ final class DocumentExtension extends AbstractExtension
      */
     public function exists(DocumentInterface $document = null): bool
     {
-        if (null !== $document && $document->isLocal()) {
-            return $this->documentsStorage->fileExists($document->getMountPath());
+        if (null !== $document && $document->isLocal() && null !== $mountPath = $document->getMountPath()) {
+            return $this->documentsStorage->fileExists($mountPath);
         }
 
         return false;

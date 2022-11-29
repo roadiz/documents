@@ -180,19 +180,19 @@ abstract class AbstractDocumentFactory
             return $document;
         }
 
-        if ($document->isLocal()) {
+        if ($document->isLocal() && null !== $mountPath =$document->getMountPath()) {
             /*
              * In case file already exists
              */
-            if ($this->documentsStorage->fileExists($document->getMountPath())) {
-                $this->documentsStorage->delete($document->getMountPath());
+            if ($this->documentsStorage->fileExists($mountPath)) {
+                $this->documentsStorage->delete($mountPath);
             }
         }
 
         if (DownloadedFile::sanitizeFilename($this->getFileName()) == $document->getFilename()) {
             $previousFolder = $document->getMountFolderPath();
 
-            if ($this->documentsStorage->directoryExists($previousFolder)) {
+            if (null !== $previousFolder && $this->documentsStorage->directoryExists($previousFolder)) {
                 $hasFiles = \count($this->documentsStorage->listContents($previousFolder)->toArray()) > 0;
                 // Remove previous folder if it's empty
                 if (!$hasFiles) {
@@ -232,7 +232,7 @@ abstract class AbstractDocumentFactory
             if (is_resource($stream)) {
                 fclose($stream);
             }
-            (new Filesystem())->remove($localFile);
+            (new Filesystem())->remove($localFile->getPathname());
         }
     }
 

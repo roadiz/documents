@@ -15,7 +15,7 @@ class DocumentFileHashCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('documents:file:hash')
             ->setDescription('Compute every document file hash and store it.')

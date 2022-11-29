@@ -14,7 +14,7 @@ class DocumentDuplicatesCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('documents:duplicates')
             ->setDescription('Find duplicated documents based on their file hash.')

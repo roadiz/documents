@@ -48,10 +48,12 @@ class ThumbnailRenderer implements RendererInterface
     {
         if (
             null !== $this->chainRenderer &&
-            $document instanceof HasThumbnailInterface &&
-            false !== $thumbnail = $document->getThumbnails()->first()
+            $document instanceof HasThumbnailInterface
         ) {
-            return $this->chainRenderer->render($thumbnail, $options);
+            $thumbnail = $document->getThumbnails()->first();
+            if ($thumbnail instanceof DocumentInterface) {
+                return $this->chainRenderer->render($thumbnail, $options);
+            }
         }
         return '';
     }

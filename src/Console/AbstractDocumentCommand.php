@@ -10,22 +10,19 @@ use Doctrine\Persistence\ObjectRepository;
 use Intervention\Image\ImageManager;
 use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
-use RZ\Roadiz\Documents\Packages;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 abstract class AbstractDocumentCommand extends Command
 {
     protected ManagerRegistry $managerRegistry;
-    protected Packages $packages;
     protected ImageManager $imageManager;
     protected FilesystemOperator $documentsStorage;
 
-    public function __construct(ManagerRegistry $managerRegistry, Packages $packages, ImageManager $imageManager, FilesystemOperator $documentsStorage)
+    public function __construct(ManagerRegistry $managerRegistry, ImageManager $imageManager, FilesystemOperator $documentsStorage)
     {
         parent::__construct();
         $this->managerRegistry = $managerRegistry;
-        $this->packages = $packages;
         $this->imageManager = $imageManager;
         $this->documentsStorage = $documentsStorage;
     }

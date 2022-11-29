@@ -15,7 +15,7 @@ class DocumentPruneCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('documents:prune:unused')
             ->setDescription('Delete every document not used by a setting, a node-source, a tag or an attribute. <info>Danger zone</info>')

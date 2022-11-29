@@ -17,7 +17,7 @@ class DocumentClearFolderCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('documents:clear-folder')
             ->addArgument('folderId', InputArgument::REQUIRED, 'Folder ID to delete documents from.')
@@ -67,13 +67,13 @@ class DocumentClearFolderCommand extends AbstractDocumentCommand
                 false
             ))
         ) {
+            /** @var DocumentInterface[] $results */
             $results = $this->getDocumentQueryBuilder($folder)
                 ->select('d')
                 ->getQuery()
                 ->getResult();
 
             $this->io->progressStart($count);
-            /** @var DocumentInterface $document */
             foreach ($results as $document) {
                 $em->remove($document);
                 if (($i % $batchSize) === 0) {

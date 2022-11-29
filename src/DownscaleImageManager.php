@@ -48,8 +48,12 @@ final class DownscaleImageManager
     public function processAndOverrideDocument(?DocumentInterface $document = null): void
     {
         if (null !== $document && $document->isLocal() && $this->maxPixelSize > 0) {
+            $mountPath = $document->getMountPath();
+            if (null === $mountPath) {
+                return;
+            }
             $processImage = $this->getDownscaledImage($this->imageManager->make(
-                $this->documentsStorage->readStream($document->getMountPath())
+                $this->documentsStorage->readStream($mountPath)
             ));
             if (false !== $processImage) {
                 if (
@@ -59,7 +63,7 @@ final class DownscaleImageManager
                     $this->logger->info(
                         'Document has been downscaled.',
                         [
-                            'path' => $document->getMountPath()
+                            'path' => $mountPath
                         ]
                     );
                 }
@@ -80,6 +84,10 @@ final class DownscaleImageManager
                 $documentPath = $document->getRawDocument()->getMountPath();
             } else {
                 $documentPath = $document->getMountPath();
+            }
+
+            if (null === $documentPath) {
+                return;
             }
 
             $documentStream = $this->documentsStorage->readStream($documentPath);
@@ -135,8 +143,13 @@ final class DownscaleImageManager
             $document instanceof FileHashInterface &&
             null !== $document->getFileHashAlgorithm()
         ) {
+            /** @var DocumentInterface & FileHashInterface $document */
+            $mountPath = $document->getMountPath();
+            if (null === $mountPath) {
+                return;
+            }
             $document->setFileHash($this->documentsStorage->checksum(
-                $document->getMountPath(),
+                $mountPath,
                 ['checksum_algo' => $document->getFileHashAlgorithm()]
             ));
         }
@@ -197,6 +210,8 @@ final class DownscaleImageManager
             $rawDocumentPath = $rawDocument->getMountPath();
 
             if (
+                null !== $originalDocumentPath &&
+                null !== $rawDocumentPath &&
                 $this->documentsStorage->fileExists($originalDocumentPath)
                 && !$this->documentsStorage->fileExists($rawDocumentPath)
             ) {
@@ -231,6 +246,9 @@ final class DownscaleImageManager
              * but we override downscaled file with the new one.
              */
             $originalDocumentPath = $originalDocument->getMountPath();
+            if (null === $originalDocumentPath) {
+                return null;
+            }
             /*
              * Remove existing downscaled document.
              */
@@ -258,6 +276,10 @@ final class DownscaleImageManager
             if (null !== $rawDocument) {
                 $originalDocumentPath = $originalDocument->getMountPath();
                 $rawDocumentPath = $rawDocument->getMountPath();
+
+                if (null === $originalDocumentPath || null === $rawDocumentPath) {
+                    return null;
+                }
 
                 /*
                  * Remove existing downscaled document.

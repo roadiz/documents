@@ -16,7 +16,7 @@ class DocumentSizeCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('documents:size')
             ->setDescription('Fetch every document size (width and height) and write it in database.')

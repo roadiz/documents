@@ -27,10 +27,14 @@ class SvgRenderer implements RendererInterface
 
     public function render(DocumentInterface $document, array $options): string
     {
+        $mountPath = $document->getMountPath();
+        if (null === $mountPath) {
+            return '';
+        }
         $options = $this->viewOptionsResolver->resolve($options);
         $assignation = array_filter($options);
         $attributes = $this->getAttributes($assignation);
-        $attributes['src'] = $this->documentsStorage->publicUrl($document->getMountPath());
+        $attributes['src'] = $this->documentsStorage->publicUrl($mountPath);
 
         $attrs = [];
         foreach ($attributes as $key => $value) {

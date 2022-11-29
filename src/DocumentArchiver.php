@@ -64,7 +64,7 @@ final class DocumentArchiver
         string $name,
         bool $keepFolders = true,
         bool $unlink = true
-    ): Response {
+    ): BinaryFileResponse {
         $filename = $this->archive($documents, $name, $keepFolders);
         $response = new BinaryFileResponse(
             $filename,
