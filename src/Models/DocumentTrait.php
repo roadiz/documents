@@ -242,6 +242,9 @@ trait DocumentTrait
         }
     }
 
+    #[
+        SymfonySerializer\Ignore
+    ]
     public function getMountFolderPath(): ?string
     {
         $folder = $this->getFolder();
