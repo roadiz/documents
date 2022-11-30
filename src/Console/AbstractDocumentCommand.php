@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Console;
 
+use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
-use Doctrine\Persistence\ObjectRepository;
 use Intervention\Image\ImageManager;
 use League\Flysystem\FilesystemOperator;
-use RZ\Repository\DocumentRepositoryInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
+use RZ\Roadiz\Documents\Repository\DocumentRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -34,7 +34,7 @@ abstract class AbstractDocumentCommand extends Command
     }
 
     /**
-     * @return DocumentRepositoryInterface<DocumentInterface>
+     * @return DocumentRepositoryInterface<DocumentInterface> & EntityRepository<DocumentInterface>
      */
     protected function getDocumentRepository(): DocumentRepositoryInterface
     {

@@ -5,25 +5,26 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Documents\Repository;
 
 use Doctrine\Persistence\ObjectRepository;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 
 /**
- * @template T of object
- * @template-implements ObjectRepository<T>
+ * @template T of DocumentInterface
+ * @template-extends ObjectRepository<DocumentInterface>
  */
 interface DocumentRepositoryInterface extends ObjectRepository
 {
     /**
-     * @return iterable<T> & \Countable
+     * @return array<T>
      */
-    public function findAllUnused(): iterable;
+    public function findAllUnused(): array;
 
     /**
-     * @return iterable<T> & \Countable
+     * @return array<T>
      */
-    public function findDuplicates(): iterable;
+    public function findDuplicates(): array;
 
     /**
-     * @return iterable<T> & \Countable
+     * @return array<T>
      */
-    public function findAllWithoutFileHash(): iterable;
+    public function findAllWithoutFileHash(): array;
 }
