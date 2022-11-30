@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Documents\Repository;
 
 use Doctrine\Persistence\ObjectRepository;
-use RZ\Roadiz\CoreBundle\Entity\Document;
-use RZ\Roadiz\CoreBundle\Repository\EntityRepository;
 
 /**
  * @template T of \RZ\Roadiz\Documents\Models\DocumentInterface
