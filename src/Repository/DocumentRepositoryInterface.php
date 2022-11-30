@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RZ\Repository;
+namespace RZ\Roadiz\Documents\Repository;
 
 use Doctrine\Persistence\ObjectRepository;
 
