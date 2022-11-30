@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Documents\Repository;
 
 use Doctrine\Persistence\ObjectRepository;
-use RZ\Roadiz\Documents\Models\DocumentInterface;
+use RZ\Roadiz\CoreBundle\Entity\Document;
+use RZ\Roadiz\CoreBundle\Repository\EntityRepository;
 
 /**
- * @template T of DocumentInterface
- * @template-extends ObjectRepository<DocumentInterface>
+ * @template T of \RZ\Roadiz\Documents\Models\DocumentInterface
+ * @template-extends ObjectRepository<T>
+ * @extends ObjectRepository<T>
  */
 interface DocumentRepositoryInterface extends ObjectRepository
 {
