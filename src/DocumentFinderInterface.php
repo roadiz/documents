@@ -42,4 +42,11 @@ interface DocumentFinderInterface
      * @return DocumentInterface|null
      */
     public function findOneByFilenames(array $fileNames): ?DocumentInterface;
+
+    /**
+     * @param string $hash
+     * @param string $algorithm
+     * @return DocumentInterface|null
+     */
+    public function findOneByHashAndAlgorithm(string $hash, string $algorithm): ?DocumentInterface;
 }

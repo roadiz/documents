@@ -27,15 +27,18 @@ abstract class AbstractDocumentFactory
     private ?File $file = null;
     private ?FolderInterface $folder = null;
     private FilesystemOperator $documentsStorage;
+    private DocumentFinderInterface $documentFinder;
 
     public function __construct(
         FilesystemOperator $documentsStorage,
+        DocumentFinderInterface $documentFinder,
         ?LoggerInterface $logger = null
     ) {
         if (!$documentsStorage instanceof MountManager) {
             trigger_error('Document Storage must be a MountManager to address public and private files.', E_USER_WARNING);
         }
         $this->documentsStorage = $documentsStorage;
+        $this->documentFinder = $documentFinder;
         $this->logger = $logger ?? new NullLogger();
     }
 
@@ -120,8 +123,6 @@ abstract class AbstractDocumentFactory
      */
     public function getDocument(bool $allowEmpty = false): ?DocumentInterface
     {
-        $document = $this->createDocument();
-
         if ($allowEmpty === false) {
             // Getter throw exception on null file
             $file = $this->getFile();
@@ -129,29 +130,59 @@ abstract class AbstractDocumentFactory
             $file = $this->file;
         }
 
-        if (null !== $file) {
-            if ($file instanceof UploadedFile && !$file->isValid()) {
-                return null;
-            }
-            $document->setFilename($this->getFileName());
-            if ($file instanceof UploadedFile) {
-                $document->setMimeType($file->getClientMimeType());
-            } else {
-                $document->setMimeType($file->getMimeType() ?? '');
-            }
-            $this->parseSvgMimeType($document);
-
-            if (
-                $document instanceof FileHashInterface &&
-                false !== $fileHash = hash_file($this->getHashAlgorithm(), $file->getPathname())
-            ) {
-                $document->setFileHash($fileHash);
-                $document->setFileHashAlgorithm($this->getHashAlgorithm());
-            }
-
-            $this->moveFile($file, $document);
+        if (null === $file) {
+            return null;
         }
 
+        if ($file instanceof UploadedFile && !$file->isValid()) {
+            return null;
+        }
+
+        $fileHash = hash_file($this->getHashAlgorithm(), $file->getPathname());
+
+        /*
+         * Serve already existing Document
+         */
+        if (false !== $fileHash) {
+            $existingDocument = $this->documentFinder->findOneByHashAndAlgorithm($fileHash, $this->getHashAlgorithm());
+            if (null !== $existingDocument) {
+                if (
+                    $existingDocument->isRaw() &&
+                    null !== $existingDownscaledDocument = $existingDocument->getDownscaledDocument()
+                ) {
+                    $existingDocument = $existingDownscaledDocument;
+                }
+                if (null !== $this->folder) {
+                    $existingDocument->addFolder($this->folder);
+                    $this->folder->addDocument($existingDocument);
+                }
+                $this->logger->info(sprintf(
+                    'File %s already exists with same checksum, do not upload it twice.',
+                    $existingDocument->getFilename()
+                ));
+                return $existingDocument;
+            }
+        }
+
+        $document = $this->createDocument();
+        $document->setFilename($this->getFileName());
+        if ($file instanceof UploadedFile) {
+            $document->setMimeType($file->getClientMimeType());
+        } else {
+            $document->setMimeType($file->getMimeType() ?? '');
+        }
+
+        $this->parseSvgMimeType($document);
+
+        if (
+            $document instanceof FileHashInterface &&
+            false !== $fileHash
+        ) {
+            $document->setFileHash($fileHash);
+            $document->setFileHashAlgorithm($this->getHashAlgorithm());
+        }
+
+        $this->moveFile($file, $document);
         $this->persistDocument($document);
 
         if (null !== $this->folder) {
