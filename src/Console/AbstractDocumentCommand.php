@@ -9,6 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use Intervention\Image\ImageManager;
 use League\Flysystem\FilesystemOperator;
+use RZ\Repository\DocumentRepositoryInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -33,11 +34,15 @@ abstract class AbstractDocumentCommand extends Command
     }
 
     /**
-     * @return ObjectRepository<DocumentInterface>
+     * @return DocumentRepositoryInterface<DocumentInterface>
      */
-    protected function getDocumentRepository(): ObjectRepository
+    protected function getDocumentRepository(): DocumentRepositoryInterface
     {
-        return $this->managerRegistry->getRepository(DocumentInterface::class);
+        $repository = $this->managerRegistry->getRepository(DocumentInterface::class);
+        if (!$repository instanceof DocumentRepositoryInterface) {
+            throw new \InvalidArgumentException('Document repository must implement ' . DocumentRepositoryInterface::class);
+        }
+        return $repository;
     }
 
     /**
