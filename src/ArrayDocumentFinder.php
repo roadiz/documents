@@ -41,6 +41,12 @@ final class ArrayDocumentFinder extends AbstractDocumentFinder
         )->first() ?: null;
     }
 
+    public function findOneByHashAndAlgorithm(string $hash, string $algorithm): ?DocumentInterface
+    {
+        return null;
+    }
+
+
     /**
      * @param DocumentInterface $document
      * @return $this
