@@ -17,6 +17,11 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
      */
     protected static string $platform = 'unsplash';
 
+    public function getShortType(): string
+    {
+        return 'documents';
+    }
+
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return false;

@@ -47,6 +47,11 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         }
     }
 
+    public function getShortType(): string
+    {
+        return $this->getPlatform();
+    }
+
     public function isEmptyThumbnailAllowed(): bool
     {
         return false;
