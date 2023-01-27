@@ -11,6 +11,10 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
  */
 abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'dailymotion';
     protected static string $idPattern = '#^https\:\/\/(?:www\.)?(?:dailymotion\.com|dai\.ly)\/video\/(?<id>[a-zA-Z0-9\_\-]+)#';
     protected static string $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
@@ -20,6 +24,11 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
     {
         return str_starts_with($embedUrl, 'https://dailymotion.com') ||
             str_starts_with($embedUrl, 'https://www.dailymotion.com');
+    }
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
     }
 
     /**

@@ -8,6 +8,10 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 
 abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'twitch';
     protected static string $idPattern = '#^https\:\/\/(www\.)?twitch\.tv\/videos\/(?<id>[0-9]+)#';
 
@@ -15,6 +19,11 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
     {
         return str_starts_with($embedUrl, 'https://twitch.tv') ||
             str_starts_with($embedUrl, 'https://www.twitch.tv');
+    }
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
     }
 
     /**

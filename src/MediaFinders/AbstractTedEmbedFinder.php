@@ -8,12 +8,21 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 
 abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'ted';
     protected static string $idPattern = '#^https\:\/\/(www\.)?ted\.com\/talks\/(?<id>[a-zA-Z0-9\-\_]+)#';
 
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return str_starts_with($embedUrl, 'https://www.ted.com/talks');
+    }
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
     }
 
     protected function validateEmbedId(string $embedId = ""): string

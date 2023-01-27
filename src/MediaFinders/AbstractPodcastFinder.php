@@ -22,6 +22,11 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
         return false;
     }
 
+    public static function getPlatform(): string
+    {
+        return 'podcast';
+    }
+
     /**
      * @inheritDoc
      */

@@ -11,6 +11,10 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
  */
 abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'soundcloud';
     protected static string $idPattern = '#^https\:\/\/soundcloud\.com\/(?<user>[a-z0-9\-]+)\/?#';
     protected static string $realIdPattern = '#^https\:\/\/api\.soundcloud\.com\/(?<type>tracks|playlists|users)\/(?<id>[0-9]+)\/?#';
@@ -21,6 +25,11 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
         return str_starts_with($embedUrl, 'https://api.soundcloud.com') ||
             str_starts_with($embedUrl, 'https://www.soundcloud.com') ||
             str_starts_with($embedUrl, 'https://soundcloud.com');
+    }
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
     }
 
     /**

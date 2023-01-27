@@ -8,6 +8,10 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 
 abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'spotify';
     // https://open.spotify.com/track/6U67bz1ggGoOUllUOvfKFF
     // https://open.spotify.com/embed/track/6U67bz1ggGoOUllUOvfKFF
@@ -18,6 +22,11 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return str_starts_with($embedUrl, 'https://open.spotify.com');
+    }
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
     }
 
     /**

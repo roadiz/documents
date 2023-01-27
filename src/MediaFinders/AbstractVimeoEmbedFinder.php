@@ -12,7 +12,16 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
 {
     protected static string $realIdPattern = '#(?<id>[0-9]+)$#';
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'vimeo';
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
+    }
 
     public static function supportEmbedUrl(string $embedUrl): bool
     {

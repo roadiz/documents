@@ -8,12 +8,21 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 
 abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'mixcloud';
     protected static string $idPattern = '#^https\:\/\/www\.mixcloud\.com\/(?<author>[a-zA-Z0-9\-]+)\/(?<id>[a-zA-Z0-9\-]+)\/?$#';
 
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return str_starts_with($embedUrl, 'https://www.mixcloud.com');
+    }
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
     }
 
     /**

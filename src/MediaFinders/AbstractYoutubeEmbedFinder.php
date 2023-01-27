@@ -13,10 +13,19 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
     protected const YOUTUBE_EMBED_DOMAIN = 'https://www.youtube-nocookie.com';
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'youtube';
     protected static string $idPattern = '#^https\:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v\=)?(?<id>[a-zA-Z0-9\_\-]+)#';
     protected static string $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
     protected ?string $embedUrl;
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
+    }
 
     public static function supportEmbedUrl(string $embedUrl): bool
     {

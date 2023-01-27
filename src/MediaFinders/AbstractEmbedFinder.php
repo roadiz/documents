@@ -32,7 +32,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     protected $feed = null;
     protected string $embedId;
     protected ?string $key = null;
-    protected static string $platform = 'abstract';
 
     /**
      * @param  string $embedId
@@ -172,7 +171,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * @final
      * @return string
      */
-    final public function getIFrame(array &$options = []): string
+    public function getIFrame(array &$options = []): string
     {
         $attributes = [];
         /*
@@ -248,7 +247,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         ObjectManager $objectManager,
         AbstractDocumentFactory $documentFactory
     ) {
-        if ($this->documentExists($objectManager, $this->embedId, static::$platform)) {
+        if ($this->documentExists($objectManager, $this->embedId, $this->getPlatform())) {
             throw new \InvalidArgumentException('embed.document.already_exists');
         }
 
@@ -274,12 +273,12 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         } catch (APINeedsAuthentificationException $exception) {
             $document = $documentFactory->getDocument(true);
             if (null !== $document) {
-                $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
+                $document->setFilename($this->getPlatform() . '_' . $this->embedId . '.jpg');
             }
         } catch (RequestException $exception) {
             $document = $documentFactory->getDocument(true);
             if (null !== $document) {
-                $document->setFilename(static::$platform . '_' . $this->embedId . '.jpg');
+                $document->setFilename($this->getPlatform() . '_' . $this->embedId . '.jpg');
             }
         }
 
@@ -288,7 +287,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         }
 
         $document->setEmbedId($this->getEmbedId());
-        $document->setEmbedPlatform(static::$platform);
+        $document->setEmbedPlatform($this->getPlatform());
 
         if ($document instanceof SizeableInterface) {
             $document->setImageWidth($this->getMediaWidth() ?? 0);

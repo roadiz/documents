@@ -8,6 +8,10 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 
 abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
 {
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'deezer';
     // https://www.deezer.com/fr/playlist/9313425622
     protected static string $idPattern = '#^https?:\/\/(www.)?deezer\.com\/(?:\\w+/)?(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)#';
@@ -17,6 +21,11 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return str_starts_with($embedUrl, 'https://www.deezer.com');
+    }
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
     }
 
     public function isEmptyThumbnailAllowed(): bool

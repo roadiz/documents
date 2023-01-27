@@ -11,11 +11,20 @@ use GuzzleHttp\Exception\GuzzleException;
 abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder implements RandomImageFinder
 {
     protected Client $client;
+    /**
+     * @var string
+     * @internal Use getPlatform() instead
+     */
     protected static string $platform = 'unsplash';
 
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return false;
+    }
+
+    public static function getPlatform(): string
+    {
+        return static::$platform;
     }
 
     /**

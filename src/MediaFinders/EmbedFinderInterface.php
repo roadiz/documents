@@ -21,4 +21,6 @@ interface EmbedFinderInterface
     public function getSource(array &$options = []): string;
 
     public static function supportEmbedUrl(string $embedUrl): bool;
+
+    public static function getPlatform(): string;
 }
