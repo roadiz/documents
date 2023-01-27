@@ -212,8 +212,8 @@ final class DownscaleImageManager
             if (
                 null !== $originalDocumentPath &&
                 null !== $rawDocumentPath &&
-                $this->documentsStorage->fileExists($originalDocumentPath)
-                && !$this->documentsStorage->fileExists($rawDocumentPath)
+                $this->documentsStorage->fileExists($originalDocumentPath) &&
+                !$this->documentsStorage->fileExists($rawDocumentPath)
             ) {
                 /*
                  * Original document path becomes raw document path. Rename it.

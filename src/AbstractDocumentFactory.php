@@ -211,7 +211,7 @@ abstract class AbstractDocumentFactory
             return $document;
         }
 
-        if ($document->isLocal() && null !== $mountPath =$document->getMountPath()) {
+        if ($document->isLocal() && null !== $mountPath = $document->getMountPath()) {
             /*
              * In case file already exists
              */
