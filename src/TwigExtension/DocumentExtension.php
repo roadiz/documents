@@ -217,7 +217,12 @@ final class DocumentExtension extends AbstractExtension
      */
     public function getPath(DocumentInterface $document = null): ?string
     {
-        if (null !== $document && $document->isLocal() && null !== $mountPath = $document->getMountPath()) {
+        if (
+            null !== $document &&
+            $document->isLocal() &&
+            !$document->isPrivate() &&
+            null !== $mountPath = $document->getMountPath()
+        ) {
             return $this->documentsStorage->publicUrl($mountPath);
         }
 

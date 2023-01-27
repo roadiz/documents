@@ -98,6 +98,10 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
 
         $mountPath = $this->document->getMountPath();
 
+        if ($this->document->isPrivate()) {
+            throw new \InvalidArgumentException('Cannot get URL from a private document');
+        }
+
         if (null !== $mountPath && ($this->options['noProcess'] === true || !$this->document->isProcessable())) {
             $publicUrl = $this->documentsStorage->publicUrl($mountPath);
             if ($absolute && \str_starts_with($publicUrl, '/')) {
