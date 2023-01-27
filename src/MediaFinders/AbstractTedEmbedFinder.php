@@ -11,6 +11,11 @@ abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
     protected static string $platform = 'ted';
     protected static string $idPattern = '#^https\:\/\/(www\.)?ted\.com\/talks\/(?<id>[a-zA-Z0-9\-\_]+)#';
 
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return str_starts_with($embedUrl, 'https://www.ted.com/talks');
+    }
+
     protected function validateEmbedId(string $embedId = ""): string
     {
         if (preg_match(static::$idPattern, $embedId, $matches)) {

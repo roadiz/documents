@@ -55,33 +55,17 @@ class EmbedFinderFactory
             throw new \InvalidArgumentException('"embedUrl" is not a valid URL');
         }
 
-        // get embedFinder from embedUrl according to starting URL pattern
-        switch (true) {
-            case str_starts_with($embedUrl, 'https://www.youtube.com/'):
-            case str_starts_with($embedUrl, 'https://youtube.com/'):
-            case str_starts_with($embedUrl, 'https://youtu.be/'):
-                return $this->createForPlatform('youtube', $embedUrl);
-            case str_starts_with($embedUrl, 'https://vimeo.com/'):
-            case str_starts_with($embedUrl, 'https://www.vimeo.com/'):
-                return $this->createForPlatform('vimeo', $embedUrl);
-            case str_starts_with($embedUrl, 'https://open.spotify.com'):
-                return $this->createForPlatform('spotify', $embedUrl);
-            case str_starts_with($embedUrl, 'https://dailymotion.com'):
-            case str_starts_with($embedUrl, 'https://www.dailymotion.com'):
-                return $this->createForPlatform('dailymotion', $embedUrl);
-            case str_starts_with($embedUrl, 'https://twitch.tv'):
-            case str_starts_with($embedUrl, 'https://www.twitch.tv'):
-                return $this->createForPlatform('twitch', $embedUrl);
-            case str_starts_with($embedUrl, 'https://www.ted.com/talks'):
-                return $this->createForPlatform('ted', $embedUrl);
-            case str_starts_with($embedUrl, 'https://www.mixcloud.com'):
-                return $this->createForPlatform('mixcloud', $embedUrl);
-            case str_starts_with($embedUrl, 'https://www.deezer.com'):
-                return $this->createForPlatform('deezer', $embedUrl);
-            case str_starts_with($embedUrl, 'https://api.soundcloud.com'):
-            case str_starts_with($embedUrl, 'https://www.soundcloud.com'):
-            case str_starts_with($embedUrl, 'https://soundcloud.com'):
-                return $this->createForPlatform('soundcloud', $embedUrl);
+        /**
+         * @var string $platform
+         * @var class-string<EmbedFinderInterface> $class
+         */
+        foreach ($this->embedPlatforms as $platform => $class) {
+            if (
+                method_exists($class, 'supportEmbedUrl') &&
+                call_user_func([$class, 'supportEmbedUrl'], $embedUrl)
+            ) {
+                return $this->createForPlatform($platform, $embedUrl);
+            }
         }
 
         return null;

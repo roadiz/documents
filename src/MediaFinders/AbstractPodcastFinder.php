@@ -6,6 +6,7 @@ namespace RZ\Roadiz\Documents\MediaFinders;
 
 use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Client;
+use League\Flysystem\FilesystemException;
 use Psr\Http\Message\StreamInterface;
 use RZ\Roadiz\Documents\AbstractDocumentFactory;
 use RZ\Roadiz\Documents\DownloadedFile;
@@ -16,6 +17,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractPodcastFinder extends AbstractEmbedFinder
 {
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return false;
+    }
+
     /**
      * @inheritDoc
      */
@@ -71,9 +77,10 @@ abstract class AbstractPodcastFinder extends AbstractEmbedFinder
      *
      * Be careful, this method does not flush.
      *
-     * @param  ObjectManager           $objectManager
-     * @param  AbstractDocumentFactory $documentFactory
-     * @return DocumentInterface|array<DocumentInterface>
+     * @param ObjectManager $objectManager
+     * @param AbstractDocumentFactory $documentFactory
+     * @return array<DocumentInterface>
+     * @throws FilesystemException
      */
     public function createDocumentFromFeed(
         ObjectManager $objectManager,

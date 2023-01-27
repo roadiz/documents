@@ -13,6 +13,11 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
     protected Client $client;
     protected static string $platform = 'unsplash';
 
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return false;
+    }
+
     /**
      * @param string $clientId
      * @param string $embedId

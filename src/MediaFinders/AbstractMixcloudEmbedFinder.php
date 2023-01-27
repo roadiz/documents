@@ -11,6 +11,11 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
     protected static string $platform = 'mixcloud';
     protected static string $idPattern = '#^https\:\/\/www\.mixcloud\.com\/(?<author>[a-zA-Z0-9\-]+)\/(?<id>[a-zA-Z0-9\-]+)\/?$#';
 
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return str_starts_with($embedUrl, 'https://www.mixcloud.com');
+    }
+
     /**
      * @inheritDoc
      */

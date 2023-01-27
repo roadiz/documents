@@ -16,6 +16,13 @@ abstract class AbstractSoundcloudEmbedFinder extends AbstractEmbedFinder
     protected static string $realIdPattern = '#^https\:\/\/api\.soundcloud\.com\/(?<type>tracks|playlists|users)\/(?<id>[0-9]+)\/?#';
     protected ?string $embedUrl;
 
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return str_starts_with($embedUrl, 'https://api.soundcloud.com') ||
+            str_starts_with($embedUrl, 'https://www.soundcloud.com') ||
+            str_starts_with($embedUrl, 'https://soundcloud.com');
+    }
+
     /**
      * @inheritDoc
      */

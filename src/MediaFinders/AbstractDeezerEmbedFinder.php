@@ -14,6 +14,11 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
     protected static string $realIdPattern = '#^(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)$#';
     protected ?string $embedUrl;
 
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return str_starts_with($embedUrl, 'https://www.deezer.com');
+    }
+
     public function isEmptyThumbnailAllowed(): bool
     {
         return true;

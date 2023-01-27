@@ -14,6 +14,12 @@ abstract class AbstractVimeoEmbedFinder extends AbstractEmbedFinder
     protected static string $realIdPattern = '#(?<id>[0-9]+)$#';
     protected static string $platform = 'vimeo';
 
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return str_starts_with($embedUrl, 'https://vimeo.com/') ||
+            str_starts_with($embedUrl, 'https://www.vimeo.com/');
+    }
+
     protected function validateEmbedId(string $embedId = ""): string
     {
         if (preg_match('#(?<id>[0-9]+)$#', $embedId, $matches) === 1) {

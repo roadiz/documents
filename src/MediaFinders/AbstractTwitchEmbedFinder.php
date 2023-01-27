@@ -11,6 +11,12 @@ abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
     protected static string $platform = 'twitch';
     protected static string $idPattern = '#^https\:\/\/(www\.)?twitch\.tv\/videos\/(?<id>[0-9]+)#';
 
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return str_starts_with($embedUrl, 'https://twitch.tv') ||
+            str_starts_with($embedUrl, 'https://www.twitch.tv');
+    }
+
     /**
      * @inheritDoc
      */

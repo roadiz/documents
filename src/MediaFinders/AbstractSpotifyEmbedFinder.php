@@ -15,6 +15,11 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
     protected static string $realIdPattern = '#^(?<type>track|playlist|artist|album|show|episode)\/(?<id>[a-zA-Z0-9]+)$#';
     protected ?string $embedUrl;
 
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return str_starts_with($embedUrl, 'https://open.spotify.com');
+    }
+
     /**
      * @inheritDoc
      */

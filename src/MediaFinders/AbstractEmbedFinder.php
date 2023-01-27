@@ -7,6 +7,7 @@ namespace RZ\Roadiz\Documents\MediaFinders;
 use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use League\Flysystem\FilesystemException;
 use Psr\Http\Message\StreamInterface;
 use RZ\Roadiz\Documents\AbstractDocumentFactory;
 use RZ\Roadiz\Documents\DownloadedFile;
@@ -238,9 +239,10 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * Be careful, this method does not flush.
      *
-     * @param  ObjectManager           $objectManager
-     * @param  AbstractDocumentFactory $documentFactory
+     * @param ObjectManager $objectManager
+     * @param AbstractDocumentFactory $documentFactory
      * @return DocumentInterface|array<DocumentInterface>
+     * @throws FilesystemException
      */
     public function createDocumentFromFeed(
         ObjectManager $objectManager,

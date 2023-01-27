@@ -16,6 +16,12 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
     protected static string $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
     protected ?string $embedUrl;
 
+    public static function supportEmbedUrl(string $embedUrl): bool
+    {
+        return str_starts_with($embedUrl, 'https://dailymotion.com') ||
+            str_starts_with($embedUrl, 'https://www.dailymotion.com');
+    }
+
     /**
      * @inheritDoc
      */
