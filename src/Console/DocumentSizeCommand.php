@@ -36,14 +36,15 @@ class DocumentSizeCommand extends AbstractDocumentCommand
         return 0;
     }
 
-    private function updateDocumentSize(DocumentInterface $document)
+    private function updateDocumentSize(DocumentInterface $document): void
     {
         if (!($document instanceof SizeableInterface)) {
             return;
         }
-        if ($document->isImage()) {
+        $mountPath = $document->getMountPath();
+        if (null !== $mountPath && $document->isImage()) {
             try {
-                $imageProcess = $this->imageManager->make($this->documentsStorage->readStream($document->getMountPath()));
+                $imageProcess = $this->imageManager->make($this->documentsStorage->readStream($mountPath));
                 $document->setImageWidth($imageProcess->width());
                 $document->setImageHeight($imageProcess->height());
             } catch (NotReadableException $exception) {

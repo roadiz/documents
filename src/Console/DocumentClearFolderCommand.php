@@ -37,7 +37,7 @@ class DocumentClearFolderCommand extends AbstractDocumentCommand
     {
         $this->io = new SymfonyStyle($input, $output);
 
-        $folderId = (int) $input->getArgument('folderId');
+        $folderId = intval($input->getArgument('folderId'));
         if ($folderId <= 0) {
             throw new \InvalidArgumentException('Folder ID must be a valid ID');
         }
@@ -51,10 +51,10 @@ class DocumentClearFolderCommand extends AbstractDocumentCommand
         $batchSize = 20;
         $i = 0;
 
-        $count = (int) $this->getDocumentQueryBuilder($folder)
+        $count = intval($this->getDocumentQueryBuilder($folder)
             ->select('count(d)')
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getSingleScalarResult());
 
         if ($count <= 0) {
             $this->io->warning('No documents were found in this folder.');

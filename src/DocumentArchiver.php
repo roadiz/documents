@@ -44,13 +44,14 @@ final class DocumentArchiver
                 $document = $rawDocument;
             }
             if ($document->isLocal()) {
-                if ($this->documentsStorage->fileExists($document->getMountPath())) {
+                $mountPath = $document->getMountPath();
+                if (null !== $mountPath && $this->documentsStorage->fileExists($mountPath)) {
                     if ($keepFolders) {
                         $zipPathname = $document->getFolder() . DIRECTORY_SEPARATOR . $document->getFilename();
                     } else {
                         $zipPathname = $document->getFilename();
                     }
-                    $zip->addFromString($zipPathname, $this->documentsStorage->read($document->getMountPath()));
+                    $zip->addFromString($zipPathname, $this->documentsStorage->read($mountPath));
                 }
             }
         }

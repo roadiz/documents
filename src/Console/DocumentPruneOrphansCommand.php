@@ -35,7 +35,7 @@ final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
         $deleteCount = 0;
 
         $this->onEachDocument(function (DocumentInterface $document) use ($em, $deleteCount, $dryRun) {
-            $this->checkDocumentFilesystem($document, $em, $deleteCount, $dryRun);
+            $this->checkDocumentFilesystem($document, $em, $deleteCount, (bool) $dryRun);
         }, new SymfonyStyle($input, $output));
 
         $this->io->success(sprintf('%d documents were deleted.', $deleteCount));
@@ -58,8 +58,9 @@ final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
         /*
          * Do not prune embed documents which may not have any file
          */
-        if (!$document->isEmbed()) {
-            if (!$this->documentsStorage->fileExists($document->getMountPath())) {
+        $mountPath = $document->getMountPath();
+        if (null !== $mountPath && !$document->isEmbed()) {
+            if (!$this->documentsStorage->fileExists($mountPath)) {
                 if ($this->io->isDebug() && !$this->io->isQuiet()) {
                     $this->io->writeln(sprintf(
                         '%s file does not exist, pruning document %s',

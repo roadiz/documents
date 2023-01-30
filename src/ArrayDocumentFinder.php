@@ -14,16 +14,20 @@ use RZ\Roadiz\Documents\Models\DocumentInterface;
 final class ArrayDocumentFinder extends AbstractDocumentFinder
 {
     /**
-     * @var Collection<DocumentInterface>
+     * @var ArrayCollection<int, DocumentInterface>
      */
-    private Collection $documents;
+    private ArrayCollection $documents;
 
     public function __construct()
     {
         $this->documents = new ArrayCollection();
     }
 
-    public function findAllByFilenames(array $fileNames): Collection
+    /**
+     * @param array<string> $fileNames
+     * @return ArrayCollection<int, DocumentInterface>
+     */
+    public function findAllByFilenames(array $fileNames): ArrayCollection
     {
         return $this->documents->filter(
             function (DocumentInterface $document) use ($fileNames) {

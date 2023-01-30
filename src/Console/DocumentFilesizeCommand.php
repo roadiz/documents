@@ -35,7 +35,7 @@ class DocumentFilesizeCommand extends AbstractDocumentCommand
         return 0;
     }
 
-    private function updateDocumentFilesize(AdvancedDocumentInterface $document)
+    private function updateDocumentFilesize(AdvancedDocumentInterface $document): void
     {
         if (null !== $document->getMountPath()) {
             try {

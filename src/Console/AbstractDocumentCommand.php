@@ -57,11 +57,11 @@ abstract class AbstractDocumentCommand extends Command
     {
         $i = 0;
         $manager = $this->getManager();
-        $count = (int) $this->getDocumentRepository()
+        $count = intval($this->getDocumentRepository()
             ->createQueryBuilder('d')
             ->select('count(d)')
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getSingleScalarResult());
 
         if ($count < 1) {
             $io->success('No document found');
@@ -71,12 +71,10 @@ abstract class AbstractDocumentCommand extends Command
         $q = $this->getDocumentRepository()
             ->createQueryBuilder('d')
             ->getQuery();
-        $iterableResult = $q->iterate();
+        $iterableResult = $q->toIterable();
 
         $io->progressStart($count);
-        foreach ($iterableResult as $row) {
-            /** @var DocumentInterface $document */
-            $document = $row[0];
+        foreach ($iterableResult as $document) {
             $method($document);
             if (($i % $batchSize) === 0) {
                 $manager->flush(); // Executes all updates.

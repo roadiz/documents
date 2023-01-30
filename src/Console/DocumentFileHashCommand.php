@@ -34,7 +34,10 @@ class DocumentFileHashCommand extends AbstractDocumentCommand
 
         $batchSize = 20;
         $i = 0;
-        $defaultAlgorithm = $input->getOption('algorithm') ?? 'sha256';
+        $defaultAlgorithm = $input->getOption('algorithm');
+        if (!\is_string($defaultAlgorithm)) {
+            $defaultAlgorithm = 'sha256';
+        }
         if (!\in_array($defaultAlgorithm, \hash_algos())) {
             throw new \RuntimeException(sprintf(
                 '“%s” algorithm is not available. Choose one from \hash_algos() method (%s)',
@@ -55,12 +58,13 @@ class DocumentFileHashCommand extends AbstractDocumentCommand
         $this->io->progressStart($count);
         /** @var DocumentInterface $document */
         foreach ($documents as $document) {
-            if ($document instanceof FileHashInterface) {
+            $mountPath = $document->getMountPath();
+            if (null !== $mountPath && $document instanceof FileHashInterface) {
                 $algorithm = $document->getFileHashAlgorithm() ?? $defaultAlgorithm;
                 # https://flysystem.thephpleague.com/docs/usage/checksums/
-                $this->documentsStorage->checksum($document->getMountPath(), ['checksum_algo' => $algorithm]);
-                if ($this->documentsStorage->fileExists($document->getMountPath())) {
-                    $fileHash = $this->documentsStorage->checksum($document->getMountPath(), ['checksum_algo' => $algorithm]);
+                $this->documentsStorage->checksum($mountPath, ['checksum_algo' => $algorithm]);
+                if ($this->documentsStorage->fileExists($mountPath)) {
+                    $fileHash = $this->documentsStorage->checksum($mountPath, ['checksum_algo' => $algorithm]);
                     $document->setFileHash($fileHash);
                     $document->setFileHashAlgorithm($algorithm);
                 }
