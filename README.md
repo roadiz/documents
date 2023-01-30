@@ -1,6 +1,6 @@
 # Roadiz Document base system
 
-[![Build Status](https://app.travis-ci.com/roadiz/documents.svg?branch=master)](https://app.travis-ci.com/roadiz/documents)
+![Run test status](https://github.com/roadiz/documents/actions/workflows/run-test.yml/badge.svg?branch=develop)
 
 ## HTML templates
 
