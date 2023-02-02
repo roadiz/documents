@@ -60,7 +60,7 @@ class EmbedFinderFactory
          * @var class-string<EmbedFinderInterface> $class
          */
         foreach ($this->embedPlatforms as $platform => $class) {
-            $callback = [$class, 'supportsUrl'];
+            $callback = [$class, 'supportEmbedUrl'];
             if (
                 is_callable($callback) &&
                 call_user_func($callback, $embedUrl)
