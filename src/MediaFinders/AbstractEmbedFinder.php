@@ -12,6 +12,7 @@ use Psr\Http\Message\StreamInterface;
 use RZ\Roadiz\Documents\AbstractDocumentFactory;
 use RZ\Roadiz\Documents\DownloadedFile;
 use RZ\Roadiz\Documents\Exceptions\APINeedsAuthentificationException;
+use RZ\Roadiz\Documents\Exceptions\EmbedDocumentAlreadyExistsException;
 use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\SizeableInterface;
@@ -253,7 +254,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         AbstractDocumentFactory $documentFactory
     ) {
         if ($this->documentExists($objectManager, $this->embedId, $this->getPlatform())) {
-            throw new \InvalidArgumentException('embed.document.already_exists');
+            throw new EmbedDocumentAlreadyExistsException();
         }
 
         try {
@@ -277,14 +278,10 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
             }
         } catch (APINeedsAuthentificationException $exception) {
             $document = $documentFactory->getDocument(true);
-            if (null !== $document) {
-                $document->setFilename($this->getPlatform() . '_' . $this->embedId . '.jpg');
-            }
+            $document?->setFilename($this->getPlatform() . '_' . $this->embedId . '.jpg');
         } catch (RequestException $exception) {
             $document = $documentFactory->getDocument(true);
-            if (null !== $document) {
-                $document->setFilename($this->getPlatform() . '_' . $this->embedId . '.jpg');
-            }
+            $document?->setFilename($this->getPlatform() . '_' . $this->embedId . '.jpg');
         }
 
         if (null === $document) {
@@ -406,7 +403,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      */
     public function getThumbnailName(string $pathinfo): string
     {
-        return $this->embedId . '_' . $pathinfo;
+        return $this->getEmbedId() . '_' . $pathinfo;
     }
 
     /**
