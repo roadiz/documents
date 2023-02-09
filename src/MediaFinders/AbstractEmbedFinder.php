@@ -253,7 +253,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         ObjectManager $objectManager,
         AbstractDocumentFactory $documentFactory
     ) {
-        if ($this->documentExists($objectManager, $this->embedId, $this->getPlatform())) {
+        if ($this->documentExists($objectManager, $this->getEmbedId(), $this->getPlatform())) {
             throw new EmbedDocumentAlreadyExistsException();
         }
 
@@ -268,7 +268,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
                 $documentFactory->setFile($file);
             }
 
-            $document = $documentFactory->getDocument($this->isEmptyThumbnailAllowed());
+            $document = $documentFactory->getDocument($this->isEmptyThumbnailAllowed(), $this->areDuplicatesAllowed());
             if (null !== $document) {
                 /*
                  * Create document metas
@@ -277,10 +277,10 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
                 $this->injectMetaInDocument($objectManager, $document);
             }
         } catch (APINeedsAuthentificationException $exception) {
-            $document = $documentFactory->getDocument(true);
+            $document = $documentFactory->getDocument(true, $this->areDuplicatesAllowed());
             $document?->setFilename($this->getPlatform() . '_' . $this->embedId . '.jpg');
         } catch (RequestException $exception) {
-            $document = $documentFactory->getDocument(true);
+            $document = $documentFactory->getDocument(true, $this->areDuplicatesAllowed());
             $document?->setFilename($this->getPlatform() . '_' . $this->embedId . '.jpg');
         }
 
@@ -453,5 +453,10 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     {
         $this->key = $key;
         return $this;
+    }
+
+    protected function areDuplicatesAllowed(): bool
+    {
+        return false;
     }
 }

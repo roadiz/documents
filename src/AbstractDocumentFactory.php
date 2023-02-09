@@ -116,12 +116,12 @@ abstract class AbstractDocumentFactory
      * Create a document from UploadedFile, Be careful, this method does not flush, only
      * persists current Document.
      *
-     * @param bool $allowEmpty
-     *
+     * @param bool $allowEmpty Default false, requires a local file to create new document entity
+     * @param bool $allowDuplicates Default false, always import new document even if file already exists
      * @return null|DocumentInterface
      * @throws FilesystemException
      */
-    public function getDocument(bool $allowEmpty = false): ?DocumentInterface
+    public function getDocument(bool $allowEmpty = false, bool $allowDuplicates = false): ?DocumentInterface
     {
         if ($allowEmpty === false) {
             // Getter throw exception on null file
@@ -143,7 +143,7 @@ abstract class AbstractDocumentFactory
         /*
          * Serve already existing Document
          */
-        if (false !== $fileHash) {
+        if (false !== $fileHash && !$allowDuplicates) {
             $existingDocument = $this->documentFinder->findOneByHashAndAlgorithm($fileHash, $this->getHashAlgorithm());
             if (null !== $existingDocument) {
                 if (
