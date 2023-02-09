@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Exceptions;
+
 use Throwable;
 
 class EmbedDocumentAlreadyExistsException extends \InvalidArgumentException
