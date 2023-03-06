@@ -1,13 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace RZ\Roadiz\Document\Renderer\tests\units;
+namespace RZ\Roadiz\Documents\Renderer\tests\units;
 
 use atoum;
-use RZ\Roadiz\Core\Models\DocumentInterface;
-use RZ\Roadiz\Core\Models\SimpleFileAware;
-use RZ\Roadiz\Utils\Asset\Packages;
-use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
+use League\Flysystem\Config;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\MountManager;
+use League\Flysystem\UrlGeneration\PublicUrlGenerator;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -16,10 +19,9 @@ class SvgRenderer extends atoum
     public function testSupports()
     {
         /** @var DocumentInterface $mockValidDocument */
-        $mockValidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockValidDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         /** @var DocumentInterface $mockInvalidDocument */
-        $mockInvalidDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
-        $mockPackages = $this->getPackages();
+        $mockInvalidDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
 
         $mockValidDocument->setFilename('file.svg');
         $mockValidDocument->setMimeType('image/svg+xml');
@@ -28,7 +30,7 @@ class SvgRenderer extends atoum
         $mockInvalidDocument->setMimeType('image/jpeg');
 
         $this
-            ->given($renderer = $this->newTestedInstance($mockPackages))
+            ->given($renderer = $this->newTestedInstance($this->getFilesystemOperator()))
             ->then
             ->string($mockValidDocument->getMimeType())
             ->isEqualTo('image/svg+xml')
@@ -47,15 +49,14 @@ class SvgRenderer extends atoum
     public function testRender()
     {
         /** @var DocumentInterface $mockDocument */
-        $mockDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
-        $mockPackages = $this->getPackages();
+        $mockDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
 
         $mockDocument->setFilename('file2.svg');
         $mockDocument->setFolder('folder');
         $mockDocument->setMimeType('image/svg+xml');
 
         $this
-            ->given($renderer = $this->newTestedInstance($mockPackages))
+            ->given($renderer = $this->newTestedInstance($this->getFilesystemOperator()))
             ->then
             ->string($mockDocument->getMimeType())
             ->isEqualTo('image/svg+xml')
@@ -66,19 +67,29 @@ EOT
 );
     }
 
-    private function getPackages(): Packages
+    private function getFilesystemOperator(): FilesystemOperator
     {
-        return new Packages(
-            new EmptyVersionStrategy(),
-            $this->getDummyRequestStack(),
-            new SimpleFileAware(dirname(__DIR__) . '/../../../')
-        );
-    }
-
-    private function getDummyRequestStack(): RequestStack
-    {
-        $stack = new RequestStack();
-        $stack->push(Request::create('http://dummy.test'));
-        return $stack;
+        return new MountManager([
+            'public' => new Filesystem(
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../../files/'),
+                publicUrlGenerator: new class() implements PublicUrlGenerator
+                {
+                    public function publicUrl(string $path, Config $config): string
+                    {
+                        return '/files/' . $path;
+                    }
+                }
+            ),
+            'private' => new Filesystem(
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../../files/'),
+                publicUrlGenerator: new class() implements PublicUrlGenerator
+                {
+                    public function publicUrl(string $path, Config $config): string
+                    {
+                        return '/files/' . $path;
+                    }
+                }
+            )
+        ]);
     }
 }

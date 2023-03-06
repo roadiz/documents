@@ -1,16 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace RZ\Roadiz\Document\Renderer\tests\units;
+namespace RZ\Roadiz\Documents\Renderer\tests\units;
 
 use atoum;
-use RZ\Roadiz\Core\Models\DocumentInterface;
-use RZ\Roadiz\Document\Renderer;
-use RZ\Roadiz\Core\Models\SimpleFileAware;
-use RZ\Roadiz\Utils\Asset\Packages;
-use RZ\Roadiz\Utils\MediaFinders\EmbedFinderFactory;
-use RZ\Roadiz\Utils\UrlGenerators\DocumentUrlGeneratorInterface;
-use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
+use League\Flysystem\Config;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\MountManager;
+use League\Flysystem\UrlGeneration\PublicUrlGenerator;
+use RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
+use RZ\Roadiz\Documents\Renderer;
+use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
@@ -21,36 +24,36 @@ class ChainRenderer extends atoum
     public function testRender()
     {
         /** @var DocumentInterface $mockSvgDocument */
-        $mockSvgDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockSvgDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockSvgDocument->setFilename('file.svg');
         $mockSvgDocument->setFolder('folder');
         $mockSvgDocument->setMimeType('image/svg');
 
         /** @var DocumentInterface $mockPdfDocument */
-        $mockPdfDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockPdfDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockPdfDocument->setFilename('file.pdf');
         $mockPdfDocument->setFolder('folder');
         $mockPdfDocument->setMimeType('application/pdf');
 
         /** @var DocumentInterface $mockDocumentYoutube */
-        $mockDocumentYoutube = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockDocumentYoutube = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockDocumentYoutube->setFilename('poster.jpg');
         $mockDocumentYoutube->setEmbedId('xxxxxxx');
         $mockDocumentYoutube->setEmbedPlatform('youtube');
         $mockDocumentYoutube->setMimeType('image/jpeg');
 
         /** @var DocumentInterface $mockPictureDocument */
-        $mockPictureDocument = new \mock\RZ\Roadiz\Core\Models\SimpleDocument();
+        $mockPictureDocument = new \mock\RZ\Roadiz\Documents\Models\SimpleDocument();
         $mockPictureDocument->setFilename('file.jpg');
         $mockPictureDocument->setFolder('folder');
         $mockPictureDocument->setMimeType('image/jpeg');
 
         $renderers = [
-            new Renderer\InlineSvgRenderer($this->getPackages()),
-            new Renderer\SvgRenderer($this->getPackages()),
-            new Renderer\PdfRenderer($this->getPackages(), $this->getEnvironment(), $this->getUrlGenerator()),
-            new Renderer\ImageRenderer($this->getPackages(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
-            new Renderer\PictureRenderer($this->getPackages(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\InlineSvgRenderer($this->getFilesystemOperator()),
+            new Renderer\SvgRenderer($this->getFilesystemOperator()),
+            new Renderer\PdfRenderer($this->getFilesystemOperator(), $this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\ImageRenderer($this->getFilesystemOperator(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
+            new Renderer\PictureRenderer($this->getFilesystemOperator(), $this->getEmbedFinderFactory(), $this->getEnvironment(), $this->getUrlGenerator()),
             new Renderer\EmbedRenderer($this->getEmbedFinderFactory()),
         ];
 
@@ -112,29 +115,39 @@ EOT
      */
     private function getUrlGenerator(): DocumentUrlGeneratorInterface
     {
-        return new \mock\RZ\Roadiz\Utils\UrlGenerators\DummyDocumentUrlGenerator($this->getPackages());
+        return new \mock\RZ\Roadiz\Documents\UrlGenerators\DummyDocumentUrlGenerator();
     }
 
-    private function getPackages(): Packages
+    private function getFilesystemOperator(): FilesystemOperator
     {
-        return new Packages(
-            new EmptyVersionStrategy(),
-            $this->getDummyRequestStack(),
-            new SimpleFileAware(dirname(__DIR__) . '/../../../')
-        );
-    }
-
-    private function getDummyRequestStack(): RequestStack
-    {
-        $stack = new RequestStack();
-        $stack->push(Request::create('http://dummy.test'));
-        return $stack;
+        return new MountManager([
+            'public' => new Filesystem(
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../../files/'),
+                publicUrlGenerator: new class() implements PublicUrlGenerator
+                {
+                    public function publicUrl(string $path, Config $config): string
+                    {
+                        return '/files/' . $path;
+                    }
+                }
+            ),
+            'private' => new Filesystem(
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../../files/'),
+                publicUrlGenerator: new class() implements PublicUrlGenerator
+                {
+                    public function publicUrl(string $path, Config $config): string
+                    {
+                        return '/files/' . $path;
+                    }
+                }
+            )
+        ]);
     }
 
     private function getEnvironment(): Environment
     {
         $loader = new FilesystemLoader([
-            dirname(__DIR__) . '/../../../src/Roadiz/Resources/views'
+            dirname(__DIR__) . '/../../../src/Resources/views'
         ]);
         return new Environment($loader, [
             'autoescape' => false
@@ -147,10 +160,10 @@ EOT
     private function getEmbedFinderFactory(): EmbedFinderFactory
     {
         return new EmbedFinderFactory([
-            'youtube' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractYoutubeEmbedFinder::class,
-            'vimeo' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractVimeoEmbedFinder::class,
-            'dailymotion' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractDailymotionEmbedFinder::class,
-            'soundcloud' => \mock\RZ\Roadiz\Utils\MediaFinders\AbstractSoundcloudEmbedFinder::class,
+            'youtube' => \mock\RZ\Roadiz\Documents\MediaFinders\AbstractYoutubeEmbedFinder::class,
+            'vimeo' => \mock\RZ\Roadiz\Documents\MediaFinders\AbstractVimeoEmbedFinder::class,
+            'dailymotion' => \mock\RZ\Roadiz\Documents\MediaFinders\AbstractDailymotionEmbedFinder::class,
+            'soundcloud' => \mock\RZ\Roadiz\Documents\MediaFinders\AbstractSoundcloudEmbedFinder::class,
         ]);
     }
 }
