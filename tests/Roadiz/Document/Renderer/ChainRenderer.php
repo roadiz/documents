@@ -65,7 +65,7 @@ class ChainRenderer extends atoum
             ->isEqualTo('<object type="application/pdf" data="http://dummy.test/files/folder/file.pdf"><p>Your browser does not support PDF native viewer.</p></object>')
             ->string($this->htmlTidy($renderer->render($mockSvgDocument, [])))
             ->isEqualTo($this->htmlTidy(<<<EOT
-<object type="image/svg+xml" data="/files/folder/file.svg"></object>
+<img src="/files/folder/file.svg" />
 EOT
             ))
             ->string($this->htmlTidy($renderer->render($mockSvgDocument, ['inline' => true])))
