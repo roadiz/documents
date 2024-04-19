@@ -53,10 +53,7 @@ abstract class AbstractDocumentFinder implements DocumentFinderInterface
     {
         $pathInfo = pathinfo($fileName);
         $basename = $pathInfo['filename'];
-        $currentExtension = $pathInfo['extension'] ?? null;
-        if (null === $currentExtension) {
-            return [];
-        }
+        $currentExtension = $pathInfo['extension'];
         $extensionsList = [
             'jpg',
             'gif',
