@@ -42,14 +42,14 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
      */
     public function getMediaDescription(): string
     {
-        return "";
+        return $this->getFeed()['description'] ?? '';
     }
     /**
      * {@inheritdoc}
      */
     public function getMediaCopyright(): string
     {
-        return "";
+        return $this->getFeed()['author_name'] ?? '';
     }
     /**
      * {@inheritdoc}
@@ -64,6 +64,7 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
      */
     public function getFeed()
     {
+        $oEmbedIframePattern = '#src\=\"https\:\/\/(?:www\.|geo\.)?dailymotion\.com\/(?:embed\/video\/|player\.html\?video\=)(?<realId>[a-zA-Z0-9\_\-]+)#';
         $feed = parent::getFeed();
         /*
          * We need to extract REAL embedId from oEmbed response, from the HTML field.
@@ -72,7 +73,7 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
         if (
             is_array($feed)
             && !empty($feed['html'])
-            && preg_match('#src\=\"https\:\/\/www\.dailymotion\.com\/embed\/video\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)
+            && preg_match($oEmbedIframePattern, $feed['html'], $matches)
         ) {
             $this->embedId = urldecode($matches['realId']);
         }
@@ -147,7 +148,8 @@ abstract class AbstractDailymotionEmbedFinder extends AbstractEmbedFinder
         $queryString['loop'] = (int) $options['loop'];
         $queryString['controls'] = (int) $options['controls'];
         $queryString['muted'] = (int) $options['muted'];
+        $queryString['video'] = $this->embedId;
 
-        return 'https://www.dailymotion.com/embed/video/' . $this->embedId . '?' . http_build_query($queryString);
+        return 'https://geo.dailymotion.com/player.html?' . http_build_query($queryString);
     }
 }
