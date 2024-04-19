@@ -1,3 +1,10 @@
+## 2.0.8 (2024-04-19)
+
+
+### Bug Fixes
+
+* **Documents:** Upgrade Dailymotion oembed iframe source discovery ([e948a2e](https://github.com/roadiz/documents/commit/e948a2e00d0d391eb6e356c9227562c25b8bc40f))
+
 ## 2.0.7 (2022-10-07)
 
 ### Bug Fixes
