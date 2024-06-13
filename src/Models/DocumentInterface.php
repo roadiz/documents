@@ -156,7 +156,7 @@ interface DocumentInterface
     public function isRaw(): bool;
 
     /**
-     * @param bool $raw the raw
+     * @param boolean $raw the raw
      * @return $this
      */
     public function setRaw(bool $raw): static;
