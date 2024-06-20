@@ -1,3 +1,7 @@
+#
+# Roadiz
+#
+/pimple.json
 
 # Ignore Google webmaster tool verification
 /google*.html
