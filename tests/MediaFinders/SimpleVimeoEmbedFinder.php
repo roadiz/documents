@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RZ\Roadiz\Documents\Test\MediaFinders;
+namespace RZ\Roadiz\Documents\Tests\MediaFinders;
 
 use Doctrine\Persistence\ObjectManager;
 use RZ\Roadiz\Documents\MediaFinders\AbstractVimeoEmbedFinder;

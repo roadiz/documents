@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RZ\Roadiz\Documents\Test\Renderer;
+namespace RZ\Roadiz\Documents\Tests\Renderer;
 
 use League\Flysystem\Config;
 use League\Flysystem\Filesystem;
@@ -12,8 +12,8 @@ use League\Flysystem\MountManager;
 use League\Flysystem\UrlGeneration\PublicUrlGenerator;
 use PHPUnit\Framework\TestCase;
 use RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory;
-use RZ\Roadiz\Documents\Test\MediaFinders\SimpleVimeoEmbedFinder;
-use RZ\Roadiz\Documents\Test\MediaFinders\SimpleYoutubeEmbedFinder;
+use RZ\Roadiz\Documents\Tests\MediaFinders\SimpleVimeoEmbedFinder;
+use RZ\Roadiz\Documents\Tests\MediaFinders\SimpleYoutubeEmbedFinder;
 use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
 use RZ\Roadiz\Documents\UrlGenerators\DummyDocumentUrlGenerator;
 use Twig\Environment;
@@ -38,7 +38,7 @@ abstract class AbstractRendererTestCase extends TestCase
     {
         return new MountManager([
             'public' => new Filesystem(
-                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../files/'),
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../files/'),
                 publicUrlGenerator: new class () implements PublicUrlGenerator
                 {
                     public function publicUrl(string $path, Config $config): string
@@ -48,7 +48,7 @@ abstract class AbstractRendererTestCase extends TestCase
                 }
             ),
             'private' => new Filesystem(
-                new LocalFilesystemAdapter(dirname(__DIR__) . '/../../files/'),
+                new LocalFilesystemAdapter(dirname(__DIR__) . '/../files/'),
                 publicUrlGenerator: new class () implements PublicUrlGenerator
                 {
                     public function publicUrl(string $path, Config $config): string
@@ -63,7 +63,7 @@ abstract class AbstractRendererTestCase extends TestCase
     protected function getEnvironment(): Environment
     {
         $loader = new FilesystemLoader([
-            dirname(__DIR__) . '/../Resources/views'
+            dirname(__DIR__) . '/../src/Resources/views'
         ]);
         return new Environment($loader, [
             'autoescape' => false

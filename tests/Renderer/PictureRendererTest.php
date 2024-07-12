@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RZ\Roadiz\Documents\Test\Renderer;
+namespace RZ\Roadiz\Documents\Tests\Renderer;
 
 use RZ\Roadiz\Documents\Models\SimpleDocument;
 use RZ\Roadiz\Documents\Renderer\PictureRenderer;
