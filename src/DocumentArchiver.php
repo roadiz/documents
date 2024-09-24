@@ -16,18 +16,21 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
  */
 final class DocumentArchiver
 {
-    public function __construct(private readonly FilesystemOperator $documentsStorage)
+    private FilesystemOperator $documentsStorage;
+
+    public function __construct(FilesystemOperator $documentsStorage)
     {
+        $this->documentsStorage = $documentsStorage;
     }
 
     /**
-     * @param iterable<DocumentInterface> $documents
+     * @param array $documents
      * @param string $name
      * @param bool $keepFolders
      * @return string Zip file path
      * @throws FilesystemException
      */
-    public function archive(iterable $documents, string $name, bool $keepFolders = true): string
+    public function archive(array $documents, string $name, bool $keepFolders = true): string
     {
         $filename = (new AsciiSlugger())->slug($name . ' ' . date('YmdHis'), '_') . '.zip';
         $tmpFileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename;
@@ -57,16 +60,8 @@ final class DocumentArchiver
         return $tmpFileName;
     }
 
-    /**
-     * @param iterable<DocumentInterface> $documents
-     * @param string $name
-     * @param bool $keepFolders
-     * @param bool $unlink
-     * @return BinaryFileResponse
-     * @throws FilesystemException
-     */
     public function archiveAndServe(
-        iterable $documents,
+        array $documents,
         string $name,
         bool $keepFolders = true,
         bool $unlink = true
