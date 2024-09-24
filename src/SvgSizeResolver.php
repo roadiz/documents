@@ -11,13 +11,15 @@ use RZ\Roadiz\Documents\Models\DocumentInterface;
 
 final class SvgSizeResolver
 {
+    private DocumentInterface $document;
     private ?\DOMDocument $xmlDocument = null;
     private ?\DOMNode $svgNode = null;
+    private FilesystemOperator $documentsStorage;
 
-    public function __construct(
-        private readonly DocumentInterface $document,
-        private readonly FilesystemOperator $documentsStorage
-    ) {
+    public function __construct(DocumentInterface $document, FilesystemOperator $documentsStorage)
+    {
+        $this->document = $document;
+        $this->documentsStorage = $documentsStorage;
     }
 
     /**
