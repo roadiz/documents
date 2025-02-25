@@ -8,9 +8,7 @@ use Doctrine\Persistence\ObjectRepository;
 
 /**
  * @template T of \RZ\Roadiz\Documents\Models\DocumentInterface
- *
  * @template-extends ObjectRepository<T>
- *
  * @extends ObjectRepository<T>
  */
 interface DocumentRepositoryInterface extends ObjectRepository
