@@ -165,9 +165,4 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         // https://widget.deezer.com/widget/dark/playlist/9313425622
         return $baseUri . '?' . http_build_query($queryString);
     }
-
-    protected function areDuplicatesAllowed(): bool
-    {
-        return true;
-    }
 }
