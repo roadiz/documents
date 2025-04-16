@@ -31,6 +31,9 @@ class SimpleDocument implements DocumentInterface
         $this->folders = new ArrayCollection();
     }
 
+    /**
+     * @return string
+     */
     public function getFilename(): string
     {
         return $this->filename;
@@ -39,7 +42,6 @@ class SimpleDocument implements DocumentInterface
     public function setFilename(string $filename): static
     {
         $this->filename = $filename;
-
         return $this;
     }
 
@@ -51,10 +53,12 @@ class SimpleDocument implements DocumentInterface
     public function setMimeType(?string $mimeType): static
     {
         $this->mimeType = $mimeType;
-
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getFolder(): string
     {
         return $this->folder;
@@ -67,6 +71,9 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getEmbedId(): ?string
     {
         return $this->embedId;
@@ -79,6 +86,9 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getEmbedPlatform(): ?string
     {
         return $this->embedPlatform;
@@ -91,6 +101,9 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function isPrivate(): bool
     {
         return $this->private;
@@ -103,6 +116,9 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
+    /**
+     * @return DocumentInterface|null
+     */
     public function getRawDocument(): ?DocumentInterface
     {
         return $this->rawDocument;
@@ -115,6 +131,9 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function isRaw(): bool
     {
         return $this->raw;
@@ -139,6 +158,9 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
+    /**
+     * @return Collection
+     */
     public function getFolders(): Collection
     {
         return $this->folders;
@@ -147,21 +169,18 @@ class SimpleDocument implements DocumentInterface
     public function setFolders(Collection $folders): static
     {
         $this->folders = $folders;
-
         return $this;
     }
 
     public function addFolder(FolderInterface $folder): static
     {
         $this->folders->add($folder);
-
         return $this;
     }
 
     public function removeFolder(FolderInterface $folder): static
     {
         $this->folders->removeElement($folder);
-
         return $this;
     }
 
