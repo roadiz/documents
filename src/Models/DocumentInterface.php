@@ -66,8 +66,6 @@ interface DocumentInterface
 
     /**
      * @return $this
-     *
-     * @internal You should use DocumentFactory to generate a document folder
      */
     public function setFolder(string $folder): static;
 

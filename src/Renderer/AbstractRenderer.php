@@ -14,15 +14,23 @@ use Twig\Environment;
 
 abstract class AbstractRenderer implements RendererInterface
 {
+    protected Environment $templating;
+    protected DocumentUrlGeneratorInterface $documentUrlGenerator;
+    protected string $templateBasePath;
     protected UrlOptionsResolver $urlOptionsResolver;
     protected ViewOptionsResolver $viewOptionsResolver;
+    protected FilesystemOperator $documentsStorage;
 
     public function __construct(
-        protected readonly FilesystemOperator $documentsStorage,
-        protected readonly Environment $templating,
-        protected readonly DocumentUrlGeneratorInterface $documentUrlGenerator,
-        protected readonly string $templateBasePath = 'documents',
+        FilesystemOperator $documentsStorage,
+        Environment $templating,
+        DocumentUrlGeneratorInterface $documentUrlGenerator,
+        string $templateBasePath = 'documents',
     ) {
+        $this->documentsStorage = $documentsStorage;
+        $this->templating = $templating;
+        $this->documentUrlGenerator = $documentUrlGenerator;
+        $this->templateBasePath = $templateBasePath;
         $this->urlOptionsResolver = new UrlOptionsResolver();
         $this->viewOptionsResolver = new ViewOptionsResolver();
     }
