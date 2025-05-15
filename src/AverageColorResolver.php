@@ -6,7 +6,7 @@ namespace RZ\Roadiz\Documents;
 
 use Intervention\Image\Image;
 
-final readonly class AverageColorResolver
+class AverageColorResolver
 {
     public function getAverageColor(Image $image): string
     {

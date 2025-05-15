@@ -20,9 +20,9 @@ abstract class AbstractDocumentUrlGenerator implements DocumentUrlGeneratorInter
     protected OptionsCompiler $optionCompiler;
 
     public function __construct(
-        protected readonly FilesystemOperator $documentsStorage,
-        protected readonly UrlHelper $urlHelper,
-        protected readonly CacheItemPoolInterface $optionsCacheAdapter,
+        protected FilesystemOperator $documentsStorage,
+        protected UrlHelper $urlHelper,
+        protected CacheItemPoolInterface $optionsCacheAdapter,
         array $options = [],
     ) {
         $this->viewOptionsResolver = new ViewOptionsResolver();
