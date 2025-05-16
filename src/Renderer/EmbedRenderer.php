@@ -12,6 +12,9 @@ class EmbedRenderer implements RendererInterface
 {
     protected EmbedFinderFactory $embedFinderFactory;
 
+    /**
+     * @param EmbedFinderFactory $embedFinderFactory
+     */
     public function __construct(EmbedFinderFactory $embedFinderFactory)
     {
         $this->embedFinderFactory = $embedFinderFactory;
@@ -23,7 +26,7 @@ class EmbedRenderer implements RendererInterface
             $document->isEmbed()
             && $this->embedFinderFactory->supports($document->getEmbedPlatform())
             && isset($options['embed'])
-            && true === $options['embed']
+            && $options['embed'] === true
         ) {
             return true;
         } else {
@@ -41,10 +44,9 @@ class EmbedRenderer implements RendererInterface
             if (null !== $finder) {
                 return $finder->getIFrame($options);
             }
-
             return '';
         } catch (InvalidEmbedId $exception) {
-            return '<p>'.$exception->getMessage().'</p>';
+            return '<p>' . $exception->getMessage() . '</p>';
         }
     }
 }

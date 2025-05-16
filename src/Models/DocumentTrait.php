@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Models;
 
-use ApiPlatform\Metadata\ApiProperty;
 use Symfony\Component\Serializer\Annotation as SymfonySerializer;
 
 trait DocumentTrait
@@ -13,7 +12,6 @@ trait DocumentTrait
      * Associate mime type to simple types.
      *
      * - code
-     * - text
      * - image
      * - word
      * - video
@@ -23,122 +21,90 @@ trait DocumentTrait
      * - excel
      * - powerpoint
      * - font
-     * - 3d
      *
      * @var array<string, string>
-     *
      * @internal
      */
     #[SymfonySerializer\Ignore()]
     protected static array $mimeToIcon = [
-        // Code
-        'application/javascript' => 'code',
-        'application/json' => 'code',
-        'application/ld+json' => 'code',
-        'text/css' => 'code',
         'text/html' => 'code',
+        'application/javascript' => 'code',
+        'text/css' => 'code',
+        'text/rtf' => 'word',
         'text/xml' => 'code',
-        // Text
-        'text/plain' => 'text',
-        // Images types
-        'image/avif' => 'image',
-        'image/bmp' => 'image',
+        'image/png' => 'image',
+        'image/jpeg' => 'image',
         'image/gif' => 'image',
+        'image/tiff' => 'image',
+        'image/webp' => 'image',
+        'image/avif' => 'image',
         'image/heic' => 'image',
         'image/heif' => 'image',
-        'image/jpeg' => 'image',
-        'image/png' => 'image',
-        'image/svg' => 'image',
-        'image/svg+xml' => 'image',
-        'image/tiff' => 'image',
         'image/vnd.microsoft.icon' => 'image',
-        'image/webp' => 'image',
         'image/x-icon' => 'image',
-        // PDF
         'application/pdf' => 'pdf',
         // Audio types
-        'audio/aac' => 'audio',
-        'audio/ac3' => 'audio',
-        'audio/eac3' => 'audio',
-        'audio/flac' => 'audio',
-        'audio/matroska' => 'audio',
-        'audio/mp4' => 'audio',
         'audio/mpeg' => 'audio',
+        'audio/x-m4a' => 'audio',
+        'audio/x-wav' => 'audio',
+        'audio/wav' => 'audio',
+        'audio/aac' => 'audio',
+        'audio/mp4' => 'audio',
+        'audio/webm' => 'audio',
         'audio/ogg' => 'audio',
         'audio/vorbis' => 'audio',
-        'audio/wav' => 'audio',
-        'audio/webm' => 'audio',
-        'audio/x-m4a' => 'audio',
+        'audio/ac3' => 'audio',
         'audio/x-matroska' => 'audio',
-        'audio/x-wav' => 'audio',
         // Video types
         'application/ogg' => 'video',
-        'video/3gpp' => 'video',
-        'video/3gpp-tt' => 'video',
-        'video/3gpp2' => 'video',
-        'video/VP8' => 'video',
-        'video/matroska' => 'video',
-        'video/matroska-3d' => 'video',
-        'video/mp4' => 'video',
-        'video/mpeg' => 'video',
         'video/ogg' => 'video',
-        'video/quicktime' => 'video',
         'video/webm' => 'video',
-        'video/x-flv' => 'video',
+        'video/mpeg' => 'video',
+        'video/mp4' => 'video',
         'video/x-m4v' => 'video',
+        'video/quicktime' => 'video',
+        'video/x-flv' => 'video',
+        'video/3gpp' => 'video',
+        'video/3gpp2' => 'video',
+        'video/3gpp-tt' => 'video',
+        'video/VP8' => 'video',
         'video/x-matroska' => 'video',
         // Epub type
         'application/epub+zip' => 'epub',
         // Archives types
         'application/gzip' => 'archive',
+        'application/zip' => 'archive',
+        'application/x-bzip2' => 'archive',
+        'application/x-tar' => 'archive',
         'application/x-7z-compressed' => 'archive',
         'application/x-apple-diskimage' => 'archive',
-        'application/x-bzip2' => 'archive',
         'application/x-rar-compressed' => 'archive',
-        'application/x-tar' => 'archive',
-        'application/zip' => 'archive',
         // Office types
         'application/msword' => 'word',
         'application/vnd.ms-excel' => 'excel',
         'application/vnd.ms-office' => 'excel',
         'application/vnd.ms-powerpoint' => 'powerpoint',
-        'application/vnd.oasis.opendocument.presentation' => 'powerpoint',
-        'application/vnd.oasis.opendocument.spreadsheet' => 'excel',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'word',
         'application/vnd.oasis.opendocument.text ' => 'word',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.slideshow' => 'powerpoint',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.template' => 'excel',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'word',
-        'text/rtf' => 'word',
+        'application/vnd.oasis.opendocument.spreadsheet' => 'excel',
+        'application/vnd.openxmlformats-officedocument.presentationml.slideshow' => 'powerpoint',
+        'application/vnd.oasis.opendocument.presentation' => 'powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'powerpoint',
         // Fonts types
-        'application/font-woff' => 'font',
-        'application/font-woff2' => 'font',
-        'application/vnd.ms-fontobject' => 'font',
-        'application/x-font-opentype' => 'font',
-        'application/x-font-truetype' => 'font',
+        'image/svg+xml' => 'font',
         'application/x-font-ttf' => 'font',
+        'application/x-font-truetype' => 'font',
+        'application/x-font-opentype' => 'font',
+        'application/font-woff' => 'font',
+        'application/vnd.ms-fontobject' => 'font',
         'font/opentype' => 'font',
         'font/ttf' => 'font',
-        'font/woff' => 'font',
-        'font/woff2' => 'font',
-        // 3d
-        'model/gltf+binary' => '3d',
-        'model/gltf+json' => '3d',
-        'model/gltf-binary' => '3d',
-        'model/mtl' => '3d',
-        'model/obj' => '3d',
-        'model/stl' => '3d',
-        'model/u3d' => '3d',
-        'model/vnd.gltf+json' => '3d',
-        'model/vnd.gltf.binary' => '3d',
-        'model/vnd.usda' => '3d',
-        'model/vnd.usdz+zip' => '3d',
     ];
 
     /**
-     * @var string[] processable file mime type by GD or Imagick
-     *
+     * @var string[] Processable file mime type by GD or Imagick.
      * @internal
      */
     #[SymfonySerializer\Ignore()]
@@ -155,6 +121,8 @@ trait DocumentTrait
 
     /**
      * Get short type name for current document Mime type.
+     *
+     * @return string
      */
     #[SymfonySerializer\Ignore()]
     public function getShortType(): string
@@ -168,86 +136,99 @@ trait DocumentTrait
 
     /**
      * Get short Mime type.
+     *
+     * @return string
      */
     #[SymfonySerializer\Ignore()]
     public function getShortMimeType(): string
     {
         if (!empty($this->getMimeType())) {
             $mime = explode('/', $this->getMimeType());
-
             return $mime[\count($mime) - 1];
         }
-
         return 'unknown';
     }
 
     /**
      * Is current document an image.
+     *
+     * @return bool
      */
     #[SymfonySerializer\Ignore()]
     public function isImage(): bool
     {
-        return 'image' === static::getShortType();
+        return static::getShortType() === 'image';
     }
 
     /**
      * Is current document a vector SVG file.
+     *
+     * @return bool
      */
     #[SymfonySerializer\Ignore()]
     public function isSvg(): bool
     {
-        return 'image/svg+xml' === $this->getMimeType() || 'image/svg' === $this->getMimeType();
+        return $this->getMimeType() === 'image/svg+xml' || $this->getMimeType() === 'image/svg';
     }
 
     /**
      * Is current document a video.
+     *
+     * @return bool
      */
     #[SymfonySerializer\Ignore()]
     public function isVideo(): bool
     {
-        return 'video' === static::getShortType();
+        return static::getShortType() === 'video';
     }
 
     /**
      * Is current document an audio file.
+     *
+     * @return bool
      */
     #[SymfonySerializer\Ignore()]
     public function isAudio(): bool
     {
-        return 'audio' === static::getShortType();
+        return static::getShortType() === 'audio';
     }
 
     /**
      * Is current document a PDF file.
+     *
+     * @return bool
      */
     #[SymfonySerializer\Ignore()]
     public function isPdf(): bool
     {
-        return 'pdf' === static::getShortType();
+        return static::getShortType() === 'pdf';
     }
 
+    /**
+     * @return bool
+     */
     #[SymfonySerializer\Ignore()]
     public function isWebp(): bool
     {
-        return 'image/webp' === $this->getMimeType();
+        return $this->getMimeType() === 'image/webp';
     }
 
     #[
-        SymfonySerializer\Groups(['document', 'document_display', 'nodes_sources', 'tag', 'attribute']),
-        SymfonySerializer\SerializedName('relativePath'),
+        SymfonySerializer\Groups(["document", "document_display", "nodes_sources", "tag", "attribute"]),
+        SymfonySerializer\SerializedName("relativePath"),
     ]
     public function getRelativePath(): ?string
     {
         if ($this->isLocal()) {
-            return $this->getFolder().'/'.$this->getFilename();
+            return $this->getFolder() . '/' . $this->getFilename();
         } else {
             return null;
         }
     }
 
     #[
-        SymfonySerializer\Groups(['document_mount']),
-        SymfonySerializer\SerializedName('mountPath'),
+        SymfonySerializer\Groups(["document_mount"]),
+        SymfonySerializer\SerializedName("mountPath"),
     ]
     public function getMountPath(): ?string
     {
@@ -255,9 +236,9 @@ trait DocumentTrait
             return null;
         }
         if ($this->isPrivate()) {
-            return 'private://'.$relativePath;
+            return 'private://' . $relativePath;
         } else {
-            return 'public://'.$relativePath;
+            return 'public://' . $relativePath;
         }
     }
 
@@ -271,42 +252,44 @@ trait DocumentTrait
             return null;
         }
         if ($this->isPrivate()) {
-            return 'private://'.$folder;
+            return 'private://' . $folder;
         } else {
-            return 'public://'.$folder;
+            return 'public://' . $folder;
         }
     }
 
     /**
      * Tells if current document has embed media information.
+     *
+     * @return bool
      */
     #[SymfonySerializer\Ignore()]
     public function isEmbed(): bool
     {
-        return !empty($this->getEmbedId()) && !empty($this->getEmbedPlatform());
+        return (!empty($this->getEmbedId()) && !empty($this->getEmbedPlatform()));
     }
 
     protected function initDocumentTrait(): void
     {
-        $this->setFolder(\mb_substr(hash('crc32b', date('YmdHi')), 0, 12));
+        $this->setFolder(\mb_substr(hash("crc32b", date('YmdHi')), 0, 12));
     }
 
     #[
-        SymfonySerializer\Groups(['document', 'document_display', 'nodes_sources', 'tag', 'attribute']),
-        SymfonySerializer\SerializedName('processable'),
-        ApiProperty(
-            description: 'Document can be processed as an image for resampling and other image operations.',
-            writable: false,
-        )
+        SymfonySerializer\Groups(["document", "document_display", "nodes_sources", "tag", "attribute"]),
+        SymfonySerializer\SerializedName("processable"),
     ]
     public function isProcessable(): bool
     {
-        return $this->isImage() && in_array($this->getMimeType(), static::$processableMimeTypes, true);
+        if ($this->isImage() && in_array($this->getMimeType(), static::$processableMimeTypes)) {
+            return true;
+        }
+
+        return false;
     }
 
     #[
-        SymfonySerializer\Groups(['document', 'document_display', 'nodes_sources', 'tag', 'attribute']),
-        SymfonySerializer\SerializedName('alt'),
+        SymfonySerializer\Groups(["document", "document_display", "nodes_sources", "tag", "attribute"]),
+        SymfonySerializer\SerializedName("alt"),
     ]
     public function getAlternativeText(): string
     {
@@ -314,11 +297,13 @@ trait DocumentTrait
     }
 
     /**
-     * Return false if no local file is linked to document. i.e no filename, no folder.
+     * Return false if no local file is linked to document. i.e no filename, no folder
+     *
+     * @return bool
      */
     #[SymfonySerializer\Ignore()]
     public function isLocal(): bool
     {
-        return '' !== $this->getFilename() && '' !== $this->getFolder();
+        return $this->getFilename() !== '' && $this->getFolder() !== '';
     }
 }
