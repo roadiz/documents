@@ -14,9 +14,9 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 /**
  * Easily create and serve ZIP archives from your Roadiz documents.
  */
-final readonly class DocumentArchiver
+final class DocumentArchiver
 {
-    public function __construct(private FilesystemOperator $documentsStorage)
+    public function __construct(private readonly FilesystemOperator $documentsStorage)
     {
     }
 
