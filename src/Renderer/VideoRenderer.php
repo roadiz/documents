@@ -13,17 +13,14 @@ use Twig\Environment;
 
 class VideoRenderer extends AbstractRenderer
 {
-    protected DocumentFinderInterface $documentFinder;
-
     public function __construct(
         FilesystemOperator $documentsStorage,
-        DocumentFinderInterface $documentFinder,
+        protected readonly DocumentFinderInterface $documentFinder,
         Environment $templating,
         DocumentUrlGeneratorInterface $documentUrlGenerator,
-        string $templateBasePath = 'documents'
+        string $templateBasePath = 'documents',
     ) {
         parent::__construct($documentsStorage, $templating, $documentUrlGenerator, $templateBasePath);
-        $this->documentFinder = $documentFinder;
     }
 
     public function supports(DocumentInterface $document, array $options): bool
@@ -54,33 +51,28 @@ class VideoRenderer extends AbstractRenderer
              */
             $assignation['poster'] = $this->getPosterUrl($document, $options, $options['absolute']);
         }
+
         return $this->renderHtmlElement('video.html.twig', $assignation);
     }
 
-    /**
-     * @param DocumentInterface $document
-     * @param array             $options
-     * @param bool              $absolute
-     *
-     * @return string|null
-     */
     protected function getPosterUrl(
         DocumentInterface $document,
         array $options = [],
-        bool $absolute = false
+        bool $absolute = false,
     ): ?string {
         /*
          * Use document thumbnail first
          */
         if (
-            !$options['no_thumbnail'] &&
-            $document instanceof HasThumbnailInterface &&
-            $document->hasThumbnails()
+            !$options['no_thumbnail']
+            && $document instanceof HasThumbnailInterface
+            && $document->hasThumbnails()
         ) {
             $thumbnail = $document->getThumbnails()->first();
             if (false !== $thumbnail) {
                 $this->documentUrlGenerator->setOptions($options);
                 $this->documentUrlGenerator->setDocument($thumbnail);
+
                 return $this->documentUrlGenerator->getUrl($absolute);
             }
         }
@@ -96,6 +88,7 @@ class VideoRenderer extends AbstractRenderer
         foreach ($sourcesDocs as $sourcesDoc) {
             $this->documentUrlGenerator->setOptions($options);
             $this->documentUrlGenerator->setDocument($sourcesDoc);
+
             return $this->documentUrlGenerator->getUrl($absolute);
         }
 
@@ -107,10 +100,6 @@ class VideoRenderer extends AbstractRenderer
      *
      * This method will search for document which filename is the same
      * except the extension. If you choose an MP4 file, it will look for a OGV and WEBM file.
-     *
-     * @param DocumentInterface $document
-     *
-     * @return array
      */
     protected function getSourcesFiles(DocumentInterface $document): array
     {
