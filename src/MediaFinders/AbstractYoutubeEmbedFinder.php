@@ -14,6 +14,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
     protected const YOUTUBE_EMBED_DOMAIN = 'https://www.youtube-nocookie.com';
     /**
+     * @var string
      * @internal Use getPlatform() instead
      */
     protected static string $platform = 'youtube';
@@ -28,39 +29,48 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 
     public static function supportEmbedUrl(string $embedUrl): bool
     {
-        return str_starts_with($embedUrl, 'https://www.youtube.com/')
-            || str_starts_with($embedUrl, 'https://youtube.com/')
-            || str_starts_with($embedUrl, 'https://youtu.be/');
+        return str_starts_with($embedUrl, 'https://www.youtube.com/') ||
+            str_starts_with($embedUrl, 'https://youtube.com/') ||
+            str_starts_with($embedUrl, 'https://youtu.be/');
     }
 
-    protected function validateEmbedId(string $embedId = ''): string
+    /**
+     * @inheritDoc
+     */
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (1 === preg_match(static::$idPattern, $embedId, $matches)) {
+        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
-        if (1 === preg_match(static::$realIdPattern, $embedId, $matches)) {
+        if (preg_match(static::$realIdPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
     }
 
-    public function getMediaFeed(?string $search = null): string
+    /**
+     * @inheritDoc
+     */
+    public function getMediaFeed($search = null)
     {
         if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
-            $url = 'https://www.youtube.com/watch?v='.$this->embedId;
+            $url = 'https://www.youtube.com/watch?v=' . $this->embedId;
         } else {
             $url = $this->embedId;
         }
-        $endpoint = 'https://www.youtube.com/oembed';
+        $endpoint = "https://www.youtube.com/oembed";
         $query = [
             'url' => $url,
             'format' => 'json',
         ];
 
-        return $this->downloadFeedFromAPI($endpoint.'?'.http_build_query($query));
+        return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
     }
 
-    public function getFeed(): array|\SimpleXMLElement|null
+    /**
+     * @inheritDoc
+     */
+    public function getFeed()
     {
         $feed = parent::getFeed();
         /*
@@ -86,13 +96,12 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
     public function getMediaDescription(): string
     {
         $feed = $this->getFeed();
-
         return (is_array($feed) && isset($feed['description'])) ? ($feed['description']) : ('');
     }
 
     public function getMediaCopyright(): string
     {
-        return ($this->getFeed()['author_name'] ?? '').' ('.($this->getFeed()['author_url'] ?? '').')';
+        return ($this->getFeed()['author_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? '') . ')';
     }
 
     public function getThumbnailURL(): string
@@ -100,11 +109,17 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getMediaWidth(): ?int
     {
         return $this->getFeed()['width'] ?? null;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getMediaHeight(): ?int
     {
         return $this->getFeed()['height'] ?? null;
@@ -117,34 +132,34 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         } else {
             $embed = $this->embedUrl;
         }
-        if (1 === preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $matches)) {
-            $pathinfo = '.'.$matches['extension'];
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $matches) === 1) {
+            $pathinfo = '.' . $matches['extension'];
         } else {
             $pathinfo = '.jpg';
         }
-        if (1 === preg_match(static::$realIdPattern, $embed, $matches)) {
-            return 'youtube_'.$matches['id'].$pathinfo;
+        if (preg_match(static::$realIdPattern, $embed, $matches) === 1) {
+            return 'youtube_' . $matches['id'] . $pathinfo;
         }
-        if (1 === preg_match(static::$idPattern, $embed, $matches)) {
-            return 'youtube_'.$matches['id'].$pathinfo;
+        if (preg_match(static::$idPattern, $embed, $matches) === 1) {
+            return 'youtube_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($embed, static::$platform);
     }
 
     /**
-     * @throws APINeedsAuthentificationException
+     * @inheritdoc
+     * @throws     APINeedsAuthentificationException
      */
-    public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15): ?string
+    public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15)
     {
-        if (null !== $this->getKey() && '' != $this->getKey()) {
-            $url = 'https://www.googleapis.com/youtube/v3/search?q='.$searchTerm.'&part=snippet&key='.$this->getKey().'&maxResults='.$maxResults;
-            if (!empty($author)) {
-                $url .= '&author='.$author;
+        if (null !== $this->getKey() && $this->getKey() != "") {
+            $url = "https://www.googleapis.com/youtube/v3/search?q=" . $searchTerm . "&part=snippet&key=" . $this->getKey() . "&maxResults=" . $maxResults;
+            if (null !== $author && !empty($author)) {
+                $url .= '&author=' . $author;
             }
-
             return $this->downloadFeedFromAPI($url);
         } else {
-            throw new APINeedsAuthentificationException('YoutubeEmbedFinder needs a Google server key, create a “google_server_id” setting.', 1);
+            throw new APINeedsAuthentificationException("YoutubeEmbedFinder needs a Google server key, create a “google_server_id” setting.", 1);
         }
     }
 
@@ -159,6 +174,10 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      * * start
      * * enablejsapi
      * * muted
+     *
+     * @param array $options
+     *
+     * @return string
      */
     public function getSource(array &$options = []): string
     {
@@ -199,6 +218,6 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         $queryString['enablejsapi'] = (int) $options['enablejsapi'];
         $queryString['mute'] = (int) $options['muted'];
 
-        return static::YOUTUBE_EMBED_DOMAIN.'/embed/'.$this->embedId.'?'.http_build_query($queryString);
+        return static::YOUTUBE_EMBED_DOMAIN . '/embed/' . $this->embedId . '?' . http_build_query($queryString);
     }
 }
