@@ -19,7 +19,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ['8.0', '8.1', '8.2', '8.3']
+                php-version: ['8.1', '8.2', '8.3']
         steps:
             - uses: shivammathur/setup-php@v2
               with:
@@ -35,8 +35,8 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-
             - name: Install Dependencies
               run: composer install --no-scripts --no-ansi --no-interaction --no-progress
-            - name: Run atoum unit tests
-              run: vendor/bin/atoum -d tests
+            - name: Run Unit tests
+              run: vendor/bin/phpunit -v --whitelist ./src tests
             - name: Run PHP Code Sniffer
               run: vendor/bin/phpcs -p ./src
             - name: Run PHPStan
