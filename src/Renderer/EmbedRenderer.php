@@ -10,14 +10,8 @@ use RZ\Roadiz\Documents\Models\DocumentInterface;
 
 class EmbedRenderer implements RendererInterface
 {
-    protected EmbedFinderFactory $embedFinderFactory;
-
-    /**
-     * @param EmbedFinderFactory $embedFinderFactory
-     */
-    public function __construct(EmbedFinderFactory $embedFinderFactory)
+    public function __construct(protected readonly EmbedFinderFactory $embedFinderFactory)
     {
-        $this->embedFinderFactory = $embedFinderFactory;
     }
 
     public function supports(DocumentInterface $document, array $options): bool
@@ -26,7 +20,7 @@ class EmbedRenderer implements RendererInterface
             $document->isEmbed()
             && $this->embedFinderFactory->supports($document->getEmbedPlatform())
             && isset($options['embed'])
-            && $options['embed'] === true
+            && true === $options['embed']
         ) {
             return true;
         } else {
@@ -44,9 +38,10 @@ class EmbedRenderer implements RendererInterface
             if (null !== $finder) {
                 return $finder->getIFrame($options);
             }
+
             return '';
         } catch (InvalidEmbedId $exception) {
-            return '<p>' . $exception->getMessage() . '</p>';
+            return '<p>'.$exception->getMessage().'</p>';
         }
     }
 }
