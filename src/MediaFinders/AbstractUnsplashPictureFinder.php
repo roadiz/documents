@@ -4,74 +4,82 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\MediaFinders;
 
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 
 abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder implements RandomImageFinder
 {
+    protected Client $client;
     /**
+     * @var string
      * @internal Use getPlatform() instead
      */
     protected static string $platform = 'unsplash';
 
-    #[\Override]
     public function getShortType(): string
     {
         return 'documents';
     }
 
-    #[\Override]
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return false;
     }
 
-    #[\Override]
     public static function getPlatform(): string
     {
         return static::$platform;
     }
 
-    public function __construct(HttpClientInterface $client, string $clientId, string $embedId = '')
+    /**
+     * @param string $clientId
+     * @param string $embedId
+     */
+    public function __construct(string $clientId, string $embedId = '')
     {
-        parent::__construct($client->withOptions([
+        parent::__construct($embedId);
+
+        $this->client = new Client(
+            [
             // Base URI is used with relative requests
             'base_uri' => 'https://api.unsplash.com',
             // You can set any number of default request options.
             'timeout' => 3.0,
             'headers' => [
-                'Authorization' => 'Client-ID '.$clientId,
-            ],
-        ]), $embedId);
+                'Authorization' => 'Client-ID ' . $clientId
+            ]
+            ]
+        );
     }
 
-    #[\Override]
-    protected function validateEmbedId(string $embedId = ''): string
+    protected function validateEmbedId(string $embedId = ""): string
     {
         return $embedId;
     }
 
     /**
-     * @see https://unsplash.com/documentation#get-a-random-photo
+     * @see    https://unsplash.com/documentation#get-a-random-photo
+     * @param  array $options
+     * @return array|null
+     * @throws GuzzleException
      */
-    #[\Override]
     public function getRandom(array $options = []): ?array
     {
         try {
-            $response = $this->client->request(
-                'GET',
+            $response = $this->client->get(
                 '/photos/random',
                 [
-                    'query' => array_merge(
-                        [
-                            'content_filter' => 'high',
-                            'orientation' => 'landscape',
-                        ],
-                        $options
-                    ),
+                'query' => array_merge(
+                    [
+                    'content_filter' => 'high',
+                    'orientation' => 'landscape'
+                    ],
+                    $options
+                )
                 ]
             );
-            $feed = json_decode($response->getContent(), true) ?? null;
+            $feed = json_decode($response->getBody()->getContents(), true) ?? null;
             if (!is_array($feed)) {
                 return null;
             }
@@ -81,67 +89,85 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
             if (null !== $url) {
                 $this->embedId = (string) $feed['id'];
                 $this->feed = $feed;
-
                 return $this->feed;
             }
-
             return null;
-        } catch (ClientExceptionInterface) {
+        } catch (ClientException $e) {
             return null;
         }
     }
 
-    #[\Override]
-    public function getRandomBySearch(string $keyword, array $options = []): ?array
+    /**
+     * @param  string $keyword
+     * @param  array  $options
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getRandomBySearch(string $keyword, array $options = [])
     {
         return $this->getRandom(
             [
-                'query' => $keyword,
+            'query' => $keyword
             ]
         );
     }
 
-    #[\Override]
-    public function getMediaFeed(?string $search = null): string
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMediaFeed($search = null)
     {
-        throw new \LogicException('Unsplash API does not provide a feed.');
+        return '';
     }
 
-    #[\Override]
+    /**
+     * {@inheritdoc}
+     */
     public function getMediaTitle(): string
     {
         return $this->feed['description'] ?? '';
     }
 
-    #[\Override]
+    /**
+     * @return int|null
+     */
     public function getMediaWidth(): ?int
     {
         return $this->feed['width'] ?? null;
     }
 
-    #[\Override]
+    /**
+     * @return int|null
+     */
     public function getMediaHeight(): ?int
     {
         return $this->feed['height'] ?? null;
     }
 
-    #[\Override]
+    /**
+     * {@inheritdoc}
+     */
     public function getMediaDescription(): string
     {
         return $this->feed['alt_description'] ?? '';
     }
 
-    #[\Override]
+    /**
+     * {@inheritdoc}
+     */
     public function getMediaCopyright(): string
     {
         if (isset($this->feed['user'])) {
-            return trim(($this->feed['user']['name'] ?? '').', Unsplash', " \t\n\r\0\x0B-");
+            return trim(($this->feed['user']['name'] ?? '') . ', Unsplash', " \t\n\r\0\x0B-");
         }
-
         return 'Unsplash';
     }
 
-    #[\Override]
+    /**
+     * @inheritdoc
+     * @throws     GuzzleException
+     */
     public function getThumbnailURL(): ?string
     {
         if (null === $this->feed) {
@@ -154,16 +180,19 @@ abstract class AbstractUnsplashPictureFinder extends AbstractEmbedFinder impleme
         if (is_array($this->feed)) {
             return $this->getBestUrl($this->feed);
         }
-
         return null;
     }
 
+    /**
+     * @param array|null $feed
+     *
+     * @return string|null
+     */
     protected function getBestUrl(?array $feed): ?string
     {
         if (null === $feed) {
             return null;
         }
-
         return $feed['urls']['full'] ?? $feed['urls']['raw'] ?? null;
     }
 }

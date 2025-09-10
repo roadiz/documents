@@ -9,63 +9,64 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
 {
     /**
+     * @var string
      * @internal Use getPlatform() instead
      */
     protected static string $platform = 'deezer';
     // https://www.deezer.com/fr/playlist/9313425622
     protected static string $idPattern = '#^https?:\/\/(www.)?deezer\.com\/(?:\\w+/)?(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)#';
     protected static string $realIdPattern = '#^(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)$#';
-    protected ?string $embedUrl = null;
+    protected ?string $embedUrl;
 
-    #[\Override]
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return str_starts_with($embedUrl, 'https://www.deezer.com');
     }
 
-    #[\Override]
     public static function getPlatform(): string
     {
         return static::$platform;
     }
 
-    #[\Override]
     public function isEmptyThumbnailAllowed(): bool
     {
         return true;
     }
 
-    #[\Override]
-    protected function validateEmbedId(string $embedId = ''): string
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (1 === preg_match(static::$idPattern, $embedId, $matches)) {
+        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
-        if (1 === preg_match(static::$realIdPattern, $embedId, $matches)) {
+        if (preg_match(static::$realIdPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
     }
 
-    #[\Override]
-    public function getMediaFeed(?string $search = null): string
+    /**
+     * @inheritDoc
+     */
+    public function getMediaFeed($search = null)
     {
         if (preg_match(static::$realIdPattern, $this->embedId)) {
-            $url = 'https://www.deezer.com/fr/'.$this->embedId;
+            $url = 'https://www.deezer.com/fr/' . $this->embedId;
         } else {
             $url = $this->embedId;
         }
-        $endpoint = 'https://api.deezer.com/oembed';
+        $endpoint = "https://api.deezer.com/oembed";
         $query = [
             'url' => $url,
             'format' => 'json',
         ];
 
-        return $this->downloadFeedFromAPI($endpoint.'?'.http_build_query($query));
+        return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
     }
 
-    #[\Override]
-    public function getFeed(): array|\SimpleXMLElement|null
+    /**
+     * @inheritDoc
+     */
+    public function getFeed()
     {
         $feed = parent::getFeed();
         /*
@@ -73,64 +74,65 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
          */
         $this->embedUrl = $this->embedId;
         if (preg_match(static::$idPattern, $this->embedId, $matches)) {
-            $this->embedId = $matches['type'].'/'.$matches['id'];
+            $this->embedId = $matches['type'] . '/' . $matches['id'];
         }
 
         return $feed;
     }
 
-    #[\Override]
     public function getMediaTitle(): string
     {
-        return $this->getFeed()['title'] ?? '';
+        return isset($this->getFeed()['title']) ? $this->getFeed()['title'] : '';
     }
 
-    #[\Override]
     public function getMediaDescription(): string
     {
-        return $this->getFeed()['description'] ?? '';
+        return isset($this->getFeed()['description']) ? $this->getFeed()['description'] : '';
     }
 
-    #[\Override]
     public function getMediaCopyright(): string
     {
-        return ($this->getFeed()['provider_name'] ?? '').' ('.($this->getFeed()['provider_url'] ?? '').')';
+        return ($this->getFeed()['provider_name'] ?? '') . ' (' . ($this->getFeed()['provider_url'] ?? '') . ')';
     }
 
-    #[\Override]
     public function getThumbnailURL(): string
     {
         return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
-    #[\Override]
+    /**
+     * @inheritDoc
+     */
     public function getThumbnailName(string $pathinfo): string
     {
-        if (1 === preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
-            $pathinfo = '.'.$ext['extension'];
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext) === 1) {
+            $pathinfo = '.' . $ext['extension'];
         } else {
             $pathinfo = '.jpg';
         }
 
-        if (1 === preg_match(static::$idPattern, $this->embedId, $matches)) {
-            return $matches['type'].'_'.$matches['id'].$pathinfo;
+        if (preg_match(static::$idPattern, $this->embedId, $matches) === 1) {
+            return $matches['type'] . '_' . $matches['id'] . $pathinfo;
         }
-        if (1 === preg_match(static::$realIdPattern, $this->embedId, $matches)) {
-            return $matches['type'].'_'.$matches['id'].$pathinfo;
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches) === 1) {
+            return $matches['type'] . '_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($this->embedId, static::$platform);
     }
 
     /**
      * Get embed media source URL.
+     *
+     * @param array $options
+     *
+     * @return string
      */
-    #[\Override]
     public function getSource(array &$options = []): string
     {
         parent::getSource($options);
 
         $queryString = [
-            'id' => $this->embedId,
+            'id' => $this->embedId
         ];
 
         if (key_exists('autoplay', $options)) {
@@ -153,18 +155,17 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         $queryString['mute'] = (int) $options['muted'];
 
         if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
-            $baseUri = 'https://widget.deezer.com/widget/auto/'.$this->embedId;
+            $baseUri = 'https://widget.deezer.com/widget/auto/' . $this->embedId;
         } elseif (preg_match(static::$idPattern, $this->embedId, $matches)) {
-            $baseUri = 'https://widget.deezer.com/widget/auto/'.$matches['type'].'/'.$matches['id'];
+            $baseUri = 'https://widget.deezer.com/widget/auto/' . $matches['type'] . '/' . $matches['id'];
         } else {
             $baseUri = 'https://widget.deezer.com/widget/auto/';
         }
 
         // https://widget.deezer.com/widget/dark/playlist/9313425622
-        return $baseUri.'?'.http_build_query($queryString);
+        return $baseUri . '?' . http_build_query($queryString);
     }
 
-    #[\Override]
     protected function areDuplicatesAllowed(): bool
     {
         return true;

@@ -9,6 +9,7 @@ use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
 {
     /**
+     * @var string
      * @internal Use getPlatform() instead
      */
     protected static string $platform = 'spotify';
@@ -16,51 +17,55 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
     // https://open.spotify.com/embed/track/6U67bz1ggGoOUllUOvfKFF
     protected static string $idPattern = '#^https\:\/\/open\.spotify\.com\/(?<type>track|playlist|artist|album|show|episode)\/(?<id>[a-zA-Z0-9]+)#';
     protected static string $realIdPattern = '#^(?<type>track|playlist|artist|album|show|episode)\/(?<id>[a-zA-Z0-9]+)$#';
-    protected ?string $embedUrl = null;
+    protected ?string $embedUrl;
 
-    #[\Override]
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return str_starts_with($embedUrl, 'https://open.spotify.com');
     }
 
-    #[\Override]
     public static function getPlatform(): string
     {
         return static::$platform;
     }
 
-    #[\Override]
-    protected function validateEmbedId(string $embedId = ''): string
+    /**
+     * @inheritDoc
+     */
+    protected function validateEmbedId(string $embedId = ""): string
     {
-        if (1 === preg_match(static::$idPattern, $embedId, $matches)) {
+        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
-        if (1 === preg_match(static::$realIdPattern, $embedId, $matches)) {
+        if (preg_match(static::$realIdPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
     }
 
-    #[\Override]
-    public function getMediaFeed(?string $search = null): string
+    /**
+     * @inheritDoc
+     */
+    public function getMediaFeed($search = null)
     {
         if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
-            $url = 'https://open.spotify.com/'.$this->embedId;
+            $url = 'https://open.spotify.com/' . $this->embedId;
         } else {
             $url = $this->embedId;
         }
-        $endpoint = 'https://embed.spotify.com/oembed';
+        $endpoint = "https://embed.spotify.com/oembed";
         $query = [
             'url' => $url,
             'format' => 'json',
         ];
 
-        return $this->downloadFeedFromAPI($endpoint.'?'.http_build_query($query));
+        return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
     }
 
-    #[\Override]
-    public function getFeed(): array|\SimpleXMLElement|null
+    /**
+     * @inheritDoc
+     */
+    public function getFeed()
     {
         $feed = parent::getFeed();
         /*
@@ -68,78 +73,87 @@ abstract class AbstractSpotifyEmbedFinder extends AbstractEmbedFinder
          */
         $this->embedUrl = $this->embedId;
         if (preg_match(static::$idPattern, $this->embedId, $matches)) {
-            $this->embedId = $matches['type'].'/'.$matches['id'];
+            $this->embedId = $matches['type'] . '/' . $matches['id'];
         }
 
         return $feed;
     }
 
-    #[\Override]
+    /**
+     * @inheritDoc
+     */
     public function getMediaTitle(): string
     {
         $feed = $this->getFeed();
-
         return is_array($feed) && isset($feed['title']) ? $feed['title'] : '';
     }
 
-    #[\Override]
+    /**
+     * @inheritDoc
+     */
     public function getMediaDescription(): string
     {
         $feed = $this->getFeed();
-
         return is_array($feed) && isset($feed['description']) ? $feed['description'] : '';
     }
 
-    #[\Override]
+    /**
+     * @inheritDoc
+     */
     public function getMediaCopyright(): string
     {
         $feed = $this->getFeed();
-
-        return is_array($feed) ? $feed['provider_name'].' ('.$feed['provider_url'].')' : '';
+        return is_array($feed) ? $feed['provider_name'] . ' (' . $feed['provider_url'] . ')' : '';
     }
 
-    #[\Override]
+    /**
+     * @inheritDoc
+     */
     public function getThumbnailURL(): string
     {
         return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
-    #[\Override]
+    /**
+     * @inheritDoc
+     */
     public function getThumbnailName(string $pathinfo): string
     {
-        if (1 === preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
-            $pathinfo = '.'.$ext['extension'];
+        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext) === 1) {
+            $pathinfo = '.' . $ext['extension'];
         } else {
             $pathinfo = '.jpg';
         }
-        if (1 === preg_match(static::$idPattern, $this->embedId, $matches)) {
-            return $matches['type'].'_'.$matches['id'].$pathinfo;
+        if (preg_match(static::$idPattern, $this->embedId, $matches) === 1) {
+            return $matches['type'] . '_' . $matches['id'] . $pathinfo;
         }
-        if (1 === preg_match(static::$realIdPattern, $this->embedId, $matches)) {
-            return $matches['type'].'_'.$matches['id'].$pathinfo;
+        if (preg_match(static::$realIdPattern, $this->embedId, $matches) === 1) {
+            return $matches['type'] . '_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($this->embedId, static::$platform);
     }
 
     /**
      * Get embed media source URL.
+     *
+     * @param array $options
+     *
+     * @return string
      */
-    #[\Override]
     public function getSource(array &$options = []): string
     {
         parent::getSource($options);
 
         if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
-            return 'https://open.spotify.com/embed/'.$this->embedId;
+            return 'https://open.spotify.com/embed/' . $this->embedId;
         }
         if (preg_match(static::$idPattern, $this->embedId, $matches)) {
-            return 'https://open.spotify.com/embed/'.$matches['type'].'/'.$matches['id'];
+            return 'https://open.spotify.com/embed/' . $matches['type'] . '/' . $matches['id'];
         }
 
         return $this->embedId;
     }
 
-    #[\Override]
     protected function areDuplicatesAllowed(): bool
     {
         return true;

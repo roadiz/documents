@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Renderer;
 
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 
 class ChainRenderer implements RendererInterface
 {
@@ -13,6 +13,9 @@ class ChainRenderer implements RendererInterface
      */
     private array $renderers;
 
+    /**
+     * @param array $renderers
+     */
     public function __construct(array $renderers)
     {
         /**
@@ -27,23 +30,22 @@ class ChainRenderer implements RendererInterface
     }
 
     /**
+     * @param RendererInterface $renderer
+     *
      * @return $this
      */
     public function addRenderer(RendererInterface $renderer): ChainRenderer
     {
         $this->renderers[] = $renderer;
-
         return $this;
     }
 
-    #[\Override]
-    public function supports(BaseDocumentInterface $document, array $options): bool
+    public function supports(DocumentInterface $document, array $options): bool
     {
         return true;
     }
 
-    #[\Override]
-    public function render(BaseDocumentInterface $document, array $options): string
+    public function render(DocumentInterface $document, array $options): string
     {
         /**
          * @var RendererInterface $renderer
