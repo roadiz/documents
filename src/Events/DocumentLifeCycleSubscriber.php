@@ -132,7 +132,7 @@ final readonly class DocumentLifeCycleSubscriber
                 $this->documentsStorage->delete($documentPath);
             }
             $this->cleanFileDirectory($this->getDocumentFolderPath($document));
-        } catch (DocumentWithoutFileException) {
+        } catch (DocumentWithoutFileException $e) {
             // Do nothing when document does not have any file on system.
         }
     }

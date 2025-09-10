@@ -69,7 +69,8 @@ class EmbedRendererTest extends AbstractRendererTestCase
 <iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen></iframe>
-EOT,
+EOT
+            ,
             $renderer->render($mockDocumentYoutube, ['embed' => true])
         );
 
@@ -79,7 +80,8 @@ EOT,
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen
         loading="lazy"></iframe>
-EOT,
+EOT
+            ,
             $renderer->render($mockDocumentYoutube, [
                 'embed' => true,
                 'loading' => 'lazy',
@@ -91,7 +93,8 @@ EOT,
 <iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         width="500" height="312" allowFullScreen></iframe>
-EOT,
+EOT
+            ,
             $renderer->render($mockDocumentYoutube, [
                 'embed' => true,
                 'width' => 500,
@@ -104,7 +107,8 @@ EOT,
 <iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         width="500" height="500" allowFullScreen></iframe>
-EOT,
+EOT
+            ,
             $renderer->render($mockDocumentYoutube, [
                 'embed' => true,
                 'width' => 500,
@@ -117,7 +121,8 @@ EOT,
 <iframe src="https://www.youtube-nocookie.com/embed/xxxxxxx?rel=0&html5=1&wmode=transparent&autoplay=1&playsinline=1&loop=0&controls=1&fs=1&modestbranding=1&showinfo=0&enablejsapi=1&mute=0"
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; autoplay; fullscreen"
         allowFullScreen></iframe>
-EOT,
+EOT
+            ,
             $renderer->render($mockDocumentYoutube, [
                 'embed' => true,
                 'autoplay' => true,
@@ -132,7 +137,8 @@ EOT,
 <iframe src="https://player.vimeo.com/video/0000000?title=0&byline=0&portrait=0&api=1&loop=0&fullscreen=1&controls=1&autopause=0&automute=0"
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen></iframe>
-EOT,
+EOT
+            ,
             $renderer->render($mockDocumentVimeo, ['embed' => true])
         );
 
@@ -141,7 +147,8 @@ EOT,
 <iframe src="https://player.vimeo.com/video/0000000?title=0&byline=0&portrait=0&api=1&loop=0&fullscreen=1&controls=1&autopause=0&automute=1&autoplay=1&playsinline=1"
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; autoplay; fullscreen"
         allowFullScreen></iframe>
-EOT,
+EOT
+            ,
             $renderer->render($mockDocumentVimeo, [
                 'embed' => true,
                 'autoplay' => true,
@@ -154,7 +161,8 @@ EOT,
 <iframe src="https://player.vimeo.com/video/0000000?title=0&byline=0&portrait=0&api=1&loop=0&fullscreen=1&controls=1&autopause=0&automute=0&autoplay=1&playsinline=1&background=1"
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; autoplay; fullscreen"
         allowFullScreen></iframe>
-EOT,
+EOT
+            ,
             $renderer->render($mockDocumentVimeo, [
                 'embed' => true,
                 'autoplay' => true,

@@ -7,11 +7,17 @@ namespace RZ\Roadiz\Documents\Viewers;
 use enshrined\svgSanitize\Sanitizer;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
-final class SvgDocumentViewer
+class SvgDocumentViewer
 {
+    protected array $attributes;
+    protected bool $asObject = false;
+    protected string $imageUrl;
+    protected FilesystemOperator $documentsStorage;
+    protected DocumentInterface $document;
+
     /**
      * @var string[]
      */
@@ -22,12 +28,22 @@ final class SvgDocumentViewer
         'class',
     ];
 
+    /**
+     * @param bool   $asObject Default false
+     * @param string $imageUrl only needed if you set $asObject to true
+     */
     public function __construct(
-        private readonly FilesystemOperator $documentsStorage,
-        private readonly BaseDocumentInterface $document,
-        private readonly array $attributes = [],
-        private readonly bool $asObject = false,
+        FilesystemOperator $documentsStorage,
+        DocumentInterface $document,
+        array $attributes = [],
+        bool $asObject = false,
+        string $imageUrl = '',
     ) {
+        $this->imageUrl = $imageUrl;
+        $this->attributes = $attributes;
+        $this->asObject = $asObject;
+        $this->documentsStorage = $documentsStorage;
+        $this->document = $document;
     }
 
     /**
@@ -151,7 +167,7 @@ final class SvgDocumentViewer
 
         $attrs = [];
         foreach ($attributes as $key => $value) {
-            $attrs[] = $key.'="'.htmlspecialchars((string) $value).'"';
+            $attrs[] = $key.'="'.htmlspecialchars($value).'"';
         }
 
         return '<object '.implode(' ', $attrs).'></object>';

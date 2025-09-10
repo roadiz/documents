@@ -6,16 +6,18 @@ namespace RZ\Roadiz\Documents\Renderer;
 
 use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory;
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 
 class EmbedRenderer implements RendererInterface
 {
-    public function __construct(protected readonly EmbedFinderFactory $embedFinderFactory)
+    protected EmbedFinderFactory $embedFinderFactory;
+
+    public function __construct(EmbedFinderFactory $embedFinderFactory)
     {
+        $this->embedFinderFactory = $embedFinderFactory;
     }
 
-    #[\Override]
-    public function supports(BaseDocumentInterface $document, array $options): bool
+    public function supports(DocumentInterface $document, array $options): bool
     {
         if (
             $document->isEmbed()
@@ -29,8 +31,7 @@ class EmbedRenderer implements RendererInterface
         }
     }
 
-    #[\Override]
-    public function render(BaseDocumentInterface $document, array $options): string
+    public function render(DocumentInterface $document, array $options): string
     {
         try {
             $finder = $this->embedFinderFactory->createForPlatform(

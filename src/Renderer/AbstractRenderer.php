@@ -6,7 +6,7 @@ namespace RZ\Roadiz\Documents\Renderer;
 
 use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Exceptions\DocumentWithoutFileException;
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\OptionsResolver\UrlOptionsResolver;
 use RZ\Roadiz\Documents\OptionsResolver\ViewOptionsResolver;
 use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
@@ -14,20 +14,28 @@ use Twig\Environment;
 
 abstract class AbstractRenderer implements RendererInterface
 {
+    protected Environment $templating;
+    protected DocumentUrlGeneratorInterface $documentUrlGenerator;
+    protected string $templateBasePath;
     protected UrlOptionsResolver $urlOptionsResolver;
     protected ViewOptionsResolver $viewOptionsResolver;
+    protected FilesystemOperator $documentsStorage;
 
     public function __construct(
-        protected readonly FilesystemOperator $documentsStorage,
-        protected readonly Environment $templating,
-        protected readonly DocumentUrlGeneratorInterface $documentUrlGenerator,
-        protected readonly string $templateBasePath = 'documents',
+        FilesystemOperator $documentsStorage,
+        Environment $templating,
+        DocumentUrlGeneratorInterface $documentUrlGenerator,
+        string $templateBasePath = 'documents',
     ) {
+        $this->documentsStorage = $documentsStorage;
+        $this->templating = $templating;
+        $this->documentUrlGenerator = $documentUrlGenerator;
+        $this->templateBasePath = $templateBasePath;
         $this->urlOptionsResolver = new UrlOptionsResolver();
         $this->viewOptionsResolver = new ViewOptionsResolver();
     }
 
-    protected function getSource(BaseDocumentInterface $document, array $options): string
+    protected function getSource(DocumentInterface $document, array $options): string
     {
         if (empty($document->getRelativePath())) {
             throw new DocumentWithoutFileException($document);
@@ -49,12 +57,15 @@ abstract class AbstractRenderer implements RendererInterface
     }
 
     /**
-     * @param iterable<BaseDocumentInterface> $sourcesDocs
+     * @param iterable<DocumentInterface> $sourcesDocs
      */
-    protected function getSourcesFilesArray(BaseDocumentInterface $document, iterable $sourcesDocs): array
+    protected function getSourcesFilesArray(DocumentInterface $document, iterable $sourcesDocs): array
     {
         $sources = [];
 
+        /**
+         * @var DocumentInterface $source
+         */
         foreach ($sourcesDocs as $source) {
             $sourceMountPath = $source->getMountPath();
             if (null !== $sourceMountPath) {
