@@ -4,30 +4,16 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents;
 
-use Intervention\Image\Image;
+use Intervention\Image\Interfaces\ImageInterface;
 
-class AverageColorResolver
+final readonly class AverageColorResolver
 {
-    public function getAverageColor(Image $image): string
-    {
-        $colorArray = $this->getAverageColorAsArray($image);
-        return sprintf(
-            '#%02x%02x%02x',
-            $colorArray[0],
-            $colorArray[1],
-            $colorArray[2]
-        );
-    }
     /**
-     * @param Image $image
-     *
-     * @return array
+     * Get the average color of an image by resampling the image to 1x1 pixel and pick this pixel color.
+     * Then only use the RGB channels by picking only the 7 first hex chars to get rid of alpha channel.
      */
-    public function getAverageColorAsArray(Image $image): array
+    public function getAverageColor(ImageInterface $image): string
     {
-        $image->resize(1, 1);
-        /** @var array $array */
-        $array = $image->pickColor(0, 0);
-        return $array;
+        return substr($image->resize(1, 1)->pickColor(0, 0)->toHex('#'), 0, 7);
     }
 }

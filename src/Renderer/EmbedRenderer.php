@@ -6,27 +6,22 @@ namespace RZ\Roadiz\Documents\Renderer;
 
 use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory;
-use RZ\Roadiz\Documents\Models\DocumentInterface;
+use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
 
 class EmbedRenderer implements RendererInterface
 {
-    protected EmbedFinderFactory $embedFinderFactory;
-
-    /**
-     * @param EmbedFinderFactory $embedFinderFactory
-     */
-    public function __construct(EmbedFinderFactory $embedFinderFactory)
+    public function __construct(protected readonly EmbedFinderFactory $embedFinderFactory)
     {
-        $this->embedFinderFactory = $embedFinderFactory;
     }
 
-    public function supports(DocumentInterface $document, array $options): bool
+    #[\Override]
+    public function supports(BaseDocumentInterface $document, array $options): bool
     {
         if (
             $document->isEmbed()
             && $this->embedFinderFactory->supports($document->getEmbedPlatform())
             && isset($options['embed'])
-            && $options['embed'] === true
+            && true === $options['embed']
         ) {
             return true;
         } else {
@@ -34,7 +29,8 @@ class EmbedRenderer implements RendererInterface
         }
     }
 
-    public function render(DocumentInterface $document, array $options): string
+    #[\Override]
+    public function render(BaseDocumentInterface $document, array $options): string
     {
         try {
             $finder = $this->embedFinderFactory->createForPlatform(
@@ -44,9 +40,10 @@ class EmbedRenderer implements RendererInterface
             if (null !== $finder) {
                 return $finder->getIFrame($options);
             }
+
             return '';
         } catch (InvalidEmbedId $exception) {
-            return '<p>' . $exception->getMessage() . '</p>';
+            return '<p>'.$exception->getMessage().'</p>';
         }
     }
 }
