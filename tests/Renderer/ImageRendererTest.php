@@ -89,7 +89,7 @@ EOT,
 EOT,
             $renderer->render($mockDocument, [
                 'width' => 300,
-                'absolute' => true,
+                'absolute' => true
             ])
         );
 
@@ -103,7 +103,7 @@ EOT,
             $renderer->render($mockDocument, [
                 'width' => 300,
                 'class' => 'awesome-image responsive',
-                'absolute' => true,
+                'absolute' => true
             ])
         );
 
@@ -122,7 +122,7 @@ EOT,
 EOT,
             $renderer->render($mockDocument, [
                 'width' => 300,
-                'lazyload' => true,
+                'lazyload' => true
             ])
         );
 
@@ -142,7 +142,7 @@ EOT,
             $renderer->render($mockDocument, [
                 'width' => 300,
                 'lazyload' => true,
-                'fallback' => 'https://test.test/fallback.png',
+                'fallback' => 'https://test.test/fallback.png'
             ])
         );
 
@@ -154,7 +154,7 @@ EOT,
 EOT,
             $renderer->render($mockDocument, [
                 'width' => 300,
-                'fallback' => 'https://test.test/fallback.png',
+                'fallback' => 'https://test.test/fallback.png'
             ])
         );
 
@@ -168,7 +168,7 @@ EOT,
 EOT,
             $renderer->render($mockDocument, [
                 'fit' => '600x400',
-                'quality' => 70,
+                'quality' => 70
             ])
         );
 
@@ -204,15 +204,15 @@ EOT,
                 'width' => 300,
                 'srcset' => [[
                     'format' => [
-                        'width' => 300,
+                        'width' => 300
                     ],
-                    'rule' => '1x',
-                ], [
+                    'rule' => '1x'
+                ],[
                     'format' => [
-                        'width' => 600,
+                        'width' => 600
                     ],
-                    'rule' => '2x',
-                ]],
+                    'rule' => '2x'
+                ]]
             ])
         );
 
@@ -227,19 +227,19 @@ EOT,
                 'width' => 300,
                 'srcset' => [[
                     'format' => [
-                        'width' => 300,
+                        'width' => 300
                     ],
-                    'rule' => '1x',
-                ], [
+                    'rule' => '1x'
+                ],[
                     'format' => [
-                        'width' => 600,
+                        'width' => 600
                     ],
-                    'rule' => '2x',
+                    'rule' => '2x'
                 ]],
                 'sizes' => [
                     '(max-width: 767px) 300px',
-                    '(min-width: 768px) 400px',
-                ],
+                    '(min-width: 768px) 400px'
+                ]
             ])
         );
 
@@ -257,17 +257,17 @@ EOT,
                     'format' => [
                         'fit' => '600x400',
                     ],
-                    'rule' => '1x',
-                ], [
+                    'rule' => '1x'
+                ],[
                     'format' => [
                         'fit' => '1200x800',
                     ],
-                    'rule' => '2x',
+                    'rule' => '2x'
                 ]],
                 'sizes' => [
                     '(max-width: 767px) 300px',
-                    '(min-width: 768px) 400px',
-                ],
+                    '(min-width: 768px) 400px'
+                ]
             ])
         );
 
@@ -287,17 +287,17 @@ EOT,
                     'format' => [
                         'fit' => '600x400',
                     ],
-                    'rule' => '1x',
-                ], [
+                    'rule' => '1x'
+                ],[
                     'format' => [
                         'fit' => '1200x800',
                     ],
-                    'rule' => '2x',
+                    'rule' => '2x'
                 ]],
                 'sizes' => [
                     '(max-width: 767px) 300px',
-                    '(min-width: 768px) 400px',
-                ],
+                    '(min-width: 768px) 400px'
+                ]
             ])
         );
 
@@ -325,17 +325,17 @@ EOT,
                     'format' => [
                         'fit' => '600x400',
                     ],
-                    'rule' => '1x',
-                ], [
+                    'rule' => '1x'
+                ],[
                     'format' => [
                         'fit' => '1200x800',
                     ],
-                    'rule' => '2x',
+                    'rule' => '2x'
                 ]],
                 'sizes' => [
                     '(max-width: 767px) 300px',
-                    '(min-width: 768px) 400px',
-                ],
+                    '(min-width: 768px) 400px'
+                ]
             ])
         );
 
@@ -366,17 +366,17 @@ EOT,
                     'format' => [
                         'fit' => '600x400',
                     ],
-                    'rule' => '1x',
-                ], [
+                    'rule' => '1x'
+                ],[
                     'format' => [
                         'fit' => '1200x800',
                     ],
-                    'rule' => '2x',
+                    'rule' => '2x'
                 ]],
                 'sizes' => [
                     '(max-width: 767px) 300px',
-                    '(min-width: 768px) 400px',
-                ],
+                    '(min-width: 768px) 400px'
+                ]
             ])
         );
     }

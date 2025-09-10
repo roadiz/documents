@@ -10,8 +10,14 @@ use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
-final class SvgDocumentViewer
+class SvgDocumentViewer
 {
+    protected array $attributes;
+    protected bool $asObject = false;
+    protected string $imageUrl;
+    protected FilesystemOperator $documentsStorage;
+    protected DocumentInterface $document;
+
     /**
      * @var string[]
      */
@@ -22,17 +28,31 @@ final class SvgDocumentViewer
         'class',
     ];
 
+    /**
+     * @param FilesystemOperator $documentsStorage
+     * @param DocumentInterface $document
+     * @param array $attributes
+     * @param bool $asObject Default false
+     * @param string $imageUrl Only needed if you set $asObject to true.
+     */
     public function __construct(
-        private readonly FilesystemOperator $documentsStorage,
-        private readonly DocumentInterface $document,
-        private readonly array $attributes = [],
-        private readonly bool $asObject = false,
+        FilesystemOperator $documentsStorage,
+        DocumentInterface $document,
+        array $attributes = [],
+        bool $asObject = false,
+        string $imageUrl = ""
     ) {
+        $this->imageUrl = $imageUrl;
+        $this->attributes = $attributes;
+        $this->asObject = $asObject;
+        $this->documentsStorage = $documentsStorage;
+        $this->document = $document;
     }
 
     /**
      * Get SVG string to be used inside HTML content.
      *
+     * @return string
      * @throws FilesystemException
      */
     public function getContent(): string
@@ -44,23 +64,26 @@ final class SvgDocumentViewer
         }
     }
 
+    /**
+     * @return array
+     */
     protected function getAllowedAttributes(): array
     {
         $attributes = [];
         foreach ($this->attributes as $key => $value) {
             if (in_array($key, static::$allowedAttributes)) {
-                if ('identifier' === $key) {
+                if ($key === 'identifier') {
                     $attributes['id'] = $value;
                 } else {
                     $attributes[$key] = $value;
                 }
             }
         }
-
         return $attributes;
     }
 
     /**
+     * @return string
      * @throws FilesystemException
      */
     protected function getInlineSvg(): string
@@ -72,7 +95,7 @@ final class SvgDocumentViewer
         }
 
         if (!$this->documentsStorage->fileExists($mountPath)) {
-            throw new FileNotFoundException('SVG file does not exist: '.$mountPath);
+            throw new FileNotFoundException('SVG file does not exist: ' . $mountPath);
         }
         // Create a new sanitizer instance
         $sanitizer = new Sanitizer();
@@ -88,11 +111,12 @@ final class SvgDocumentViewer
             // Pass it to the sanitizer and get it back clean
             return $this->injectAttributes($cleanSVG);
         }
-
         return $dirtySVG;
     }
 
     /**
+     * @param string $svg
+     * @return string
      * @throws \Exception
      */
     protected function injectAttributes(string $svg): string
@@ -131,7 +155,8 @@ final class SvgDocumentViewer
     }
 
     /**
-     * @deprecated use SvgRenderer to render HTML object
+     * @return string
+     * @deprecated Use SvgRenderer to render HTML object.
      */
     protected function getObjectSvg(): string
     {
@@ -151,9 +176,9 @@ final class SvgDocumentViewer
 
         $attrs = [];
         foreach ($attributes as $key => $value) {
-            $attrs[] = $key.'="'.htmlspecialchars($value).'"';
+            $attrs[] = $key . '="' . htmlspecialchars($value) . '"';
         }
 
-        return '<object '.implode(' ', $attrs).'></object>';
+        return '<object ' . implode(' ', $attrs) . '></object>';
     }
 }
