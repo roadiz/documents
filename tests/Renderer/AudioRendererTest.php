@@ -68,14 +68,16 @@ class AudioRendererTest extends AbstractRendererTestCase
     <source type="audio/mpeg" src="/files/folder/file.mp3">
     <p>Your browser does not support native audio.</p>
 </audio>
-EOT, $renderer->render($mockDocument, []));
+EOT
+            , $renderer->render($mockDocument, []));
 
         $this->assertHtmlTidyEquals(<<<EOT
 <audio controls>
     <source type="audio/mpeg" src="/files/folder/file2.mp3">
     <p>Your browser does not support native audio.</p>
 </audio>
-EOT, $renderer->render($mockDocument2, []));
+EOT
+            , $renderer->render($mockDocument2, []));
 
         $this->assertHtmlTidyEquals(<<<EOT
 <audio controls autoplay loop>
@@ -83,11 +85,12 @@ EOT, $renderer->render($mockDocument2, []));
     <source type="audio/mpeg" src="/files/folder/file.mp3">
     <p>Your browser does not support native audio.</p>
 </audio>
-EOT, $renderer->render($mockDocument, [
-            'controls' => true,
-            'loop' => true,
-            'autoplay' => true,
-        ]));
+EOT
+            , $renderer->render($mockDocument, [
+                'controls' => true,
+                'loop' => true,
+                'autoplay' => true,
+            ]));
 
         $this->assertHtmlTidyEquals(<<<EOT
 <audio>
@@ -95,9 +98,10 @@ EOT, $renderer->render($mockDocument, [
     <source type="audio/mpeg" src="/files/folder/file.mp3">
     <p>Your browser does not support native audio.</p>
 </audio>
-EOT, $renderer->render($mockDocument, [
-            'controls' => false,
-        ]));
+EOT
+            , $renderer->render($mockDocument, [
+                'controls' => false,
+            ]));
     }
 
     private function getDocumentFinder(): DocumentFinderInterface
