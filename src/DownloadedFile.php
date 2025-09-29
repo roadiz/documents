@@ -9,7 +9,7 @@ use Symfony\Component\String\UnicodeString;
 
 class DownloadedFile extends File
 {
-    protected ?string $originalFilename = null;
+    protected ?string $originalFilename;
 
     public function getOriginalFilename(): ?string
     {
@@ -38,20 +38,6 @@ class DownloadedFile extends File
     {
         if (null === $string) {
             return '';
-        }
-
-        // Remove images double extensions
-        // for compatibility with intervention-request
-        // and only keep the last one.
-        // example: my.image.jpg.webp => my_image_jpg.webp
-        $parts = explode('.', $string);
-        if (count($parts) > 2) {
-            $extension = array_pop($parts);
-            // Keep double extension for zip, gz, xz and bz
-            if (!\in_array($extension, ['zip', 'gz', 'xz', 'bz', 'bz2', '7z', 'tgz'], true)) {
-                $filename = implode('_', $parts);
-                $string = $filename.'.'.$extension;
-            }
         }
 
         return (new UnicodeString($string))
@@ -101,7 +87,7 @@ class DownloadedFile extends File
             if ($file->isReadable() && filesize($file->getPathname()) > 0) {
                 return $file;
             }
-        } catch (\RuntimeException) {
+        } catch (\RuntimeException $e) {
             return null;
         }
 

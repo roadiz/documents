@@ -14,19 +14,16 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
     protected static string $platform = 'mixcloud';
     protected static string $idPattern = '#^https\:\/\/www\.mixcloud\.com\/(?<author>[a-zA-Z0-9\-]+)\/(?<id>[a-zA-Z0-9\-]+)\/?$#';
 
-    #[\Override]
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return str_starts_with($embedUrl, 'https://www.mixcloud.com');
     }
 
-    #[\Override]
     public static function getPlatform(): string
     {
         return static::$platform;
     }
 
-    #[\Override]
     protected function validateEmbedId(string $embedId = ''): string
     {
         if (1 === preg_match(static::$idPattern, $embedId, $matches)) {
@@ -35,7 +32,6 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
         throw new InvalidEmbedId($embedId, static::$platform);
     }
 
-    #[\Override]
     public function getMediaFeed(?string $search = null): string
     {
         $endpoint = 'https://www.mixcloud.com/oembed/';
@@ -47,31 +43,26 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
         return $this->downloadFeedFromAPI($endpoint.'?'.http_build_query($query));
     }
 
-    #[\Override]
     public function getMediaTitle(): string
     {
         return $this->getFeed()['title'] ?? '';
     }
 
-    #[\Override]
     public function getMediaDescription(): string
     {
         return $this->getFeed()['description'] ?? '';
     }
 
-    #[\Override]
     public function getMediaCopyright(): string
     {
         return ($this->getFeed()['author_name'] ?? '').' ('.($this->getFeed()['author_url'] ?? '').')';
     }
 
-    #[\Override]
     public function getThumbnailURL(): string
     {
         return $this->getFeed()['image'] ?? '';
     }
 
-    #[\Override]
     public function getThumbnailName(string $pathinfo): string
     {
         if (1 === preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
@@ -95,7 +86,6 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
      * * mini
      * * hide_cover
      */
-    #[\Override]
     public function getSource(array &$options = []): string
     {
         parent::getSource($options);
@@ -130,7 +120,6 @@ abstract class AbstractMixcloudEmbedFinder extends AbstractEmbedFinder
         return 'https://www.mixcloud.com/widget/iframe/?'.http_build_query($queryString);
     }
 
-    #[\Override]
     protected function areDuplicatesAllowed(): bool
     {
         return true;
