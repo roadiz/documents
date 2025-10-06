@@ -40,7 +40,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         }
     }
 
-    #[\Override]
     public function getShortType(): string
     {
         return $this->getPlatform();
@@ -107,7 +106,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Get embed media source URL.
      */
-    #[\Override]
     public function getSource(array &$options = []): string
     {
         $resolver = new ViewOptionsResolver();
@@ -137,8 +135,9 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * * title
      * * id
      * * class
+     *
+     * @final
      */
-    #[\Override]
     public function getIFrame(array &$options = []): string
     {
         $attributes = [];
@@ -210,7 +209,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @throws FilesystemException
      */
-    #[\Override]
     public function createDocumentFromFeed(
         ObjectManager $objectManager,
         AbstractDocumentFactory $documentFactory,
@@ -238,7 +236,10 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
                  */
                 $this->injectMetaInDocument($objectManager, $document);
             }
-        } catch (APINeedsAuthentificationException|ClientExceptionInterface) {
+        } catch (APINeedsAuthentificationException $exception) {
+            $document = $documentFactory->getDocument(true, $this->areDuplicatesAllowed());
+            $document?->setFilename($this->getPlatform().'_'.$this->embedId.'.jpg');
+        } catch (ClientExceptionInterface $exception) {
             $document = $documentFactory->getDocument(true, $this->areDuplicatesAllowed());
             $document?->setFilename($this->getPlatform().'_'.$this->embedId.'.jpg');
         }
