@@ -9,8 +9,11 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class FilterDocumentEvent extends Event
 {
-    public function __construct(protected DocumentInterface $document)
+    protected DocumentInterface $document;
+
+    public function __construct(DocumentInterface $document)
     {
+        $this->document = $document;
     }
 
     public function getDocument(): DocumentInterface
