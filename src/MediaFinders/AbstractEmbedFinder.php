@@ -9,7 +9,6 @@ use League\Flysystem\FilesystemException;
 use RZ\Roadiz\Documents\AbstractDocumentFactory;
 use RZ\Roadiz\Documents\DownloadedFile;
 use RZ\Roadiz\Documents\Exceptions\APINeedsAuthentificationException;
-use RZ\Roadiz\Documents\Exceptions\EmbedDocumentAlreadyExistsException;
 use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\SizeableInterface;
@@ -40,6 +39,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         }
     }
 
+    #[\Override]
     public function getShortType(): string
     {
         return $this->getPlatform();
@@ -106,6 +106,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Get embed media source URL.
      */
+    #[\Override]
     public function getSource(array &$options = []): string
     {
         $resolver = new ViewOptionsResolver();
@@ -135,9 +136,8 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * * title
      * * id
      * * class
-     *
-     * @final
      */
+    #[\Override]
     public function getIFrame(array &$options = []): string
     {
         $attributes = [];
@@ -209,12 +209,13 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @throws FilesystemException
      */
+    #[\Override]
     public function createDocumentFromFeed(
         ObjectManager $objectManager,
         AbstractDocumentFactory $documentFactory,
     ): DocumentInterface|array {
-        if ($this->documentExists($objectManager, $this->getEmbedId(), $this->getPlatform())) {
-            throw new EmbedDocumentAlreadyExistsException();
+        if (null !== $document = $this->getExistingDocument($objectManager, $this->getEmbedId(), $this->getPlatform())) {
+            return $document;
         }
 
         try {
@@ -236,10 +237,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
                  */
                 $this->injectMetaInDocument($objectManager, $document);
             }
-        } catch (APINeedsAuthentificationException $exception) {
-            $document = $documentFactory->getDocument(true, $this->areDuplicatesAllowed());
-            $document?->setFilename($this->getPlatform().'_'.$this->embedId.'.jpg');
-        } catch (ClientExceptionInterface $exception) {
+        } catch (APINeedsAuthentificationException|ClientExceptionInterface) {
             $document = $documentFactory->getDocument(true, $this->areDuplicatesAllowed());
             $document?->setFilename($this->getPlatform().'_'.$this->embedId.'.jpg');
         }
@@ -268,6 +266,12 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         string $embedId,
         ?string $embedPlatform,
     ): bool;
+
+    abstract protected function getExistingDocument(
+        ObjectManager $objectManager,
+        string $embedId,
+        ?string $embedPlatform,
+    ): ?DocumentInterface;
 
     /**
      * Store additional information into Document.
