@@ -9,25 +9,28 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class EmbedFinderFactory
 {
     /**
+     * Embed platform classes, for example:
+     *
+     * [
+     *    youtube => YoutubeEmbedFinder::class,
+     *    vimeo => VimeoEmbedFinder::class
+     * ]
+     *
+     * @var array<string, class-string<EmbedFinderInterface>>
+     */
+    private array $embedPlatforms;
+
+    /**
      * @param array<string, class-string<EmbedFinderInterface>> $embedPlatforms
      */
-    public function __construct(
-        protected readonly HttpClientInterface $client,
-        /**
-         * Embed platform classes, for example:
-         *
-         * [
-         *    youtube => YoutubeEmbedFinder::class,
-         *    vimeo => VimeoEmbedFinder::class
-         * ]
-         */
-        private array $embedPlatforms = [],
-    ) {
+    public function __construct(protected readonly HttpClientInterface $client, array $embedPlatforms = [])
+    {
+        $this->embedPlatforms = $embedPlatforms;
     }
 
     public function createForPlatform(?string $mediaPlatform, ?string $embedId): ?EmbedFinderInterface
     {
-        if (null !== $embedId && null !== $mediaPlatform && $this->supports($mediaPlatform)) {
+        if (null !== $embedId && $this->supports($mediaPlatform)) {
             /**
              * @var class-string<EmbedFinderInterface> $class
              */
@@ -43,6 +46,10 @@ class EmbedFinderFactory
     {
         if (null === $embedUrl) {
             throw new \InvalidArgumentException('"embedUrl" is required');
+        }
+        // Throws a BadRequestHttpException if the embedUrl is not a string
+        if (!is_string($embedUrl)) {
+            throw new \InvalidArgumentException('"embedUrl" must be a string');
         }
         // Throws a BadRequestHttpException if the embedUrl is not a valid URL
         if (!filter_var($embedUrl, FILTER_VALIDATE_URL)) {
