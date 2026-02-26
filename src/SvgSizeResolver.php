@@ -11,7 +11,7 @@ use RZ\Roadiz\Documents\Models\DocumentInterface;
 final class SvgSizeResolver
 {
     private ?\DOMDocument $xmlDocument = null;
-    private ?\DOMNode $svgNode = null;
+    private ?\DOMElement $svgNode = null;
 
     public function __construct(
         private readonly DocumentInterface $document,
@@ -29,7 +29,7 @@ final class SvgSizeResolver
             if (null !== $viewBox && '' !== $viewBox->textContent) {
                 return explode(' ', $viewBox->textContent);
             }
-        } catch (\RuntimeException $exception) {
+        } catch (\RuntimeException) {
             return null;
         }
 
@@ -47,7 +47,7 @@ final class SvgSizeResolver
             ) {
                 return (int) $attribute->textContent;
             }
-        } catch (\RuntimeException $exception) {
+        } catch (\RuntimeException) {
             return null;
         }
 
@@ -97,10 +97,11 @@ final class SvgSizeResolver
     {
         if (null === $this->svgNode) {
             $svg = $this->getDOMDocument()->getElementsByTagName('svg');
-            if (!isset($svg[0])) {
+            $node = $svg->item(0);
+            if (!$node instanceof \DOMElement) {
                 throw new \RuntimeException('SVG does not contain a valid <svg> tag');
             }
-            $this->svgNode = $svg[0];
+            $this->svgNode = $node;
         }
 
         return $this->svgNode;
@@ -108,13 +109,7 @@ final class SvgSizeResolver
 
     private function getSvgNodeAttributes(): \DOMNamedNodeMap
     {
-        /** @var \DOMNamedNodeMap|null $attributes */
-        $attributes = $this->getSvgNode()->attributes;
-        if (null === $attributes) {
-            throw new \RuntimeException('SVG tag <svg> does not contain any attribute');
-        }
-
-        return $attributes;
+        return $this->getSvgNode()->attributes;
     }
 
     /**
