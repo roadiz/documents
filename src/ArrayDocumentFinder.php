@@ -52,7 +52,7 @@ final class ArrayDocumentFinder extends AbstractDocumentFinder
     /**
      * @return $this
      */
-    public function addDocument(DocumentInterface $document): static
+    public function addDocument(DocumentInterface $document): self
     {
         if (!$this->documents->contains($document)) {
             $this->documents->add($document);
