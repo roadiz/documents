@@ -17,7 +17,6 @@ final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    #[\Override]
     protected function configure(): void
     {
         $this->setName('documents:prune:orphans')
@@ -26,7 +25,6 @@ final class DocumentPruneOrphansCommand extends AbstractDocumentCommand
         ;
     }
 
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $em = $this->getManager();

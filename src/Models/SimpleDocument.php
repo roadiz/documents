@@ -12,7 +12,6 @@ use Doctrine\Common\Collections\Collection;
  */
 class SimpleDocument implements DocumentInterface
 {
-    use BaseDocumentTrait;
     use DocumentTrait;
 
     private string $filename = '';
@@ -33,13 +32,11 @@ class SimpleDocument implements DocumentInterface
         $this->folders = new ArrayCollection();
     }
 
-    #[\Override]
     public function getFilename(): string
     {
         return $this->filename;
     }
 
-    #[\Override]
     public function setFilename(string $filename): static
     {
         $this->filename = $filename;
@@ -47,13 +44,11 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function getMimeType(): ?string
     {
         return $this->mimeType;
     }
 
-    #[\Override]
     public function setMimeType(?string $mimeType): static
     {
         $this->mimeType = $mimeType;
@@ -61,13 +56,11 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function getFolder(): string
     {
         return $this->folder;
     }
 
-    #[\Override]
     public function setFolder(string $folder): static
     {
         $this->folder = $folder;
@@ -75,13 +68,11 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function getEmbedId(): ?string
     {
         return $this->embedId;
     }
 
-    #[\Override]
     public function setEmbedId(?string $embedId): static
     {
         $this->embedId = $embedId;
@@ -89,13 +80,11 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function getEmbedPlatform(): ?string
     {
         return $this->embedPlatform;
     }
 
-    #[\Override]
     public function setEmbedPlatform(?string $embedPlatform): static
     {
         $this->embedPlatform = $embedPlatform;
@@ -103,13 +92,11 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function isPrivate(): bool
     {
         return $this->private;
     }
 
-    #[\Override]
     public function setPrivate(bool $private): static
     {
         $this->private = $private;
@@ -117,13 +104,11 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function getRawDocument(): ?DocumentInterface
     {
         return $this->rawDocument;
     }
 
-    #[\Override]
     public function setRawDocument(?DocumentInterface $rawDocument = null): static
     {
         $this->rawDocument = $rawDocument;
@@ -131,13 +116,11 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function isRaw(): bool
     {
         return $this->raw;
     }
 
-    #[\Override]
     public function setRaw(bool $raw): static
     {
         $this->raw = $raw;
@@ -145,7 +128,6 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function getDownscaledDocument(): ?DocumentInterface
     {
         return $this->downscaledDocument;
@@ -158,7 +140,6 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function getFolders(): Collection
     {
         return $this->folders;
@@ -171,7 +152,6 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function addFolder(FolderInterface $folder): static
     {
         $this->folders->add($folder);
@@ -179,7 +159,6 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function removeFolder(FolderInterface $folder): static
     {
         $this->folders->removeElement($folder);
@@ -194,26 +173,13 @@ class SimpleDocument implements DocumentInterface
         return $this;
     }
 
-    #[\Override]
     public function getAlternativeText(): ?string
     {
         return $this->alternativeText;
     }
 
-    #[\Override]
     public function __toString(): string
     {
         return $this->getFilename();
-    }
-
-    #[\Override]
-    public function compareTo($other): int
-    {
-        if (!$other instanceof DocumentInterface) {
-            throw new \InvalidArgumentException('Can only compare to DocumentInterface instances.');
-        }
-
-        return $this->getFilename() === $other->getFilename()
-            && $this->getFolder() === $other->getFolder() ? 0 : -1;
     }
 }

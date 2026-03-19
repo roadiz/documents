@@ -9,7 +9,7 @@ use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Documents\MediaFinders\EmbedFinderFactory;
 use RZ\Roadiz\Documents\MediaFinders\EmbedFinderInterface;
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\SizeableInterface;
 use RZ\Roadiz\Documents\Renderer\RendererInterface;
 use Symfony\Component\OptionsResolver\Exception\InvalidArgumentException;
@@ -33,18 +33,17 @@ final class DocumentExtension extends AbstractExtension
     ) {
     }
 
-    #[\Override]
     public function getFilters(): array
     {
         return [
-            new TwigFilter('display', $this->display(...), ['is_safe' => ['html']]),
-            new TwigFilter('imageRatio', $this->getImageRatio(...)),
-            new TwigFilter('imageSize', $this->getImageSize(...)),
-            new TwigFilter('imageOrientation', $this->getImageOrientation(...)),
-            new TwigFilter('path', $this->getPath(...)),
-            new TwigFilter('exists', $this->exists(...)),
-            new TwigFilter('embedFinder', $this->getEmbedFinder(...)),
-            new TwigFilter('formatBytes', $this->formatBytes(...)),
+            new TwigFilter('display', [$this, 'display'], ['is_safe' => ['html']]),
+            new TwigFilter('imageRatio', [$this, 'getImageRatio']),
+            new TwigFilter('imageSize', [$this, 'getImageSize']),
+            new TwigFilter('imageOrientation', [$this, 'getImageOrientation']),
+            new TwigFilter('path', [$this, 'getPath']),
+            new TwigFilter('exists', [$this, 'exists']),
+            new TwigFilter('embedFinder', [$this, 'getEmbedFinder']),
+            new TwigFilter('formatBytes', [$this, 'formatBytes']),
         ];
     }
 
@@ -56,13 +55,13 @@ final class DocumentExtension extends AbstractExtension
         $size = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         $factor = floor((\mb_strlen((string) $bytes) - 1) / 3);
 
-        return sprintf("%.{$precision}f", (int) $bytes / 1024 ** $factor).@$size[$factor];
+        return sprintf("%.{$precision}f", (int) $bytes / pow(1024, $factor)).@$size[$factor];
     }
 
     /**
      * @throws RuntimeError
      */
-    public function getEmbedFinder(?BaseDocumentInterface $document = null): ?EmbedFinderInterface
+    public function getEmbedFinder(?DocumentInterface $document = null): ?EmbedFinderInterface
     {
         if (null === $document) {
             if ($this->throwExceptions) {
@@ -96,7 +95,7 @@ final class DocumentExtension extends AbstractExtension
     /**
      * @throws RuntimeError
      */
-    public function display(?BaseDocumentInterface $document = null, ?array $options = []): string
+    public function display(?DocumentInterface $document = null, ?array $options = []): string
     {
         if (null === $document) {
             if ($this->throwExceptions) {
@@ -188,7 +187,7 @@ final class DocumentExtension extends AbstractExtension
         return 0.0;
     }
 
-    public function getPath(?BaseDocumentInterface $document = null): ?string
+    public function getPath(?DocumentInterface $document = null): ?string
     {
         if (
             null !== $document
@@ -205,7 +204,7 @@ final class DocumentExtension extends AbstractExtension
     /**
      * @throws FilesystemException
      */
-    public function exists(?BaseDocumentInterface $document = null): bool
+    public function exists(?DocumentInterface $document = null): bool
     {
         if (null !== $document && $document->isLocal() && null !== $mountPath = $document->getMountPath()) {
             return $this->documentsStorage->fileExists($mountPath);
