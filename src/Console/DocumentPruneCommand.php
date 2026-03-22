@@ -15,6 +15,7 @@ class DocumentPruneCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
+    #[\Override]
     protected function configure(): void
     {
         $this->setName('documents:prune:unused')
@@ -23,6 +24,7 @@ class DocumentPruneCommand extends AbstractDocumentCommand
         ;
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
@@ -36,36 +38,40 @@ class DocumentPruneCommand extends AbstractDocumentCommand
 
         if ($count <= 0) {
             $this->io->warning('All documents are used.');
+
             return 0;
         }
 
         if ($input->getOption('dry-run')) {
             $this->io->info(sprintf(
-                '%d documents are not used by a node-source, a tag, a setting or an attribute.',
+                '%d documents are not used by a node-source, a tag, a setting, a custom-form answer or an attribute.',
                 $count
             ));
+
             return 0;
         }
 
         if (
-            $this->io->askQuestion(new ConfirmationQuestion(
+            !$this->io->askQuestion(new ConfirmationQuestion(
                 sprintf('Are you sure to delete permanently %d unused documents?', $count),
                 false
             ))
         ) {
-            $this->io->progressStart($count);
-            /** @var DocumentInterface $document */
-            foreach ($documents as $document) {
-                $em->remove($document);
-                if (($i % $batchSize) === 0) {
-                    $em->flush(); // Executes all updates.
-                }
-                ++$i;
-                $this->io->progressAdvance();
-            }
-            $em->flush();
-            $this->io->progressFinish();
+            return 0;
         }
+
+        $this->io->progressStart($count);
+        /** @var DocumentInterface $document */
+        foreach ($documents as $document) {
+            $em->remove($document);
+            if (($i % $batchSize) === 0) {
+                $em->flush(); // Executes all updates.
+            }
+            ++$i;
+            $this->io->progressAdvance();
+        }
+        $em->flush();
+        $this->io->progressFinish();
 
         return 0;
     }

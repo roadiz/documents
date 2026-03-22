@@ -14,6 +14,7 @@ class DocumentDuplicatesCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
+    #[\Override]
     protected function configure(): void
     {
         $this->setName('documents:duplicates')
@@ -21,6 +22,7 @@ class DocumentDuplicatesCommand extends AbstractDocumentCommand
         ;
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
@@ -29,12 +31,13 @@ class DocumentDuplicatesCommand extends AbstractDocumentCommand
         $count = \count($documents);
         $rows = [];
 
-        if ($count <= 0) {
+        if (0 === $count) {
             $this->io->success('No duplicated documents were found.');
+
             return 0;
         }
 
-        /** @var DocumentInterface & FileHashInterface $document */
+        /** @var DocumentInterface&FileHashInterface $document */
         foreach ($documents as $document) {
             $rows[] = [
                 'ID' => (string) $document,
@@ -45,7 +48,7 @@ class DocumentDuplicatesCommand extends AbstractDocumentCommand
         }
 
         $this->io->table([
-            'ID', 'Filename', 'Hash', 'Algo'
+            'ID', 'Filename', 'Hash', 'Algo',
         ], $rows);
 
         return 0;

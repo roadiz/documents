@@ -10,12 +10,12 @@ namespace RZ\Roadiz\Documents\Models;
 interface FileAwareInterface
 {
     /**
-     * @return string Return absolute path to public files folder.
+     * @return string return absolute path to public files folder
      */
     public function getPublicFilesPath(): string;
 
     /**
-     * @return string Return relative path to public files folder.
+     * @return string return relative path to public files folder
      */
     public function getPublicFilesBasePath(): string;
 
@@ -25,27 +25,17 @@ interface FileAwareInterface
     public function getPrivateFilesPath(): string;
 
     /**
-     * @return string Return relative path to private files folder.
+     * @return string return relative path to private files folder
      */
     public function getPrivateFilesBasePath(): string;
 
     /**
-     * @return string Return absolute path to private font files folder. Path must be protected.
-     */
-    public function getFontsFilesPath(): string;
-
-    /**
-     * @return string Return relative path to private font files folder.
-     */
-    public function getFontsFilesBasePath(): string;
-
-    /**
-     * @return string Return absolute path to public images cache.
+     * @return string return absolute path to public images cache
      */
     public function getPublicCachePath(): string;
 
     /**
-     * @return string Return relative path to public images cache.
+     * @return string return relative path to public images cache
      */
     public function getPublicCacheBasePath(): string;
 }
