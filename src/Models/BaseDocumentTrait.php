@@ -174,9 +174,8 @@ trait BaseDocumentTrait
         Serializer\SerializedName('type'),]
     public function getShortType(): string
     {
-        $mimeType = (string) $this->getMimeType();
-        if ('' !== $mimeType && isset(static::$mimeToIcon[$mimeType])) {
-            return static::$mimeToIcon[$mimeType];
+        if (null !== $this->getMimeType() && isset(static::$mimeToIcon[$this->getMimeType()])) {
+            return static::$mimeToIcon[$this->getMimeType()];
         }
 
         return 'unknown';
@@ -275,9 +274,6 @@ trait BaseDocumentTrait
 
     /**
      * Return false if no local file is linked to document. i.e no filename, no folder.
-     *
-     * @phpstan-assert-if-true non-empty-string $this->getMountPath()
-     * @phpstan-assert-if-true non-empty-string $this->getRelativePath()
      */
     #[Serializer\Ignore()]
     public function isLocal(): bool
