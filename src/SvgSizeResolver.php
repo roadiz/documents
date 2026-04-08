@@ -11,7 +11,7 @@ use RZ\Roadiz\Documents\Models\DocumentInterface;
 final class SvgSizeResolver
 {
     private ?\DOMDocument $xmlDocument = null;
-    private ?\DOMNode $svgNode = null;
+    private ?\DOMElement $svgNode = null;
 
     public function __construct(
         private readonly DocumentInterface $document,
@@ -97,10 +97,11 @@ final class SvgSizeResolver
     {
         if (null === $this->svgNode) {
             $svg = $this->getDOMDocument()->getElementsByTagName('svg');
-            if (!isset($svg[0])) {
+            $node = $svg->item(0);
+            if (!$node instanceof \DOMElement) {
                 throw new \RuntimeException('SVG does not contain a valid <svg> tag');
             }
-            $this->svgNode = $svg[0];
+            $this->svgNode = $node;
         }
 
         return $this->svgNode;
@@ -108,13 +109,7 @@ final class SvgSizeResolver
 
     private function getSvgNodeAttributes(): \DOMNamedNodeMap
     {
-        /** @var \DOMNamedNodeMap|null $attributes */
-        $attributes = $this->getSvgNode()->attributes;
-        if (null === $attributes) {
-            throw new \RuntimeException('SVG tag <svg> does not contain any attribute');
-        }
-
-        return $attributes;
+        return $this->getSvgNode()->attributes;
     }
 
     /**
@@ -129,7 +124,11 @@ final class SvgSizeResolver
             }
             $this->xmlDocument = new \DOMDocument();
             $svgSource = $this->documentsStorage->read($mountPath);
-            if (false === $this->xmlDocument->loadXML($svgSource)) {
+            // LIBXML_NONET prevents network entity resolution; LIBXML_NOENT keeps
+            // entities unexpanded (defense-in-depth against XXE on PHP < 8 and any
+            // future regression — PHP 8 disables external entities by default but
+            // explicit flags make the intent clear and version-independent).
+            if (false === $this->xmlDocument->loadXML($svgSource, \LIBXML_NONET | \LIBXML_NOENT)) {
                 throw new \RuntimeException(sprintf('SVG (%s) could not be loaded.', $mountPath));
             }
         }
