@@ -15,27 +15,23 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
     // https://www.deezer.com/fr/playlist/9313425622
     protected static string $idPattern = '#^https?:\/\/(www.)?deezer\.com\/(?:\\w+/)?(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)#';
     protected static string $realIdPattern = '#^(?<type>track|playlist|artist|podcast|episode|album)\/(?<id>[a-zA-Z0-9]+)$#';
-    protected ?string $embedUrl = null;
+    protected ?string $embedUrl;
 
-    #[\Override]
     public static function supportEmbedUrl(string $embedUrl): bool
     {
         return str_starts_with($embedUrl, 'https://www.deezer.com');
     }
 
-    #[\Override]
     public static function getPlatform(): string
     {
         return static::$platform;
     }
 
-    #[\Override]
     public function isEmptyThumbnailAllowed(): bool
     {
         return true;
     }
 
-    #[\Override]
     protected function validateEmbedId(string $embedId = ''): string
     {
         if (1 === preg_match(static::$idPattern, $embedId, $matches)) {
@@ -47,7 +43,6 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         throw new InvalidEmbedId($embedId, static::$platform);
     }
 
-    #[\Override]
     public function getMediaFeed(?string $search = null): string
     {
         if (preg_match(static::$realIdPattern, $this->embedId)) {
@@ -64,7 +59,6 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         return $this->downloadFeedFromAPI($endpoint.'?'.http_build_query($query));
     }
 
-    #[\Override]
     public function getFeed(): array|\SimpleXMLElement|null
     {
         $feed = parent::getFeed();
@@ -79,31 +73,26 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         return $feed;
     }
 
-    #[\Override]
     public function getMediaTitle(): string
     {
-        return $this->getFeed()['title'] ?? '';
+        return isset($this->getFeed()['title']) ? $this->getFeed()['title'] : '';
     }
 
-    #[\Override]
     public function getMediaDescription(): string
     {
-        return $this->getFeed()['description'] ?? '';
+        return isset($this->getFeed()['description']) ? $this->getFeed()['description'] : '';
     }
 
-    #[\Override]
     public function getMediaCopyright(): string
     {
         return ($this->getFeed()['provider_name'] ?? '').' ('.($this->getFeed()['provider_url'] ?? '').')';
     }
 
-    #[\Override]
     public function getThumbnailURL(): string
     {
         return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
-    #[\Override]
     public function getThumbnailName(string $pathinfo): string
     {
         if (1 === preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $ext)) {
@@ -124,7 +113,6 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
     /**
      * Get embed media source URL.
      */
-    #[\Override]
     public function getSource(array &$options = []): string
     {
         parent::getSource($options);
@@ -164,7 +152,6 @@ abstract class AbstractDeezerEmbedFinder extends AbstractEmbedFinder
         return $baseUri.'?'.http_build_query($queryString);
     }
 
-    #[\Override]
     protected function areDuplicatesAllowed(): bool
     {
         return true;
