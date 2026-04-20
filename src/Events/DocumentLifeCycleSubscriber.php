@@ -133,7 +133,7 @@ final readonly class DocumentLifeCycleSubscriber
                 $this->documentsStorage->delete($documentPath);
             }
             $this->cleanFileDirectory($this->getDocumentFolderPath($document));
-        } catch (UnableToDeleteFile|DocumentWithoutFileException $e) {
+        } catch (UnableToDeleteFile|DocumentWithoutFileException) {
             // Do not prevent entity deletion when document does not have any file on system.
             // Do not prevent entity deletion when file cannot be deleted (permissions issue).
         }
