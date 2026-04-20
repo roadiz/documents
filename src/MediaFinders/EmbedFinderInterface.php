@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\MediaFinders;
 
-use Doctrine\Persistence\ObjectManager;
-use RZ\Roadiz\Documents\AbstractDocumentFactory;
-use RZ\Roadiz\Documents\Models\DocumentInterface;
-
 interface EmbedFinderInterface
 {
+    /**
+     * @param array $options
+     *
+     * @return string
+     */
     public function getIFrame(array &$options = []): string;
 
+    /**
+     * @param array $options
+     *
+     * @return string
+     */
     public function getSource(array &$options = []): string;
 
     public static function supportEmbedUrl(string $embedUrl): bool;
@@ -22,9 +28,4 @@ interface EmbedFinderInterface
      * @return string Embed short type for displaying icons
      */
     public function getShortType(): string;
-
-    public function createDocumentFromFeed(
-        ObjectManager $objectManager,
-        AbstractDocumentFactory $documentFactory,
-    ): DocumentInterface|array;
 }

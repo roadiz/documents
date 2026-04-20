@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\MediaFinders;
 
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-
 class EmbedFinderFactory
 {
     /**
@@ -23,22 +21,23 @@ class EmbedFinderFactory
     /**
      * @param array<string, class-string<EmbedFinderInterface>> $embedPlatforms
      */
-    public function __construct(protected readonly HttpClientInterface $client, array $embedPlatforms = [])
+    public function __construct(array $embedPlatforms = [])
     {
         $this->embedPlatforms = $embedPlatforms;
     }
 
+    /**
+     * @param string|null $mediaPlatform
+     * @param string|null $embedId
+     *
+     * @return EmbedFinderInterface|null
+     */
     public function createForPlatform(?string $mediaPlatform, ?string $embedId): ?EmbedFinderInterface
     {
         if (null !== $embedId && $this->supports($mediaPlatform)) {
-            /**
-             * @var class-string<EmbedFinderInterface> $class
-             */
             $class = $this->embedPlatforms[$mediaPlatform];
-
-            return new $class($this->client, $embedId);
+            return new $class($embedId);
         }
-
         return null;
     }
 
@@ -57,14 +56,14 @@ class EmbedFinderFactory
         }
 
         /**
-         * @var string                             $platform
+         * @var string $platform
          * @var class-string<EmbedFinderInterface> $class
          */
         foreach ($this->embedPlatforms as $platform => $class) {
             $callback = [$class, 'supportEmbedUrl'];
             if (
-                is_callable($callback)
-                && call_user_func($callback, $embedUrl)
+                is_callable($callback) &&
+                call_user_func($callback, $embedUrl)
             ) {
                 return $this->createForPlatform($platform, $embedUrl);
             }
@@ -73,11 +72,16 @@ class EmbedFinderFactory
         return null;
     }
 
+    /**
+     * @param string|null $mediaPlatform
+     *
+     * @return bool
+     */
     public function supports(?string $mediaPlatform): bool
     {
         return
-            null !== $mediaPlatform
-            && in_array(
+            null !== $mediaPlatform &&
+            in_array(
                 $mediaPlatform,
                 array_keys($this->embedPlatforms)
             );

@@ -6,18 +6,19 @@ namespace RZ\Roadiz\Documents\MediaFinders;
 
 use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 
-abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
+abstract class AbstractTwitchEmbedFinder extends AbstractEmbedFinder
 {
     /**
      * @var string
      * @internal Use getPlatform() instead
      */
-    protected static string $platform = 'ted';
-    protected static string $idPattern = '#^https\:\/\/(www\.)?ted\.com\/talks\/(?<id>[a-zA-Z0-9\-\_]+)#';
+    protected static string $platform = 'twitch';
+    protected static string $idPattern = '#^https\:\/\/(www\.)?twitch\.tv\/videos\/(?<id>[0-9]+)#';
 
     public static function supportEmbedUrl(string $embedUrl): bool
     {
-        return str_starts_with($embedUrl, 'https://www.ted.com/talks');
+        return str_starts_with($embedUrl, 'https://twitch.tv') ||
+            str_starts_with($embedUrl, 'https://www.twitch.tv');
     }
 
     public static function getPlatform(): string
@@ -25,17 +26,23 @@ abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
         return static::$platform;
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function validateEmbedId(string $embedId = ""): string
     {
-        if (preg_match(static::$idPattern, $embedId, $matches)) {
+        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getMediaFeed($search = null)
     {
-        $endpoint = "https://www.ted.com/services/v1/oembed.json";
+        $endpoint = "https://api.twitch.tv/v4/oembed";
         $query = [
             'url' => $this->embedId,
         ];
@@ -71,7 +78,7 @@ abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
             $pathinfo = '.jpg';
         }
         if (preg_match(static::$idPattern, $this->embedId, $matches) === 1) {
-            return 'ted_talk_' . $matches['id'] . $pathinfo;
+            return 'twitch_' . $matches['id'] . $pathinfo;
         }
         throw new InvalidEmbedId($this->embedId, static::$platform);
     }
@@ -88,7 +95,17 @@ abstract class AbstractTedEmbedFinder extends AbstractEmbedFinder
         parent::getSource($options);
 
         if (preg_match(static::$idPattern, $this->embedId, $matches)) {
-            return 'https://embed.ted.com/talks/' . $matches['id'];
+            $queryString = [
+                'video' => $matches['id'],
+                'branding' => 0,
+            ];
+
+            if ($options['autoplay']) {
+                $queryString['autoplay'] = (int) $options['autoplay'];
+                $queryString['playsinline'] = (int) $options['autoplay'];
+            }
+
+            return 'https://player.twitch.tv/?' . http_build_query($queryString);
         }
 
         return $this->embedId;
