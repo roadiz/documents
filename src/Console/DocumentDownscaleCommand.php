@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Documents\Console;
 
 use Doctrine\Persistence\ManagerRegistry;
-use Intervention\Image\Exceptions\DecoderException;
+use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\ImageManager;
-use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\DownscaleImageManager;
 use RZ\Roadiz\Documents\Events\CachePurgeAssetsRequestEvent;
@@ -37,7 +36,6 @@ class DocumentDownscaleCommand extends AbstractDocumentCommand
         parent::__construct($managerRegistry, $imageManager, $documentsStorage, $name);
     }
 
-    #[\Override]
     protected function configure(): void
     {
         $this->setName('documents:downscale')
@@ -47,7 +45,6 @@ class DocumentDownscaleCommand extends AbstractDocumentCommand
             ->setDescription('Downscale every document according to max pixel size defined in configuration.');
     }
 
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -136,7 +133,7 @@ class DocumentDownscaleCommand extends AbstractDocumentCommand
         foreach ($documents as $document) {
             try {
                 $this->downscaler->processDocumentFromExistingRaw($document);
-            } catch (DecoderException|FilesystemException $exception) {
+            } catch (NotReadableException $exception) {
                 $io->error($exception->getMessage().' - '.(string) $document);
             }
             $io->progressAdvance();
