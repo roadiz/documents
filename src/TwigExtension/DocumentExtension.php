@@ -54,7 +54,8 @@ final class DocumentExtension extends AbstractExtension
     public function formatBytes($bytes, int $precision = 2): string
     {
         $size = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-        $factor = floor((\mb_strlen((string) $bytes) - 1) / 3);
+        $factor = (int) floor((\mb_strlen((string) $bytes) - 1) / 3);
+        $factor = min($factor, count($size) - 1);
 
         return sprintf("%.{$precision}f", (int) $bytes / 1024 ** $factor).@$size[$factor];
     }
@@ -181,7 +182,7 @@ final class DocumentExtension extends AbstractExtension
             return 0.0;
         }
 
-        if (null !== $document && null !== $ratio = $document->getImageRatio()) {
+        if (null !== $ratio = $document->getImageRatio()) {
             return $ratio;
         }
 
