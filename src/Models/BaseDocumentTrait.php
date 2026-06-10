@@ -107,7 +107,6 @@ trait BaseDocumentTrait
         'application/vnd.oasis.opendocument.text ' => 'word',
         'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'powerpoint',
         'application/vnd.openxmlformats-officedocument.presentationml.slideshow' => 'powerpoint',
-        'application/vnd.ms-excel.sheet.macroenabled.12' => 'excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.template' => 'excel',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'word',
@@ -175,10 +174,8 @@ trait BaseDocumentTrait
         Serializer\SerializedName('type'),]
     public function getShortType(): string
     {
-        $mimeType = (string) $this->getMimeType();
-        $mimeType = strtolower($mimeType);
-        if ('' !== $mimeType && isset(static::$mimeToIcon[$mimeType])) {
-            return static::$mimeToIcon[$mimeType];
+        if (null !== $this->getMimeType() && isset(static::$mimeToIcon[$this->getMimeType()])) {
+            return static::$mimeToIcon[$this->getMimeType()];
         }
 
         return 'unknown';
@@ -277,9 +274,6 @@ trait BaseDocumentTrait
 
     /**
      * Return false if no local file is linked to document. i.e no filename, no folder.
-     *
-     * @phpstan-assert-if-true non-empty-string $this->getMountPath()
-     * @phpstan-assert-if-true non-empty-string $this->getRelativePath()
      */
     #[Serializer\Ignore()]
     public function isLocal(): bool
