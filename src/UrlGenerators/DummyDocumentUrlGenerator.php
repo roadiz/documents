@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\UrlGenerators;
 
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 
 class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
 {
-    private ?BaseDocumentInterface $document = null;
+    private ?DocumentInterface $document = null;
     private array $options = [];
 
-    #[\Override]
     public function getUrl(bool $absolute = false): string
     {
         if (null === $this->document) {
@@ -37,15 +36,13 @@ class DummyDocumentUrlGenerator implements DocumentUrlGeneratorInterface
         return '/assets/'.$compiledOptions.'/'.$this->document->getRelativePath();
     }
 
-    #[\Override]
-    public function setDocument(BaseDocumentInterface $document): static
+    public function setDocument(DocumentInterface $document): static
     {
         $this->document = $document;
 
         return $this;
     }
 
-    #[\Override]
     public function setOptions(array $options = []): static
     {
         $this->options = $options;

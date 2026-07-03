@@ -15,7 +15,6 @@ class DocumentFileHashCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    #[\Override]
     protected function configure(): void
     {
         $this->setName('documents:file:hash')
@@ -29,7 +28,6 @@ class DocumentFileHashCommand extends AbstractDocumentCommand
         ;
     }
 
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);

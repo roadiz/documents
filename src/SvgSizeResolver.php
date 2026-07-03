@@ -11,7 +11,7 @@ use RZ\Roadiz\Documents\Models\DocumentInterface;
 final class SvgSizeResolver
 {
     private ?\DOMDocument $xmlDocument = null;
-    private ?\DOMElement $svgNode = null;
+    private ?\DOMNode $svgNode = null;
 
     public function __construct(
         private readonly DocumentInterface $document,
@@ -29,7 +29,7 @@ final class SvgSizeResolver
             if (null !== $viewBox && '' !== $viewBox->textContent) {
                 return explode(' ', $viewBox->textContent);
             }
-        } catch (\RuntimeException) {
+        } catch (\RuntimeException $exception) {
             return null;
         }
 
@@ -47,7 +47,7 @@ final class SvgSizeResolver
             ) {
                 return (int) $attribute->textContent;
             }
-        } catch (\RuntimeException) {
+        } catch (\RuntimeException $exception) {
             return null;
         }
 
@@ -97,11 +97,10 @@ final class SvgSizeResolver
     {
         if (null === $this->svgNode) {
             $svg = $this->getDOMDocument()->getElementsByTagName('svg');
-            $node = $svg->item(0);
-            if (!$node instanceof \DOMElement) {
+            if (!isset($svg[0])) {
                 throw new \RuntimeException('SVG does not contain a valid <svg> tag');
             }
-            $this->svgNode = $node;
+            $this->svgNode = $svg[0];
         }
 
         return $this->svgNode;
@@ -109,7 +108,13 @@ final class SvgSizeResolver
 
     private function getSvgNodeAttributes(): \DOMNamedNodeMap
     {
-        return $this->getSvgNode()->attributes;
+        /** @var \DOMNamedNodeMap|null $attributes */
+        $attributes = $this->getSvgNode()->attributes;
+        if (null === $attributes) {
+            throw new \RuntimeException('SVG tag <svg> does not contain any attribute');
+        }
+
+        return $attributes;
     }
 
     /**
@@ -124,11 +129,7 @@ final class SvgSizeResolver
             }
             $this->xmlDocument = new \DOMDocument();
             $svgSource = $this->documentsStorage->read($mountPath);
-            // LIBXML_NONET prevents network entity resolution; LIBXML_NOENT keeps
-            // entities unexpanded (defense-in-depth against XXE on PHP < 8 and any
-            // future regression — PHP 8 disables external entities by default but
-            // explicit flags make the intent clear and version-independent).
-            if (false === $this->xmlDocument->loadXML($svgSource, \LIBXML_NONET | \LIBXML_NOENT)) {
+            if (false === $this->xmlDocument->loadXML($svgSource)) {
                 throw new \RuntimeException(sprintf('SVG (%s) could not be loaded.', $mountPath));
             }
         }

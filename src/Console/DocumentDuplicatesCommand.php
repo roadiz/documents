@@ -14,7 +14,6 @@ class DocumentDuplicatesCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    #[\Override]
     protected function configure(): void
     {
         $this->setName('documents:duplicates')
@@ -22,7 +21,6 @@ class DocumentDuplicatesCommand extends AbstractDocumentCommand
         ;
     }
 
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
