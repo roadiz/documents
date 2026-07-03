@@ -11,6 +11,9 @@ class SimpleFileAware implements FileAwareInterface
 {
     private string $basePath;
 
+    /**
+     * @param string $basePath
+     */
     public function __construct(string $basePath)
     {
         $this->basePath = $basePath;
@@ -18,7 +21,7 @@ class SimpleFileAware implements FileAwareInterface
 
     public function getPublicFilesPath(): string
     {
-        return $this->basePath.$this->getPublicFilesBasePath();
+        return $this->basePath . $this->getPublicFilesBasePath();
     }
 
     public function getPublicFilesBasePath(): string
@@ -28,7 +31,7 @@ class SimpleFileAware implements FileAwareInterface
 
     public function getPrivateFilesPath(): string
     {
-        return $this->basePath.$this->getPrivateFilesBasePath();
+        return $this->basePath . $this->getPrivateFilesBasePath();
     }
 
     public function getPrivateFilesBasePath(): string
@@ -38,7 +41,7 @@ class SimpleFileAware implements FileAwareInterface
 
     public function getFontsFilesPath(): string
     {
-        return $this->basePath.$this->getPrivateFilesBasePath();
+        return $this->basePath . $this->getPrivateFilesBasePath();
     }
 
     public function getFontsFilesBasePath(): string

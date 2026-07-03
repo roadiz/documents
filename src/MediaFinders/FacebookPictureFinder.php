@@ -4,38 +4,39 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\MediaFinders;
 
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Util to grab a facebook profile picture from userAlias.
  */
-final readonly class FacebookPictureFinder
+class FacebookPictureFinder
 {
-    public function __construct(private HttpClientInterface $client)
+    protected string $facebookUserAlias;
+    protected ResponseInterface $response;
+
+    /**
+     * @param string $facebookUserAlias
+     */
+    public function __construct(string $facebookUserAlias)
     {
+        $this->facebookUserAlias = $facebookUserAlias;
     }
 
     /**
      * @return string|null Facebook profile image URL
-     *
-     * @throws TransportExceptionInterface
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
+     * @throws GuzzleException
      */
-    public function getPictureUrl(string $facebookUserAlias): ?string
+    public function getPictureUrl(): ?string
     {
-        $response = $this->client->request('GET', 'https://graph.facebook.com/'.$facebookUserAlias.'/picture?redirect=false&width=200&height=200');
-        $json = json_decode($response->getContent(), true);
+        $client = new Client();
+        $this->response = $client->get('https://graph.facebook.com/' . $this->facebookUserAlias . '/picture?redirect=false&width=200&height=200');
+        $json = json_decode($this->response->getBody()->getContents(), true);
 
         if (is_array($json) && isset($json['data']) && !empty($json['data']['url'])) {
             return $json['data']['url'];
         }
-
         return null;
     }
 }

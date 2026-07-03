@@ -6,12 +6,11 @@ namespace RZ\Roadiz\Documents;
 
 use Intervention\Image\Image;
 
-final readonly class AverageColorResolver
+class AverageColorResolver
 {
     public function getAverageColor(Image $image): string
     {
         $colorArray = $this->getAverageColorAsArray($image);
-
         return sprintf(
             '#%02x%02x%02x',
             $colorArray[0],
@@ -19,13 +18,16 @@ final readonly class AverageColorResolver
             $colorArray[2]
         );
     }
-
+    /**
+     * @param Image $image
+     *
+     * @return array
+     */
     public function getAverageColorAsArray(Image $image): array
     {
         $image->resize(1, 1);
         /** @var array $array */
         $array = $image->pickColor(0, 0);
-
         return $array;
     }
 }

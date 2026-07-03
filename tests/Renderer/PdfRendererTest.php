@@ -17,7 +17,6 @@ class PdfRendererTest extends AbstractRendererTestCase
             $this->getUrlGenerator()
         );
     }
-
     public function testSupports(): void
     {
         $mockValidDocument = new SimpleDocument();
@@ -36,7 +35,7 @@ class PdfRendererTest extends AbstractRendererTestCase
         );
         $this->assertTrue(
             $renderer->supports($mockValidDocument, [
-                'embed' => true,
+                'embed' => true
             ])
         );
 
@@ -65,7 +64,7 @@ class PdfRendererTest extends AbstractRendererTestCase
         $this->assertHtmlTidyEquals(
             '<object type="application/pdf" data="/files/folder/file.pdf"><p>Your browser does not support PDF native viewer.</p></object>',
             $renderer->render($mockDocument, [
-                'embed' => true,
+                'embed' => true
             ])
         );
     }
