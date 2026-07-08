@@ -6,33 +6,30 @@ namespace RZ\Roadiz\Documents\Renderer;
 
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
-use RZ\Roadiz\Documents\Models\DocumentInterface;
+use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
 use RZ\Roadiz\Documents\OptionsResolver\ViewOptionsResolver;
 use RZ\Roadiz\Documents\Viewers\SvgDocumentViewer;
 
 class InlineSvgRenderer implements RendererInterface
 {
     protected ViewOptionsResolver $viewOptionsResolver;
-    protected FilesystemOperator $documentsStorage;
 
-    public function __construct(FilesystemOperator $documentsStorage)
+    public function __construct(protected readonly FilesystemOperator $documentsStorage)
     {
         $this->viewOptionsResolver = new ViewOptionsResolver();
-        $this->documentsStorage = $documentsStorage;
     }
 
-    public function supports(DocumentInterface $document, array $options): bool
+    #[\Override]
+    public function supports(BaseDocumentInterface $document, array $options): bool
     {
-        return $document->isLocal() && $document->isSvg() && (isset($options['inline']) && $options['inline'] === true);
+        return $document->isLocal() && $document->isSvg() && (isset($options['inline']) && true === $options['inline']);
     }
 
     /**
-     * @param DocumentInterface $document
-     * @param array $options
-     * @return string
      * @throws FilesystemException
      */
-    public function render(DocumentInterface $document, array $options): string
+    #[\Override]
+    public function render(BaseDocumentInterface $document, array $options): string
     {
         $options = $this->viewOptionsResolver->resolve($options);
         $assignation = array_filter($options);
@@ -43,9 +40,10 @@ class InlineSvgRenderer implements RendererInterface
                 $document,
                 $assignation
             );
+
             return trim($this->htmlTidy($viewer->getContent()));
         } catch (\Exception $e) {
-            return '<p>' . $e->getMessage() . '</p>';
+            return '<p>'.$e->getMessage().'</p>';
         }
     }
 

@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Renderer;
 
+use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\HasThumbnailInterface;
 
 class PictureRenderer extends AbstractImageRenderer
 {
-    public function supports(DocumentInterface $document, array $options): bool
+    #[\Override]
+    public function supports(BaseDocumentInterface $document, array $options): bool
     {
-        return isset($options['picture']) &&
-            $options['picture'] === true &&
-            parent::supports($document, $options);
+        return isset($options['picture'])
+            && true === $options['picture']
+            && parent::supports($document, $options);
     }
 
     /**
@@ -21,7 +23,8 @@ class PictureRenderer extends AbstractImageRenderer
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\LoaderError
      */
-    public function render(DocumentInterface $document, array $options): string
+    #[\Override]
+    public function render(BaseDocumentInterface $document, array $options): string
     {
         $options = $this->viewOptionsResolver->resolve($options);
 
@@ -29,9 +32,9 @@ class PictureRenderer extends AbstractImageRenderer
          * Override image by its first thumbnail if existing
          */
         if (
-            !$options['no_thumbnail'] &&
-            $document instanceof HasThumbnailInterface &&
-            $thumbnail = $document->getThumbnails()->first()
+            !$options['no_thumbnail']
+            && $document instanceof HasThumbnailInterface
+            && $thumbnail = $document->getThumbnails()->first()
         ) {
             if ($thumbnail instanceof DocumentInterface) {
                 $document = $thumbnail;
@@ -67,7 +70,7 @@ class PictureRenderer extends AbstractImageRenderer
         return $this->renderHtmlElement('picture.html.twig', $assignation);
     }
 
-    private function parseMedia(DocumentInterface $document, array $options = []): array
+    private function parseMedia(BaseDocumentInterface $document, array $options = []): array
     {
         $mediaList = [];
         foreach ($options['media'] as $media) {
@@ -80,9 +83,10 @@ class PictureRenderer extends AbstractImageRenderer
             $mediaList[] = [
                 'srcset' => $this->parseSrcSetInner($document, $media['srcset'], false, $options['absolute']),
                 'webp_srcset' => !$document->isWebp() ? $this->parseSrcSetInner($document, $media['srcset'], true, $options['absolute']) : null,
-                'rule' => $media['rule']
+                'rule' => $media['rule'],
             ];
         }
+
         return $mediaList;
     }
 }

@@ -8,27 +8,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class InvalidEmbedId extends \InvalidArgumentException
 {
-    protected ?string $embedId;
-    protected ?string $platform;
-
-    public function __construct(?string $embedId = null, ?string $platform = null)
+    public function __construct(protected ?string $embedId = null, protected ?string $platform = null)
     {
         parent::__construct('Embed ID is not valid for this platform', Response::HTTP_BAD_REQUEST);
-        $this->embedId = $embedId;
-        $this->platform = $platform;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEmbedId(): ?string
     {
         return $this->embedId;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPlatform(): ?string
     {
         return $this->platform;
