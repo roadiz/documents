@@ -13,16 +13,13 @@ class ChainRenderer implements RendererInterface
      */
     private array $renderers;
 
-    /**
-     * @param array $renderers
-     */
     public function __construct(array $renderers)
     {
         /**
          * @var RendererInterface $renderer
          */
         foreach ($renderers as $renderer) {
-            if (!($renderer instanceof RendererInterface)) {
+            if (!$renderer instanceof RendererInterface) {
                 throw new \InvalidArgumentException('Document Renderer must implement RendererInterface');
             }
         }
@@ -30,13 +27,12 @@ class ChainRenderer implements RendererInterface
     }
 
     /**
-     * @param RendererInterface $renderer
-     *
      * @return $this
      */
     public function addRenderer(RendererInterface $renderer): ChainRenderer
     {
         $this->renderers[] = $renderer;
+
         return $this;
     }
 
