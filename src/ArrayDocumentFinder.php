@@ -15,7 +15,7 @@ final class ArrayDocumentFinder extends AbstractDocumentFinder
     /**
      * @var ArrayCollection<int, DocumentInterface>
      */
-    private readonly ArrayCollection $documents;
+    private ArrayCollection $documents;
 
     public function __construct()
     {
@@ -24,40 +24,41 @@ final class ArrayDocumentFinder extends AbstractDocumentFinder
 
     /**
      * @param array<string> $fileNames
-     *
      * @return ArrayCollection<int, DocumentInterface>
      */
-    #[\Override]
     public function findAllByFilenames(array $fileNames): ArrayCollection
     {
         return $this->documents->filter(
-            fn (DocumentInterface $document) => in_array($document->getFilename(), $fileNames)
+            function (DocumentInterface $document) use ($fileNames) {
+                return in_array($document->getFilename(), $fileNames);
+            }
         );
     }
 
-    #[\Override]
     public function findOneByFilenames(array $fileNames): ?DocumentInterface
     {
         return $this->documents->filter(
-            fn (DocumentInterface $document) => in_array($document->getFilename(), $fileNames)
+            function (DocumentInterface $document) use ($fileNames) {
+                return in_array($document->getFilename(), $fileNames);
+            }
         )->first() ?: null;
     }
 
-    #[\Override]
     public function findOneByHashAndAlgorithm(string $hash, string $algorithm): ?DocumentInterface
     {
         return null;
     }
 
+
     /**
+     * @param DocumentInterface $document
      * @return $this
      */
-    public function addDocument(DocumentInterface $document): static
+    public function addDocument(DocumentInterface $document): self
     {
         if (!$this->documents->contains($document)) {
             $this->documents->add($document);
         }
-
         return $this;
     }
 }

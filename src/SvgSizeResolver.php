@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents;
 
+use DOMNamedNodeMap;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
@@ -11,43 +12,25 @@ use RZ\Roadiz\Documents\Models\DocumentInterface;
 final class SvgSizeResolver
 {
     private ?\DOMDocument $xmlDocument = null;
-    private ?\DOMElement $svgNode = null;
+    private ?\DOMNode $svgNode = null;
 
     public function __construct(
         private readonly DocumentInterface $document,
-        private readonly FilesystemOperator $documentsStorage,
+        private readonly FilesystemOperator $documentsStorage
     ) {
     }
 
     /**
      * @return array|null [$x, $y, $width, $height]
      */
-    private function getViewBoxAttributes(): ?array
+    protected function getViewBoxAttributes(): ?array
     {
         try {
             $viewBox = $this->getSvgNodeAttributes()->getNamedItem('viewBox');
-            if (null !== $viewBox && '' !== $viewBox->textContent) {
+            if (null !== $viewBox && $viewBox->textContent !== "") {
                 return explode(' ', $viewBox->textContent);
             }
-        } catch (\RuntimeException) {
-            return null;
-        }
-
-        return null;
-    }
-
-    private function getIntegerAttribute(string $name): ?int
-    {
-        try {
-            $attribute = $this->getSvgNodeAttributes()->getNamedItem($name);
-            if (
-                null !== $attribute
-                && '' !== $attribute->textContent
-                && !\str_contains($attribute->textContent, '%')
-            ) {
-                return (int) $attribute->textContent;
-            }
-        } catch (\RuntimeException) {
+        } catch (\RuntimeException $exception) {
             return null;
         }
 
@@ -55,7 +38,30 @@ final class SvgSizeResolver
     }
 
     /**
+     * @param string $name
+     * @return int|null
+     */
+    protected function getIntegerAttribute(string $name): ?int
+    {
+        try {
+            $attribute = $this->getSvgNodeAttributes()->getNamedItem($name);
+            if (
+                null !== $attribute
+                && $attribute->textContent !== ""
+                && !\str_contains($attribute->textContent, '%')
+            ) {
+                return (int) $attribute->textContent;
+            }
+        } catch (\RuntimeException $exception) {
+            return null;
+        }
+        return null;
+    }
+
+    /**
      * First, find width attr, then resolve width from viewBox.
+     *
+     * @return int
      */
     public function getWidth(): int
     {
@@ -67,7 +73,6 @@ final class SvgSizeResolver
         $viewBoxAttr = $this->getViewBoxAttributes();
         if (null !== $viewBoxAttr) {
             [$x, $y, $width, $height] = $viewBoxAttr;
-
             return (int) $width;
         }
 
@@ -76,6 +81,8 @@ final class SvgSizeResolver
 
     /**
      * First, find height attr, then resolve height from viewBox.
+     *
+     * @return int
      */
     public function getHeight(): int
     {
@@ -86,7 +93,6 @@ final class SvgSizeResolver
         $viewBoxAttr = $this->getViewBoxAttributes();
         if (null !== $viewBoxAttr) {
             [$x, $y, $width, $height] = $viewBoxAttr;
-
             return (int) $height;
         }
 
@@ -97,11 +103,10 @@ final class SvgSizeResolver
     {
         if (null === $this->svgNode) {
             $svg = $this->getDOMDocument()->getElementsByTagName('svg');
-            $node = $svg->item(0);
-            if (!$node instanceof \DOMElement) {
+            if (!isset($svg[0])) {
                 throw new \RuntimeException('SVG does not contain a valid <svg> tag');
             }
-            $this->svgNode = $node;
+            $this->svgNode = $svg[0];
         }
 
         return $this->svgNode;
@@ -109,7 +114,13 @@ final class SvgSizeResolver
 
     private function getSvgNodeAttributes(): \DOMNamedNodeMap
     {
-        return $this->getSvgNode()->attributes;
+        /** @var DOMNamedNodeMap|null $attributes */
+        $attributes = $this->getSvgNode()->attributes;
+        if (null === $attributes) {
+            throw new \RuntimeException('SVG tag <svg> does not contain any attribute');
+        }
+
+        return $attributes;
     }
 
     /**
@@ -124,15 +135,10 @@ final class SvgSizeResolver
             }
             $this->xmlDocument = new \DOMDocument();
             $svgSource = $this->documentsStorage->read($mountPath);
-            // LIBXML_NONET prevents network entity resolution; LIBXML_NOENT keeps
-            // entities unexpanded (defense-in-depth against XXE on PHP < 8 and any
-            // future regression — PHP 8 disables external entities by default but
-            // explicit flags make the intent clear and version-independent).
-            if (false === $this->xmlDocument->loadXML($svgSource, \LIBXML_NONET | \LIBXML_NOENT)) {
+            if (false === $this->xmlDocument->loadXML($svgSource)) {
                 throw new \RuntimeException(sprintf('SVG (%s) could not be loaded.', $mountPath));
             }
         }
-
         return $this->xmlDocument;
     }
 }
