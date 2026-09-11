@@ -6,7 +6,7 @@ namespace RZ\Roadiz\Documents\Renderer;
 
 use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\Exceptions\DocumentWithoutFileException;
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\OptionsResolver\UrlOptionsResolver;
 use RZ\Roadiz\Documents\OptionsResolver\ViewOptionsResolver;
 use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
@@ -27,7 +27,7 @@ abstract class AbstractRenderer implements RendererInterface
         $this->viewOptionsResolver = new ViewOptionsResolver();
     }
 
-    protected function getSource(BaseDocumentInterface $document, array $options): string
+    protected function getSource(DocumentInterface $document, array $options): string
     {
         if (empty($document->getRelativePath())) {
             throw new DocumentWithoutFileException($document);
@@ -49,18 +49,20 @@ abstract class AbstractRenderer implements RendererInterface
     }
 
     /**
-     * @param iterable<BaseDocumentInterface> $sourcesDocs
+     * @param iterable<DocumentInterface> $sourcesDocs
      */
-    protected function getSourcesFilesArray(BaseDocumentInterface $document, iterable $sourcesDocs): array
+    protected function getSourcesFilesArray(DocumentInterface $document, iterable $sourcesDocs): array
     {
         $sources = [];
 
+        /**
+         * @var DocumentInterface $source
+         */
         foreach ($sourcesDocs as $source) {
             $sourceMountPath = $source->getMountPath();
-            $sourceMimeType = $source->getMimeType();
-            if (null !== $sourceMountPath && null !== $sourceMimeType) {
-                $sources[$sourceMimeType] = [
-                    'mime' => $sourceMimeType,
+            if (null !== $sourceMountPath) {
+                $sources[$source->getMimeType()] = [
+                    'mime' => $source->getMimeType(),
                     'url' => $this->documentsStorage->publicUrl($sourceMountPath),
                 ];
             }
@@ -70,10 +72,9 @@ abstract class AbstractRenderer implements RendererInterface
         if (0 === count($sources)) {
             // If exotic extension, fallbacks using original file
             $documentMountPath = $document->getMountPath();
-            $documentMimeType = $document->getMimeType();
-            if (null !== $documentMountPath && null !== $documentMimeType) {
-                $sources[$documentMimeType] = [
-                    'mime' => $documentMimeType,
+            if (null !== $documentMountPath) {
+                $sources[$document->getMimeType()] = [
+                    'mime' => $document->getMimeType(),
                     'url' => $this->documentsStorage->publicUrl($documentMountPath),
                 ];
             }

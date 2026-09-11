@@ -9,6 +9,7 @@ use League\Flysystem\FilesystemException;
 use RZ\Roadiz\Documents\AbstractDocumentFactory;
 use RZ\Roadiz\Documents\DownloadedFile;
 use RZ\Roadiz\Documents\Exceptions\APINeedsAuthentificationException;
+use RZ\Roadiz\Documents\Exceptions\EmbedDocumentAlreadyExistsException;
 use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\SizeableInterface;
@@ -39,7 +40,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         }
     }
 
-    #[\Override]
     public function getShortType(): string
     {
         return $this->getPlatform();
@@ -106,7 +106,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Get embed media source URL.
      */
-    #[\Override]
     public function getSource(array &$options = []): string
     {
         $resolver = new ViewOptionsResolver();
@@ -118,7 +117,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     /**
      * Get the original public media URL (permalink), not the iframe/embed source.
      */
-    #[\Override]
     public function getPublicUri(): ?string
     {
         return null;
@@ -145,8 +143,9 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      * * title
      * * id
      * * class
+     *
+     * @final
      */
-    #[\Override]
     public function getIFrame(array &$options = []): string
     {
         $attributes = [];
@@ -218,13 +217,12 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @throws FilesystemException
      */
-    #[\Override]
     public function createDocumentFromFeed(
         ObjectManager $objectManager,
         AbstractDocumentFactory $documentFactory,
     ): DocumentInterface|array {
-        if (null !== $document = $this->getExistingDocument($objectManager, $this->getEmbedId(), $this->getPlatform())) {
-            return $document;
+        if ($this->documentExists($objectManager, $this->getEmbedId(), $this->getPlatform())) {
+            throw new EmbedDocumentAlreadyExistsException();
         }
 
         try {
@@ -246,7 +244,10 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
                  */
                 $this->injectMetaInDocument($objectManager, $document);
             }
-        } catch (APINeedsAuthentificationException|ClientExceptionInterface) {
+        } catch (APINeedsAuthentificationException $exception) {
+            $document = $documentFactory->getDocument(true, $this->areDuplicatesAllowed());
+            $document?->setFilename($this->getPlatform().'_'.$this->embedId.'.jpg');
+        } catch (ClientExceptionInterface $exception) {
             $document = $documentFactory->getDocument(true, $this->areDuplicatesAllowed());
             $document?->setFilename($this->getPlatform().'_'.$this->embedId.'.jpg');
         }
@@ -275,12 +276,6 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
         string $embedId,
         ?string $embedPlatform,
     ): bool;
-
-    abstract protected function getExistingDocument(
-        ObjectManager $objectManager,
-        string $embedId,
-        ?string $embedPlatform,
-    ): ?DocumentInterface;
 
     /**
      * Store additional information into Document.
@@ -323,40 +318,13 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
     }
 
     /**
-     * Max accepted size for a remote feed response, to avoid memory exhaustion
-     * on a slow/huge/malicious feed. Private networks are already blocked by
-     * roadiz_core.no_private_network_http_client.
-     */
-    private const MAX_FEED_RESPONSE_SIZE = 5 * 1024 * 1024;
-
-    /**
      * Send a CURL request and get its string output.
      */
     public function downloadFeedFromAPI(string $url): string
     {
-        return $this->fetchFeedContent($url);
-    }
+        $response = $this->client->request('GET', $url);
 
-    /**
-     * Stream a GET request, capping duration and response size, instead of
-     * buffering an unbounded body via ResponseInterface::getContent().
-     */
-    protected function fetchFeedContent(string $url): string
-    {
-        $response = $this->client->request('GET', $url, [
-            'timeout' => 10,
-            'max_duration' => 15,
-        ]);
-
-        $content = '';
-        foreach ($this->client->stream($response) as $chunk) {
-            $content .= $chunk->getContent();
-            if (\strlen($content) > self::MAX_FEED_RESPONSE_SIZE) {
-                throw new \RuntimeException('Feed response exceeds maximum allowed size.');
-            }
-        }
-
-        return $content;
+        return $response->getContent();
     }
 
     public function getThumbnailName(string $pathinfo): string
@@ -404,7 +372,7 @@ abstract class AbstractEmbedFinder implements EmbedFinderInterface
      *
      * @return $this
      */
-    public function setKey(?string $key): static
+    public function setKey(?string $key): self
     {
         $this->key = $key;
 

@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Renderer;
 
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\HasThumbnailInterface;
 
 class PictureRenderer extends AbstractImageRenderer
 {
-    #[\Override]
-    public function supports(BaseDocumentInterface $document, array $options): bool
+    public function supports(DocumentInterface $document, array $options): bool
     {
         return isset($options['picture'])
             && true === $options['picture']
@@ -23,8 +21,7 @@ class PictureRenderer extends AbstractImageRenderer
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\LoaderError
      */
-    #[\Override]
-    public function render(BaseDocumentInterface $document, array $options): string
+    public function render(DocumentInterface $document, array $options): string
     {
         $options = $this->viewOptionsResolver->resolve($options);
 
@@ -70,7 +67,7 @@ class PictureRenderer extends AbstractImageRenderer
         return $this->renderHtmlElement('picture.html.twig', $assignation);
     }
 
-    private function parseMedia(BaseDocumentInterface $document, array $options = []): array
+    private function parseMedia(DocumentInterface $document, array $options = []): array
     {
         $mediaList = [];
         foreach ($options['media'] as $media) {
