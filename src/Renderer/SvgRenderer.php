@@ -5,27 +5,27 @@ declare(strict_types=1);
 namespace RZ\Roadiz\Documents\Renderer;
 
 use League\Flysystem\FilesystemOperator;
-use RZ\Roadiz\Documents\Models\DocumentInterface;
+use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
 use RZ\Roadiz\Documents\OptionsResolver\ViewOptionsResolver;
 use RZ\Roadiz\Documents\Viewers\SvgDocumentViewer;
 
 class SvgRenderer implements RendererInterface
 {
     protected ViewOptionsResolver $viewOptionsResolver;
-    protected FilesystemOperator $documentsStorage;
 
-    public function __construct(FilesystemOperator $documentsStorage)
+    public function __construct(protected readonly FilesystemOperator $documentsStorage)
     {
         $this->viewOptionsResolver = new ViewOptionsResolver();
-        $this->documentsStorage = $documentsStorage;
     }
 
-    public function supports(DocumentInterface $document, array $options): bool
+    #[\Override]
+    public function supports(BaseDocumentInterface $document, array $options): bool
     {
-        return $document->isSvg() && (!isset($options['inline']) || $options['inline'] === false);
+        return $document->isSvg() && (!isset($options['inline']) || false === $options['inline']);
     }
 
-    public function render(DocumentInterface $document, array $options): string
+    #[\Override]
+    public function render(BaseDocumentInterface $document, array $options): string
     {
         $mountPath = $document->getMountPath();
         if (null === $mountPath) {
@@ -41,17 +41,12 @@ class SvgRenderer implements RendererInterface
             if (is_string($value)) {
                 $value = htmlspecialchars($value);
             }
-            $attrs[] = $key . '="' . $value . '"';
+            $attrs[] = $key.'="'.$value.'"';
         }
 
-        return '<img ' . implode(' ', $attrs) . ' />';
+        return '<img '.implode(' ', $attrs).' />';
     }
 
-    /**
-     * @param array $options
-     *
-     * @return array
-     */
     protected function getAttributes(array $options): array
     {
         $attributes = [];
@@ -59,18 +54,19 @@ class SvgRenderer implements RendererInterface
             SvgDocumentViewer::$allowedAttributes,
             [
                 'loading',
-                'alt'
+                'alt',
             ]
         );
         foreach ($options as $key => $value) {
             if (in_array($key, $allowedAttributes)) {
-                if ($key === 'identifier') {
+                if ('identifier' === $key) {
                     $attributes['id'] = $value;
                 } else {
                     $attributes[$key] = $value;
                 }
             }
         }
+
         return $attributes;
     }
 }

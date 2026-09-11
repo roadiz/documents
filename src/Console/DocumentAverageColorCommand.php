@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Console;
 
-use Intervention\Image\Exception\NotReadableException;
+use Intervention\Image\Exceptions\DecoderException;
+use League\Flysystem\FilesystemException;
 use RZ\Roadiz\Documents\AverageColorResolver;
 use RZ\Roadiz\Documents\Models\AdvancedDocumentInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
@@ -16,6 +17,7 @@ class DocumentAverageColorCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
+    #[\Override]
     protected function configure(): void
     {
         $this->setName('documents:color')
@@ -23,36 +25,37 @@ class DocumentAverageColorCommand extends AbstractDocumentCommand
         ;
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
 
-        $this->onEachDocument(function (DocumentInterface $document) {
+        return $this->onEachDocument(function (DocumentInterface $document) {
             $this->updateDocumentColor($document);
         }, new SymfonyStyle($input, $output));
-
-        return 0;
     }
 
     private function updateDocumentColor(DocumentInterface $document): void
     {
-        if ($document->isImage() && $document instanceof AdvancedDocumentInterface) {
-            $mountPath = $document->getMountPath();
-            if (null === $mountPath) {
-                return;
-            }
-            try {
-                $mediumColor = (new AverageColorResolver())->getAverageColor($this->imageManager->make(
-                    $this->documentsStorage->readStream($mountPath)
-                ));
-                $document->setImageAverageColor($mediumColor);
-            } catch (NotReadableException $exception) {
-                /*
-                 * Do nothing
-                 * just return 0 width and height
-                 */
-                $this->io->error($mountPath . ' is not a readable image.');
-            }
+        if (!$document->isImage() || !($document instanceof AdvancedDocumentInterface)) {
+            return;
+        }
+
+        $mountPath = $document->getMountPath();
+        if (null === $mountPath) {
+            return;
+        }
+        try {
+            $mediumColor = (new AverageColorResolver())->getAverageColor($this->imageManager->read(
+                $this->documentsStorage->readStream($mountPath)
+            ));
+            $document->setImageAverageColor($mediumColor);
+        } catch (DecoderException|FilesystemException) {
+            /*
+             * Do nothing
+             * just return 0 width and height
+             */
+            $this->io->error($mountPath.' is not a readable image.');
         }
     }
 }

@@ -75,8 +75,7 @@ class VideoRendererTest extends AbstractRendererTestCase
     <source type="video/mp4" src="/files/folder/file.mp4">
     <p>Your browser does not support native video.</p>
 </video>
-EOT
-            ,
+EOT,
             $renderer->render($mockDocument, [])
         );
 
@@ -86,8 +85,7 @@ EOT
     <source type="video/ogg" src="/files/folder/file2.ogg">
     <p>Your browser does not support native video.</p>
 </video>
-EOT
-            ,
+EOT,
             $renderer->render($mockDocument2, [])
         );
 
@@ -98,8 +96,7 @@ EOT
     <source type="video/mp4" src="/files/folder/file.mp4">
     <p>Your browser does not support native video.</p>
 </video>
-EOT
-            ,
+EOT,
             $renderer->render($mockDocument, [
                 'controls' => true,
                 'loop' => true,
@@ -114,8 +111,7 @@ EOT
     <source type="video/mp4" src="/files/folder/file.mp4">
     <p>Your browser does not support native video.</p>
 </video>
-EOT
-            ,
+EOT,
             $renderer->render($mockDocument, [
                 'controls' => true,
                 'loop' => true,
@@ -131,17 +127,13 @@ EOT
     <source type="video/mp4" src="/files/folder/file.mp4">
     <p>Your browser does not support native video.</p>
 </video>
-EOT
-            ,
+EOT,
             $renderer->render($mockDocument, [
-                'controls' => false
+                'controls' => false,
             ])
         );
     }
 
-    /**
-     * @return DocumentFinderInterface
-     */
     private function getDocumentFinder(): DocumentFinderInterface
     {
         $finder = new ArrayDocumentFinder();
