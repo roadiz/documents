@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\Renderer;
 
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\HasThumbnailInterface;
 
@@ -13,34 +12,49 @@ use RZ\Roadiz\Documents\Models\HasThumbnailInterface;
  */
 class ThumbnailRenderer implements RendererInterface
 {
-    public function __construct(protected readonly ?ChainRenderer $chainRenderer = null)
+    protected ?ChainRenderer $chainRenderer = null;
+
+    /**
+     * @param ChainRenderer|null $chainRenderer
+     */
+    public function __construct(?ChainRenderer $chainRenderer = null)
     {
+        $this->chainRenderer = $chainRenderer;
     }
 
-    #[\Override]
-    public function supports(BaseDocumentInterface $document, array $options): bool
+    /**
+     * @param DocumentInterface $document
+     * @param array             $options
+     *
+     * @return bool
+     */
+    public function supports(DocumentInterface $document, array $options): bool
     {
-        return null !== $this->chainRenderer
-            && (!key_exists('embed', $options)
-            || true !== $options['embed'])
-            && $document instanceof HasThumbnailInterface
-            && $document->hasThumbnails()
-            && false !== $document->getThumbnails()->first();
+        return null !== $this->chainRenderer &&
+            (!key_exists('embed', $options) ||
+            $options['embed'] !== true) &&
+            $document instanceof HasThumbnailInterface &&
+            $document->hasThumbnails() &&
+            false !== $document->getThumbnails()->first();
     }
 
-    #[\Override]
-    public function render(BaseDocumentInterface $document, array $options): string
+    /**
+     * @param DocumentInterface $document
+     * @param array             $options
+     *
+     * @return string
+     */
+    public function render(DocumentInterface $document, array $options): string
     {
         if (
-            null !== $this->chainRenderer
-            && $document instanceof HasThumbnailInterface
+            null !== $this->chainRenderer &&
+            $document instanceof HasThumbnailInterface
         ) {
             $thumbnail = $document->getThumbnails()->first();
             if ($thumbnail instanceof DocumentInterface) {
                 return $this->chainRenderer->render($thumbnail, $options);
             }
         }
-
         return '';
     }
 }

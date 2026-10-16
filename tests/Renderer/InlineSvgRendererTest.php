@@ -64,8 +64,23 @@ class InlineSvgRendererTest extends AbstractRendererTestCase
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100" height="100">
     <rect width="50" height="50" x="25" y="25" fill="green"></rect>
 </svg>
-EOT,
+EOT
+            ,
             $renderer->render($mockDocument, ['inline' => true])
         );
+    }
+
+    public function testRenderNeverOutputsUnsanitizedSvg(): void
+    {
+        $mockDocument = new SimpleDocument();
+
+        $mockDocument->setFilename('unsafe-entity.svg');
+        $mockDocument->setFolder('folder');
+        $mockDocument->setMimeType('image/svg');
+
+        $html = $this->getRenderer()->render($mockDocument, ['inline' => true]);
+
+        $this->assertStringNotContainsString('<script', $html);
+        $this->assertStringNotContainsString('ENTITY', $html);
     }
 }

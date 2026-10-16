@@ -6,35 +6,40 @@ namespace RZ\Roadiz\Documents\Renderer;
 
 use League\Flysystem\FilesystemOperator;
 use RZ\Roadiz\Documents\DocumentFinderInterface;
-use RZ\Roadiz\Documents\Models\BaseDocumentInterface;
+use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\UrlGenerators\DocumentUrlGeneratorInterface;
 use Twig\Environment;
 
 class AudioRenderer extends AbstractRenderer
 {
+    protected DocumentFinderInterface $documentFinder;
+
     public function __construct(
         FilesystemOperator $documentsStorage,
-        protected readonly DocumentFinderInterface $documentFinder,
+        DocumentFinderInterface $documentFinder,
         Environment $templating,
         DocumentUrlGeneratorInterface $documentUrlGenerator,
-        string $templateBasePath = 'documents',
+        string $templateBasePath = 'documents'
     ) {
         parent::__construct($documentsStorage, $templating, $documentUrlGenerator, $templateBasePath);
+        $this->documentFinder = $documentFinder;
     }
 
-    #[\Override]
-    public function supports(BaseDocumentInterface $document, array $options): bool
+    public function supports(DocumentInterface $document, array $options): bool
     {
         return $document->isAudio();
     }
 
     /**
+     * @param DocumentInterface $document
+     * @param array $options
+     *
+     * @return string
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    #[\Override]
-    public function render(BaseDocumentInterface $document, array $options): string
+    public function render(DocumentInterface $document, array $options): string
     {
         $options = $this->viewOptionsResolver->resolve($options);
         $assignation = array_filter($options);
@@ -48,8 +53,12 @@ class AudioRenderer extends AbstractRenderer
      *
      * This method will search for document which filename is the same
      * except the extension. If you choose an MP4 file, it will look for a OGV and WEBM file.
+     *
+     * @param DocumentInterface $document
+     *
+     * @return array
      */
-    protected function getSourcesFiles(BaseDocumentInterface $document): array
+    protected function getSourcesFiles(DocumentInterface $document): array
     {
         if (!$document->isLocal()) {
             return [];
