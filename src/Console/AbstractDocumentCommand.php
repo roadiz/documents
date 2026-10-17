@@ -33,7 +33,7 @@ abstract class AbstractDocumentCommand extends Command
     /**
      * @return DocumentRepositoryInterface<DocumentInterface>&EntityRepository<DocumentInterface>
      */
-    protected function getDocumentRepository(): DocumentRepositoryInterface&EntityRepository
+    protected function getDocumentRepository(): DocumentRepositoryInterface
     {
         $repository = $this->managerRegistry->getRepository(DocumentInterface::class);
         if (!$repository instanceof DocumentRepositoryInterface) {

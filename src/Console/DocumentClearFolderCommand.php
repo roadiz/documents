@@ -17,7 +17,6 @@ class DocumentClearFolderCommand extends AbstractDocumentCommand
 {
     protected SymfonyStyle $io;
 
-    #[\Override]
     protected function configure(): void
     {
         $this->setName('documents:clear-folder')
@@ -35,7 +34,6 @@ class DocumentClearFolderCommand extends AbstractDocumentCommand
             ->setParameter(':folderId', $folder);
     }
 
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);

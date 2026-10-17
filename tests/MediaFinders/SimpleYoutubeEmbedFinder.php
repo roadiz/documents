@@ -19,9 +19,4 @@ final class SimpleYoutubeEmbedFinder extends AbstractYoutubeEmbedFinder
     {
         throw new \RuntimeException('Not implemented');
     }
-
-    protected function getExistingDocument(ObjectManager $objectManager, string $embedId, ?string $embedPlatform): ?DocumentInterface
-    {
-        throw new \RuntimeException('Not implemented');
-    }
 }
