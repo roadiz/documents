@@ -13,18 +13,23 @@ use RZ\Roadiz\Documents\Viewers\SvgDocumentViewer;
 class InlineSvgRenderer implements RendererInterface
 {
     protected ViewOptionsResolver $viewOptionsResolver;
+    protected FilesystemOperator $documentsStorage;
 
-    public function __construct(protected readonly FilesystemOperator $documentsStorage)
+    public function __construct(FilesystemOperator $documentsStorage)
     {
         $this->viewOptionsResolver = new ViewOptionsResolver();
+        $this->documentsStorage = $documentsStorage;
     }
 
     public function supports(DocumentInterface $document, array $options): bool
     {
-        return $document->isLocal() && $document->isSvg() && (isset($options['inline']) && true === $options['inline']);
+        return $document->isLocal() && $document->isSvg() && (isset($options['inline']) && $options['inline'] === true);
     }
 
     /**
+     * @param DocumentInterface $document
+     * @param array $options
+     * @return string
      * @throws FilesystemException
      */
     public function render(DocumentInterface $document, array $options): string
@@ -38,10 +43,9 @@ class InlineSvgRenderer implements RendererInterface
                 $document,
                 $assignation
             );
-
             return trim($this->htmlTidy($viewer->getContent()));
         } catch (\Exception $e) {
-            return '<p>'.$e->getMessage().'</p>';
+            return '<p>' . $e->getMessage() . '</p>';
         }
     }
 
