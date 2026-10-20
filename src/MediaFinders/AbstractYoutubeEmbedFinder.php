@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace RZ\Roadiz\Documents\MediaFinders;
 
+use RZ\Roadiz\Documents\DownloadedFile;
 use RZ\Roadiz\Documents\Exceptions\APINeedsAuthentificationException;
 use RZ\Roadiz\Documents\Exceptions\InvalidEmbedId;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * Youtube tools class.
@@ -14,63 +16,61 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
 {
     protected const YOUTUBE_EMBED_DOMAIN = 'https://www.youtube-nocookie.com';
     /**
-     * @var string
      * @internal Use getPlatform() instead
      */
     protected static string $platform = 'youtube';
-    protected static string $idPattern = '#^https\:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v\=)?(?<id>[a-zA-Z0-9\_\-]+)#';
+    protected static string $idPattern = '#^https\:\/\/(?:www\.|studio\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v\=|video\?v\=)?(?<id>[a-zA-Z0-9\_\-]+)#';
     protected static string $realIdPattern = '#^(?<id>[a-zA-Z0-9\_\-]+)$#';
-    protected ?string $embedUrl;
+    protected ?string $embedUrl = null;
+    private ?int $thumbnailWidth = null;
+    private ?int $thumbnailHeight = null;
 
+    #[\Override]
     public static function getPlatform(): string
     {
         return static::$platform;
     }
 
+    #[\Override]
     public static function supportEmbedUrl(string $embedUrl): bool
     {
-        return str_starts_with($embedUrl, 'https://www.youtube.com/') ||
-            str_starts_with($embedUrl, 'https://youtube.com/') ||
-            str_starts_with($embedUrl, 'https://youtu.be/');
+        return str_starts_with($embedUrl, 'https://www.youtube.com/')
+            || str_starts_with($embedUrl, 'https://studio.youtube.com/')
+            || str_starts_with($embedUrl, 'https://youtube.com/')
+            || str_starts_with($embedUrl, 'https://youtu.be/');
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function validateEmbedId(string $embedId = ""): string
+    #[\Override]
+    protected function validateEmbedId(string $embedId = ''): string
     {
-        if (preg_match(static::$idPattern, $embedId, $matches) === 1) {
+        if (1 === preg_match(static::$idPattern, $embedId, $matches)) {
             return $embedId;
         }
-        if (preg_match(static::$realIdPattern, $embedId, $matches) === 1) {
+        if (1 === preg_match(static::$realIdPattern, $embedId, $matches)) {
             return $embedId;
         }
         throw new InvalidEmbedId($embedId, static::$platform);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getMediaFeed($search = null)
+    #[\Override]
+    public function getMediaFeed(?string $search = null): string
     {
         if (preg_match(static::$realIdPattern, $this->embedId, $matches)) {
-            $url = 'https://www.youtube.com/watch?v=' . $this->embedId;
+            $url = 'https://www.youtube.com/watch?v='.$this->embedId;
         } else {
             $url = $this->embedId;
         }
-        $endpoint = "https://www.youtube.com/oembed";
+        $endpoint = 'https://www.youtube.com/oembed';
         $query = [
             'url' => $url,
             'format' => 'json',
         ];
 
-        return $this->downloadFeedFromAPI($endpoint . '?' . http_build_query($query));
+        return $this->downloadFeedFromAPI($endpoint.'?'.http_build_query($query));
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getFeed()
+    #[\Override]
+    public function getFeed(): array|\SimpleXMLElement|null
     {
         $feed = parent::getFeed();
         /*
@@ -80,7 +80,7 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         if (
             is_array($feed)
             && !empty($feed['html'])
-            && preg_match('#src\=\"https\:\/\/www\.youtube\.com\/embed\/(?<realId>[a-zA-Z0-9\_\-]+)#', $feed['html'], $matches)
+            && preg_match('#src\=\"https\:\/\/www\.youtube\.com\/embed\/(?<realId>[a-zA-Z0-9\_\-]+)#', (string) $feed['html'], $matches)
         ) {
             $this->embedId = urldecode($matches['realId']);
         }
@@ -88,43 +88,96 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         return $feed;
     }
 
+    #[\Override]
     public function getMediaTitle(): string
     {
         return $this->getFeed()['title'] ?? '';
     }
 
+    #[\Override]
     public function getMediaDescription(): string
     {
         $feed = $this->getFeed();
+
         return (is_array($feed) && isset($feed['description'])) ? ($feed['description']) : ('');
     }
 
+    #[\Override]
     public function getMediaCopyright(): string
     {
-        return ($this->getFeed()['author_name'] ?? '') . ' (' . ($this->getFeed()['author_url'] ?? '') . ')';
+        return ($this->getFeed()['author_name'] ?? '').' ('.($this->getFeed()['author_url'] ?? '').')';
     }
 
+    #[\Override]
     public function getThumbnailURL(): string
     {
         return $this->getFeed()['thumbnail_url'] ?? '';
     }
 
     /**
-     * @inheritDoc
+     * oEmbed only exposes the low-res hqdefault.jpg cover. YouTube also serves a
+     * 1280×720 maxresdefault.jpg at the same path, but only for videos uploaded
+     * in HD, so it can 404. Returns the maxres candidate, or null when the
+     * thumbnail URL is not a recognizable ytimg default.jpg cover.
      */
-    public function getMediaWidth(): ?int
+    protected function getMaxResThumbnailURL(): ?string
     {
-        return $this->getFeed()['width'] ?? null;
+        $url = $this->getThumbnailURL();
+        $maxRes = preg_replace('#/[a-z]+default\.jpg$#', '/maxresdefault.jpg', $url);
+
+        return (null !== $maxRes && $maxRes !== $url) ? $maxRes : null;
     }
 
     /**
-     * @inheritDoc
+     * Prefer the high-res maxresdefault.jpg cover, falling back to the oEmbed
+     * thumbnail_url when maxres is missing. DownloadedFile::fromUrl() already
+     * returns null on any non-200 response, so a maxres 404 is the fallback signal.
      */
-    public function getMediaHeight(): ?int
+    #[\Override]
+    public function downloadThumbnail(): ?File
     {
-        return $this->getFeed()['height'] ?? null;
+        $maxRes = $this->getMaxResThumbnailURL();
+        if (null !== $maxRes) {
+            $file = DownloadedFile::fromUrl($maxRes, $this->getThumbnailName(basename($maxRes)));
+            if (null !== $file) {
+                return $this->rememberThumbnailSize($file);
+            }
+        }
+
+        $file = parent::downloadThumbnail();
+
+        return null !== $file ? $this->rememberThumbnailSize($file) : null;
     }
 
+    /**
+     * oEmbed width/height describe the embed player (e.g. 200×113), not the
+     * downloaded cover. Measure the actual thumbnail so the document stores the
+     * real image size — otherwise the maxres cover keeps the tiny oEmbed size.
+     */
+    private function rememberThumbnailSize(File $file): File
+    {
+        $size = @getimagesize($file->getPathname());
+        if (false !== $size) {
+            $this->thumbnailWidth = $size[0];
+            $this->thumbnailHeight = $size[1];
+        }
+
+        return $file;
+    }
+
+    #[\Override]
+    public function getMediaWidth(): ?int
+    {
+        return $this->thumbnailWidth ?? $this->getFeed()['width'] ?? null;
+    }
+
+    #[\Override]
+    public function getMediaHeight(): ?int
+    {
+        return $this->thumbnailHeight ?? $this->getFeed()['height'] ?? null;
+    }
+
+    #[\Override]
     public function getThumbnailName(string $pathinfo): string
     {
         if (null === $this->embedUrl) {
@@ -132,35 +185,35 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         } else {
             $embed = $this->embedUrl;
         }
-        if (preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $matches) === 1) {
-            $pathinfo = '.' . $matches['extension'];
+        if (1 === preg_match('#\.(?<extension>[jpe?g|png|gif])$#', $pathinfo, $matches)) {
+            $pathinfo = '.'.$matches['extension'];
         } else {
             $pathinfo = '.jpg';
         }
-        if (preg_match(static::$realIdPattern, $embed, $matches) === 1) {
-            return 'youtube_' . $matches['id'] . $pathinfo;
+        if (1 === preg_match(static::$realIdPattern, $embed, $matches)) {
+            return 'youtube_'.$matches['id'].$pathinfo;
         }
-        if (preg_match(static::$idPattern, $embed, $matches) === 1) {
-            return 'youtube_' . $matches['id'] . $pathinfo;
+        if (1 === preg_match(static::$idPattern, $embed, $matches)) {
+            return 'youtube_'.$matches['id'].$pathinfo;
         }
         throw new InvalidEmbedId($embed, static::$platform);
     }
 
     /**
-     * @inheritdoc
-     * @throws     APINeedsAuthentificationException
+     * @throws APINeedsAuthentificationException
      */
-    public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15)
+    #[\Override]
+    public function getSearchFeed(string $searchTerm, ?string $author = null, int $maxResults = 15): ?string
     {
-        if (null !== $this->getKey() && $this->getKey() != "") {
-            $url = "https://www.googleapis.com/youtube/v3/search?q=" . $searchTerm . "&part=snippet&key=" . $this->getKey() . "&maxResults=" . $maxResults;
-            if (null !== $author && !empty($author)) {
-                $url .= '&author=' . $author;
+        if (null !== $this->getKey() && '' != $this->getKey()) {
+            $url = 'https://www.googleapis.com/youtube/v3/search?q='.$searchTerm.'&part=snippet&key='.$this->getKey().'&maxResults='.$maxResults;
+            if (!empty($author)) {
+                $url .= '&author='.$author;
             }
+
             return $this->downloadFeedFromAPI($url);
-        } else {
-            throw new APINeedsAuthentificationException("YoutubeEmbedFinder needs a Google server key, create a “google_server_id” setting.", 1);
         }
+        throw new APINeedsAuthentificationException('YoutubeEmbedFinder needs a Google server key, create a “google_server_id” setting.', 1);
     }
 
     /**
@@ -174,11 +227,8 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
      * * start
      * * enablejsapi
      * * muted
-     *
-     * @param array $options
-     *
-     * @return string
      */
+    #[\Override]
     public function getSource(array &$options = []): string
     {
         parent::getSource($options);
@@ -209,6 +259,12 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
             $queryString['end'] = (int) $options['end'];
         }
 
+        if (1 === preg_match(static::$idPattern, $this->embedId, $matches)) {
+            $embedId = $matches['id'];
+        } else {
+            $embedId = $this->embedId;
+        }
+
         $queryString['loop'] = (int) $options['loop'];
         $queryString['controls'] = (int) $options['controls'];
         $queryString['fs'] = (int) $options['fullscreen'];
@@ -218,9 +274,10 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
         $queryString['enablejsapi'] = (int) $options['enablejsapi'];
         $queryString['mute'] = (int) $options['muted'];
 
-        return static::YOUTUBE_EMBED_DOMAIN . '/embed/' . $this->embedId . '?' . http_build_query($queryString);
+        return static::YOUTUBE_EMBED_DOMAIN.'/embed/'.$embedId.'?'.http_build_query($queryString);
     }
 
+    #[\Override]
     public function getPublicUri(): ?string
     {
         if (1 === preg_match(static::$idPattern, $this->embedId, $matches)) {
@@ -229,6 +286,6 @@ abstract class AbstractYoutubeEmbedFinder extends AbstractEmbedFinder
             $embedId = $this->embedId;
         }
 
-        return 'https://www.youtube.com/watch?v=' . $embedId;
+        return 'https://www.youtube.com/watch?v='.$embedId;
     }
 }

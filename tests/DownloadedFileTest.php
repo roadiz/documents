@@ -11,6 +11,84 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 class DownloadedFileTest extends TestCase
 {
     /**
+     * @dataProvider sanitizeFilenameProvider
+     */
+    public function testSanitizeFilename(string $input, string $expected): void
+    {
+        $this->assertEquals($expected, DownloadedFile::sanitizeFilename($input));
+    }
+
+    public function sanitizeFilenameProvider(): array
+    {
+        return [
+            [
+                'Les-Echos_26022015_Les-entrepreneurs-partent-à-lassaut-du-secteur-bancaire.pdf',
+                'les_echos_26022015_les_entrepreneurs_partent_a_lassaut_du_secteur_bancaire.pdf',
+            ],
+            [
+                'Les-entrepreneurs-partent-à-lassaut-du-secteur-bancaire.pdf',
+                'les_entrepreneurs_partent_a_lassaut_du_secteur_bancaire.pdf',
+            ],
+            [
+                'image.jpg',
+                'image.jpg',
+            ],
+            [
+                'image with spaces.jpg',
+                'image_with_spaces.jpg',
+            ],
+            [
+                'image/with/slashes.jpg',
+                'image_with_slashes.jpg',
+            ],
+            [
+                'image.jpg.webp',
+                'image_jpg.webp',
+            ],
+            [
+                'image.png.avif',
+                'image_png.avif',
+            ],
+            [
+                'image.png.heif',
+                'image_png.heif',
+            ],
+            [
+                'folder/folder.image.jpg.webp',
+                'folder_folder_image_jpg.webp',
+            ],
+            [
+                'folder/archive.tar.gz',
+                'folder_archive.tar.gz',
+            ],
+            [
+                'folder/archive.tar.xz',
+                'folder_archive.tar.xz',
+            ],
+            [
+                'folder/archive.tar.zip',
+                'folder_archive.tar.zip',
+            ],
+            [
+                'folder/archive.tar.bz',
+                'folder_archive.tar.bz',
+            ],
+            [
+                'folder/archive.tar.bz2',
+                'folder_archive.tar.bz2',
+            ],
+            [
+                'folder/archive.tar.tgz',
+                'folder_archive.tar.tgz',
+            ],
+            [
+                'folder/archive.tar.7z',
+                'folder_archive.tar.7z',
+            ],
+        ];
+    }
+
+    /**
      * @dataProvider blockedUrlProvider
      */
     public function testFromUrlRejectsUnsafeUrls(string $url): void
@@ -42,6 +120,20 @@ class DownloadedFileTest extends TestCase
     {
         // IP literal host: passes the pre-connect check without any DNS lookup, then the socket reports 127.0.0.1.
         MockDownloadedFile::$responses = [new MockResponse('payload', ['primary_ip' => '127.0.0.1'])];
+
+        $this->assertNull(MockDownloadedFile::fromUrl('https://93.184.216.34/test.jpg'));
+    }
+
+    public function testFromUrlRejectsRedirectToPrivateAddress(): void
+    {
+        MockDownloadedFile::$responses = [
+            new MockResponse('', [
+                'http_code' => 302,
+                'primary_ip' => '93.184.216.34',
+                'response_headers' => ['Location: http://127.0.0.1/internal.jpg'],
+            ]),
+            new MockResponse('secret', ['primary_ip' => '127.0.0.1']),
+        ];
 
         $this->assertNull(MockDownloadedFile::fromUrl('https://93.184.216.34/test.jpg'));
     }

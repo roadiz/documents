@@ -12,21 +12,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DownloadedFile extends File
 {
-    protected ?string $originalFilename;
+    protected ?string $originalFilename = null;
 
-    /**
-     * @return string|null
-     */
     public function getOriginalFilename(): ?string
     {
         return $this->originalFilename;
     }
 
-    /**
-     * @param string|null $originalFilename
-     *
-     * @return DownloadedFile
-     */
     public function setOriginalFilename(?string $originalFilename): DownloadedFile
     {
         $this->originalFilename = $originalFilename;
@@ -35,10 +27,7 @@ class DownloadedFile extends File
     }
 
     /**
-     * Final constructor for safe usage in DownloadedFile::fromUrl
-     *
-     * @param string $path
-     * @param bool   $checkPath
+     * Final constructor for safe usage in DownloadedFile::fromUrl.
      */
     final public function __construct(string $path, bool $checkPath = true)
     {
@@ -47,15 +36,25 @@ class DownloadedFile extends File
 
     /**
      * Transform to lowercase and replace every non-alpha character with an underscore.
-     *
-     * @param string|null $string
-     *
-     * @return string
      */
     public static function sanitizeFilename(?string $string): string
     {
         if (null === $string) {
             return '';
+        }
+
+        // Remove images double extensions
+        // for compatibility with intervention-request
+        // and only keep the last one.
+        // example: my.image.jpg.webp => my_image_jpg.webp
+        $parts = explode('.', $string);
+        if (count($parts) > 2) {
+            $extension = array_pop($parts);
+            // Keep double extension for zip, gz, xz and bz
+            if (!\in_array($extension, ['zip', 'gz', 'xz', 'bz', 'bz2', '7z', 'tgz'], true)) {
+                $filename = implode('_', $parts);
+                $string = $filename.'.'.$extension;
+            }
         }
 
         return (new UnicodeString($string))
@@ -67,12 +66,6 @@ class DownloadedFile extends File
         ;
     }
 
-    /**
-     * @param string      $url
-     * @param string|null $originalName
-     *
-     * @return DownloadedFile|null
-     */
     public static function fromUrl(string $url, ?string $originalName = null): ?DownloadedFile
     {
         try {
@@ -118,18 +111,17 @@ class DownloadedFile extends File
             /*
              * Some OEmbed providers won't add any extension in original filename.
              */
-            if ($file->getExtension() === '' && null !== $guessedExtension = $file->guessExtension()) {
-                $file->setOriginalFilename($file->getOriginalFilename() . '.' . $guessedExtension);
+            if ('' === $file->getExtension() && null !== $guessedExtension = $file->guessExtension()) {
+                $file->setOriginalFilename($file->getOriginalFilename().'.'.$guessedExtension);
             }
 
             if ($file->isReadable() && filesize($file->getPathname()) > 0) {
                 return $file;
             }
-        } catch (\RuntimeException $e) {
-            // Symfony HttpClient transport, client, server and redirection exceptions all extend RuntimeException,
-            // so a blocked private address returns null here like any other unreachable URL.
+        } catch (\RuntimeException) {
             return null;
         }
+
         return null;
     }
 
