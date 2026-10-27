@@ -8,6 +8,7 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\MountManager;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RZ\Roadiz\Documents\Models\DocumentInterface;
 use RZ\Roadiz\Documents\Models\FileHashInterface;
 use RZ\Roadiz\Documents\Models\FolderInterface;
@@ -22,69 +23,88 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 abstract class AbstractDocumentFactory
 {
+    private LoggerInterface $logger;
     private ?File $file = null;
     private ?FolderInterface $folder = null;
+    private FilesystemOperator $documentsStorage;
+    private DocumentFinderInterface $documentFinder;
 
     public function __construct(
-        protected readonly FilesystemOperator $documentsStorage,
-        protected readonly DocumentFinderInterface $documentFinder,
-        protected readonly LoggerInterface $logger,
+        FilesystemOperator $documentsStorage,
+        DocumentFinderInterface $documentFinder,
+        ?LoggerInterface $logger = null
     ) {
         if (!$documentsStorage instanceof MountManager) {
             trigger_error('Document Storage must be a MountManager to address public and private files.', E_USER_WARNING);
         }
+        $this->documentsStorage = $documentsStorage;
+        $this->documentFinder = $documentFinder;
+        $this->logger = $logger ?? new NullLogger();
     }
 
+    /**
+     * @return File
+     */
     public function getFile(): File
     {
         if (null === $this->file) {
             throw new \BadMethodCallException('File should be defined before using it.');
         }
-
         return $this->file;
     }
 
     /**
+     * @param  File $file
      * @return $this
      */
     public function setFile(File $file): static
     {
         $this->file = $file;
-
         return $this;
     }
 
+    /**
+     * @return FolderInterface|null
+     */
     public function getFolder(): ?FolderInterface
     {
         return $this->folder;
     }
 
     /**
+     * @param FolderInterface|null $folder
      * @return $this
      */
     public function setFolder(?FolderInterface $folder = null): static
     {
         $this->folder = $folder;
-
         return $this;
     }
 
     /**
      * Special case for SVG without XML statement.
+     *
+     * @param DocumentInterface $document
      */
     protected function parseSvgMimeType(DocumentInterface $document): void
     {
         if (
-            ('text/plain' === $document->getMimeType() || 'text/html' === $document->getMimeType())
-            && preg_match('#\.svg$#', $document->getFilename())
+            ($document->getMimeType() === 'text/plain' || $document->getMimeType() === 'text/html') &&
+            preg_match('#\.svg$#', $document->getFilename())
         ) {
             $this->logger->debug('Uploaded a SVG without xml declaration. Presuming it’s a valid SVG file.');
             $document->setMimeType('image/svg+xml');
         }
     }
 
+    /**
+     * @return DocumentInterface
+     */
     abstract protected function createDocument(): DocumentInterface;
 
+    /**
+     * @param DocumentInterface $document
+     */
     abstract protected function persistDocument(DocumentInterface $document): void;
 
     protected function getHashAlgorithm(): string
@@ -96,14 +116,14 @@ abstract class AbstractDocumentFactory
      * Create a document from UploadedFile, Be careful, this method does not flush, only
      * persists current Document.
      *
-     * @param bool $allowEmpty      Default false, requires a local file to create new document entity
+     * @param bool $allowEmpty Default false, requires a local file to create new document entity
      * @param bool $allowDuplicates Default false, always import new document even if file already exists
-     *
+     * @return null|DocumentInterface
      * @throws FilesystemException
      */
     public function getDocument(bool $allowEmpty = false, bool $allowDuplicates = false): ?DocumentInterface
     {
-        if (false === $allowEmpty) {
+        if ($allowEmpty === false) {
             // Getter throw exception on null file
             $file = $this->getFile();
         } else {
@@ -126,10 +146,10 @@ abstract class AbstractDocumentFactory
         if (false !== $fileHash && !$allowDuplicates) {
             $existingDocument = $this->documentFinder->findOneByHashAndAlgorithm($fileHash, $this->getHashAlgorithm());
             if (null !== $existingDocument) {
-                /*
-                 * If existing document is a RAW, serve its downscaled version
-                 */
-                if (null !== $existingDownscaledDocument = $existingDocument->getDownscaledDocument()) {
+                if (
+                    $existingDocument->isRaw() &&
+                    null !== $existingDownscaledDocument = $existingDocument->getDownscaledDocument()
+                ) {
                     $existingDocument = $existingDownscaledDocument;
                 }
                 if (null !== $this->folder) {
@@ -139,11 +159,7 @@ abstract class AbstractDocumentFactory
                 $this->logger->info(sprintf(
                     'File %s already exists with same checksum, do not upload it twice.',
                     $existingDocument->getFilename()
-                ), [
-                    'path' => $existingDocument->getMountPath(),
-                ]);
-                (new Filesystem())->remove($file->getPathname());
-
+                ));
                 return $existingDocument;
             }
         }
@@ -159,8 +175,8 @@ abstract class AbstractDocumentFactory
         $this->parseSvgMimeType($document);
 
         if (
-            $document instanceof FileHashInterface
-            && false !== $fileHash
+            $document instanceof FileHashInterface &&
+            false !== $fileHash
         ) {
             $document->setFileHash($fileHash);
             $document->setFileHashAlgorithm($this->getHashAlgorithm());
@@ -180,6 +196,8 @@ abstract class AbstractDocumentFactory
     /**
      * Updates a document from UploadedFile, Be careful, this method does not flush.
      *
+     * @param DocumentInterface $document
+     * @return DocumentInterface
      * @throws FilesystemException
      */
     public function updateDocument(DocumentInterface $document): DocumentInterface
@@ -213,7 +231,7 @@ abstract class AbstractDocumentFactory
                 }
             }
 
-            $document->setFolder(DocumentFolderGenerator::generateFolderName());
+            $document->setFolder(\mb_substr(hash("crc32b", date('YmdHi')), 0, 12));
         }
 
         $document->setFilename($this->getFileName());
@@ -229,6 +247,9 @@ abstract class AbstractDocumentFactory
     }
 
     /**
+     * @param File $localFile
+     * @param DocumentInterface $document
+     * @return void
      * @throws FilesystemException
      */
     public function moveFile(File $localFile, DocumentInterface $document): void
@@ -246,6 +267,9 @@ abstract class AbstractDocumentFactory
         }
     }
 
+    /**
+     * @return string
+     */
     protected function getFileName(): string
     {
         $file = $this->getFile();
@@ -254,8 +278,8 @@ abstract class AbstractDocumentFactory
             $fileName = $file->getClientOriginalName();
         } elseif (
             $file instanceof DownloadedFile
-            && null !== $file->getOriginalFilename()
-            && '' !== $file->getOriginalFilename()
+            && $file->getOriginalFilename() !== null
+            && $file->getOriginalFilename() !== ''
         ) {
             $fileName = $file->getOriginalFilename();
         } else {
@@ -268,6 +292,9 @@ abstract class AbstractDocumentFactory
     /**
      * Create a Document from an external URL.
      *
+     * @param string $downloadUrl
+     *
+     * @return DocumentInterface|null
      * @throws FilesystemException
      */
     public function getDocumentFromUrl(string $downloadUrl): ?DocumentInterface
@@ -276,7 +303,6 @@ abstract class AbstractDocumentFactory
         if (null !== $downloadedFile) {
             return $this->setFile($downloadedFile)->getDocument();
         }
-
         return null;
     }
 }
