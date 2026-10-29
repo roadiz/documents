@@ -20,6 +20,7 @@ final class MockDownloadedFile extends DownloadedFile
     /** @var array<MockResponse> */
     public static array $responses = [];
 
+    #[\Override]
     protected static function createHttpClient(): HttpClientInterface
     {
         return new NoPrivateNetworkHttpClient(new MockHttpClient(self::$responses));
