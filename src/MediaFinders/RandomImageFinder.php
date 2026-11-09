@@ -7,12 +7,15 @@ namespace RZ\Roadiz\Documents\MediaFinders;
 interface RandomImageFinder
 {
     /**
-     * @return array|null a data feed for a random image
+     * @param  array $options
+     * @return array|null A data feed for a random image.
      */
     public function getRandom(array $options = []): ?array;
 
     /**
+     * @param  string $keyword
+     * @param  array  $options
      * @return array|bool|mixed A data feed for a random image by keyword
      */
-    public function getRandomBySearch(string $keyword, array $options = []): mixed;
+    public function getRandomBySearch(string $keyword, array $options = []);
 }
